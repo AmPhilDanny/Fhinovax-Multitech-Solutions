@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { getSiteSettings, getActiveServices } from "./actions";
 
+export const dynamic = 'force-dynamic';
+
 export default async function Home() {
   const settings = await getSiteSettings();
   const servicesList = await getActiveServices();
