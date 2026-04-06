@@ -15,9 +15,9 @@ export default async function Home() {
           </div>
           <span className="font-extrabold text-brand-blue uppercase tracking-tight text-lg">Fhinovax</span>
         </div>
-        <button className="text-brand-blue p-1 rounded hover:bg-gray-50">
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>
-        </button>
+        <Link href="/admin" className="text-sm font-bold text-brand-blue px-3 py-1.5 rounded-lg border border-brand-blue hover:bg-brand-blue hover:text-white transition-colors">
+          Admin Panel
+        </Link>
       </header>
 
       <main className="flex-grow">
@@ -74,8 +74,9 @@ export default async function Home() {
       </main>
       
       {/* Footer Area */}
-      <footer className="bg-gray-900 text-gray-400 text-center py-8">
+      <footer className="bg-gray-900 text-gray-400 text-center py-8 px-4 flex flex-col items-center gap-2">
          <p className="text-sm">&copy; {new Date().getFullYear()} Fhinovax Multitech Solutions Ltd. All rights reserved.</p>
+         <Link href="/admin" className="text-xs text-gray-500 hover:text-gray-300">Admin Login</Link>
       </footer>
     </div>
   );
