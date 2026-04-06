@@ -12,7 +12,11 @@ export async function getSiteSettings() {
       heroSubtitle: "Professional diagnostics, honest repairs, physical workshop available at Ankpa Road.",
       phoneNumber: "+2348000000000",
       whatsappNumber: "2348000000000",
+      emailAddress: "info@fhinovax.com",
+      operatingHours: "Mon-Sat: 8am - 6pm",
       address: "No. 83 Ankpa Road, Makurdi, Benue State",
+      siteName: "Fhinovax Multitech Solutions Ltd",
+      logoUrl: "",
     };
   }
   return settings[0];

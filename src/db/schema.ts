@@ -3,10 +3,14 @@ import { pgTable, text, serial, timestamp, boolean, varchar } from "drizzle-orm/
 // Site Settings: Holds hero text, contact numbers, address, and overall site customization text
 export const siteSettings = pgTable("site_settings", {
   id: serial("id").primaryKey(),
+  siteName: varchar("site_name", { length: 150 }).notNull().default("Fhinovax Multitech Solutions Ltd"),
+  logoUrl: text("logo_url").default(""),
   heroTitle: text("hero_title").notNull().default("Generator & Vehicle Diagnostics in Makurdi"),
   heroSubtitle: text("hero_subtitle").notNull().default("Professional diagnostics, honest repairs, physical workshop available at Ankpa Road."),
   phoneNumber: varchar("phone_number", { length: 50 }).notNull().default("+2348000000000"),
   whatsappNumber: varchar("whatsapp_number", { length: 50 }).notNull().default("2348000000000"),
+  emailAddress: varchar("email_address", { length: 150 }).default("info@fhinovax.com"),
+  operatingHours: text("operating_hours").default("Mon-Sat: 8am - 6pm"),
   address: text("address").notNull().default("No. 83 Ankpa Road, Makurdi, Benue State"),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
