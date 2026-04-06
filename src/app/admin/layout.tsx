@@ -1,5 +1,6 @@
 import { redirect } from 'next/navigation';
 import { cookies } from 'next/headers';
+import Link from 'next/link';
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   // Super simple authentication for immediate protection.
@@ -45,10 +46,35 @@ export default async function AdminLayout({ children }: { children: React.ReactN
     );
   }
 
-  // If authenticated, render the dashboard
+  // If authenticated, render the dashboard with a sidebar
   return (
-    <>
-      {children}
-    </>
+    <div className="min-h-screen bg-gray-50 flex flex-col md:flex-row">
+      {/* Sidebar */}
+      <aside className="w-full md:w-64 bg-white border-r border-gray-200 flex-shrink-0">
+        <div className="p-6 border-b border-gray-100 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 bg-brand-blue rounded flex items-center justify-center text-white font-bold">F</div>
+            <span className="font-bold text-gray-900">Admin</span>
+          </div>
+          <Link href="/" className="text-xs text-blue-600 hover:underline">View Site &rarr;</Link>
+        </div>
+        <nav className="p-4 space-y-1">
+          <Link href="/admin" className="block px-4 py-2 rounded-lg bg-blue-50 text-brand-blue font-medium">
+            Site Settings
+          </Link>
+          <Link href="/admin/services" className="block px-4 py-2 rounded-lg text-gray-600 hover:bg-gray-50 hover:text-gray-900">
+            Manage Services
+          </Link>
+          <Link href="/admin/leads" className="block px-4 py-2 rounded-lg text-gray-600 hover:bg-gray-50 hover:text-gray-900">
+            View Leads
+          </Link>
+        </nav>
+      </aside>
+
+      {/* Main Content Area */}
+      <main className="flex-1 p-6 md:p-10 overflow-y-auto">
+        {children}
+      </main>
+    </div>
   );
 }
