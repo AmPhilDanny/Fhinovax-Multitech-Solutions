@@ -61,6 +61,8 @@ export default function AdminTabs({
 }) {
   const [activeTab, setActiveTab] = useState("dashboard");
   const [uploading, setUploading] = useState<string | null>(null);
+  const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'success' | 'error'>('idle');
+  const [saveError, setSaveError] = useState<string | null>(null);
   const [selectedMediaTarget, setSelectedMediaTarget] = useState<string | null>(null);
   const [bgType, setBgType] = useState(settings.heroBgType || "color");
   const [previews, setPreviews] = useState({
@@ -93,11 +95,32 @@ export default function AdminTabs({
         alert("Image uploaded to library! Refreshing gallery...");
         window.location.reload();
       }
-    } catch (error) {
-       console.error("Upload failed", error);
-       alert("Upload failed. please check console.");
+    } catch (error: any) {
+      console.error("AI CHAT ERROR:", error);
+      const errorMessage = error.message || "An unexpected error occurred with the AI connection.";
+      alert(errorMessage);
     } finally {
        setUploading(null);
+    }
+  };
+
+  const handleFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setSaveStatus('saving');
+    setSaveError(null);
+    const formData = new FormData(e.currentTarget);
+    try {
+      const result = await saveSiteSettings(formData);
+      if (result.success) {
+        setSaveStatus('success');
+        setTimeout(() => setSaveStatus('idle'), 3000);
+      } else {
+        setSaveStatus('error');
+        setSaveError(result.error || "Unknown error");
+      }
+    } catch (err) {
+      setSaveStatus('error');
+      setSaveError(String(err));
     }
   };
 
@@ -273,8 +296,13 @@ export default function AdminTabs({
           )}
           
           {activeTab === "general" && (
-            <form action={saveSiteSettings} className="space-y-6">
-              <h2 className="text-xl font-bold text-gray-900 mb-6">Site Identity & Global Settings</h2>
+            <div className="space-y-6">
+              <form onSubmit={handleFormSubmit} className="space-y-6">
+                <div className="flex items-center justify-between mb-2">
+                  <h2 className="text-xl font-bold text-gray-900">Site Identity & Global Settings</h2>
+                  {saveStatus === 'success' && <span className="text-xs font-bold text-green-600 animate-bounce">✓ Settings Saved!</span>}
+                  {saveStatus === 'error' && <span className="text-xs font-bold text-red-600">⚠ {saveError}</span>}
+                </div>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-1">
@@ -335,12 +363,18 @@ export default function AdminTabs({
               <button type="submit" className="admin-btn-save">
                 <Save size={18} /> Save Identity Changes
               </button>
-            </form>
+             </form>
+            </div>
           )}
 
           {activeTab === "hero" && (
-            <form action={saveSiteSettings} className="space-y-6">
-              <h2 className="text-xl font-bold text-gray-900 mb-6">Hero Section Customization</h2>
+            <div className="space-y-6">
+              <form onSubmit={handleFormSubmit} className="space-y-6">
+                <div className="flex items-center justify-between mb-2">
+                   <h2 className="text-xl font-bold text-gray-900">Hero Section Customization</h2>
+                   {saveStatus === 'success' && <span className="text-xs font-bold text-green-600 animate-bounce">✓ Hero Updated!</span>}
+                   {saveStatus === 'error' && <span className="text-xs font-bold text-red-600">⚠ {saveError}</span>}
+                </div>
               
               <div className="space-y-1">
                 <label className="text-xs font-bold uppercase text-gray-500">Hero Main Title</label>
@@ -408,7 +442,8 @@ export default function AdminTabs({
               <button type="submit" className="admin-btn-save">
                 <Save size={18} /> Apply Hero Updates
               </button>
-            </form>
+             </form>
+            </div>
           )}
 
           {activeTab === "menu" && (
@@ -558,16 +593,20 @@ export default function AdminTabs({
           )}
 
           {activeTab === "ai" && (
-            <form action={saveSiteSettings} className="space-y-8">
-               <div className="flex items-center gap-3">
-                  <div className="bg-brand-blue/10 p-2 rounded-lg text-brand-blue">
-                     <Bot size={24} />
-                  </div>
-                  <div>
-                     <h2 className="text-xl font-bold text-gray-900 leading-tight">AI & Business Context</h2>
-                     <p className="text-xs text-gray-500">Configure how Gemini interacts with your customers.</p>
-                  </div>
-               </div>
+            <div className="space-y-6">
+              <form onSubmit={handleFormSubmit} className="space-y-8">
+                <div className="flex items-center justify-between">
+                   <div className="flex items-center gap-3">
+                      <div className="bg-brand-blue/10 p-2 rounded-lg text-brand-blue">
+                         <Bot size={24} />
+                      </div>
+                      <div>
+                         <h2 className="text-xl font-bold text-gray-900 leading-tight">AI & Business Context</h2>
+                         <p className="text-xs text-gray-500">Configure how Gemini interacts with your customers.</p>
+                      </div>
+                   </div>
+                   {saveStatus === 'success' && <span className="text-xs font-bold text-green-600 animate-bounce">✓ Logic Updated!</span>}
+                </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                    <div className="space-y-1">
@@ -636,8 +675,9 @@ export default function AdminTabs({
                     <Save size={18} /> Update Business Logic
                   </button>
                </div>
-            </form>
-          )}
+              </form>
+            </div>
+           )}
            {activeTab === "marketing" && (
              <div className="space-y-8">
                 <div className="flex items-center justify-between">
@@ -783,18 +823,20 @@ export default function AdminTabs({
            )}
 
            {activeTab === "seo" && (
-
-
-             <form action={saveSiteSettings} className="space-y-8">
-               <div className="flex items-center gap-3">
-                  <div className="bg-brand-blue/10 p-2 rounded-lg text-brand-blue">
-                     <Globe size={24} />
-                  </div>
-                  <div>
-                     <h2 className="text-xl font-bold text-gray-900 leading-tight">SEO & Global Ranking</h2>
-                     <p className="text-xs text-gray-500">Control how Google and Social Media see your site.</p>
-                  </div>
-               </div>
+            <div className="space-y-6">
+              <form onSubmit={handleFormSubmit} className="space-y-8">
+                <div className="flex items-center justify-between">
+                   <div className="flex items-center gap-3">
+                      <div className="bg-brand-blue/10 p-2 rounded-lg text-brand-blue">
+                         <Globe size={24} />
+                      </div>
+                      <div>
+                         <h2 className="text-xl font-bold text-gray-900 leading-tight">SEO & Global Ranking</h2>
+                         <p className="text-xs text-gray-500">Control how Google and Social Media see your site.</p>
+                      </div>
+                   </div>
+                   {saveStatus === 'success' && <span className="text-xs font-bold text-green-600 animate-bounce">✓ SEO Saved!</span>}
+                </div>
 
                <div className="space-y-4">
                   <div className="space-y-1">
@@ -841,6 +883,7 @@ export default function AdminTabs({
                   <Save size={18} /> Save Global SEO Changes
                </button>
              </form>
+            </div>
            )}
         </div>
       </main>

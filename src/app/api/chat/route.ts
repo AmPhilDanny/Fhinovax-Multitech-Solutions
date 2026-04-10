@@ -103,8 +103,16 @@ export async function POST(req: Request) {
 
     return result.toTextStreamResponse();
   } catch (err: any) {
-    console.error("Chat API Error:", err);
-    return new Response(JSON.stringify({ error: err.message }), { status: 500, headers: { 'Content-Type': 'application/json' } });
+    console.error("AI CHAT ERROR:", err);
+    // Return a more descriptive error if possible
+    const errorMessage = err.message || "An unexpected error occurred with the AI connection.";
+    return new Response(JSON.stringify({ 
+      error: errorMessage,
+      details: err.stack?.split('\n')[0] 
+    }), { 
+      status: 500, 
+      headers: { 'Content-Type': 'application/json' } 
+    });
   }
 }
 

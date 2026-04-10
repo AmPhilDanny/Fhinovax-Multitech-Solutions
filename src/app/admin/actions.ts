@@ -31,17 +31,30 @@ export async function saveSiteSettings(formData: FormData) {
     }
   }
 
+  console.log("DB: Updating site settings for fields:", Object.keys(updateData));
+  if (updateData.aiApiKey) {
+    console.log("DB: AI API Key detected in payload starting with:", updateData.aiApiKey.substring(0, 4) + "...");
+  }
+  
   // Check if a row exists
   const existing = await db.select().from(siteSettings).limit(1);
 
-  if (existing.length === 0) {
-    await db.insert(siteSettings).values(updateData as any);
-  } else {
-    await db.update(siteSettings).set(updateData).where(eq(siteSettings.id, existing[0].id));
+  try {
+    if (existing.length === 0) {
+      console.log("DB: Inserting new settings row");
+      await db.insert(siteSettings).values(updateData as any);
+    } else {
+      console.log("DB: Updating existing settings id", existing[0].id);
+      await db.update(siteSettings).set(updateData).where(eq(siteSettings.id, existing[0].id));
+    }
+    
+    revalidatePath("/");
+    revalidatePath("/admin");
+    return { success: true };
+  } catch (err) {
+    console.error("DB: Save failed", err);
+    return { success: false, error: String(err) };
   }
-
-  revalidatePath("/");
-  revalidatePath("/admin");
 }
 
 /* --- DYNAMIC PAGES ACTIONS --- */
