@@ -9,15 +9,13 @@ import { motion, AnimatePresence } from "framer-motion";
 export default function ChatWidget({ agentName = "Phinovax AI" }: { agentName?: string }) {
   const [isOpen, setIsOpen] = useState(false);
   const [input, setInput] = useState("");
-  const { messages, sendMessage, status } = useChat({
-    transport: new DefaultChatTransport({
-      api: "/api/chat",
-    }),
+  const { messages, append, isLoading } = useChat({
+    api: "/api/chat",
   });
   const [errorVisible, setErrorVisible] = useState(false);
   const chatParent = useRef<HTMLDivElement>(null);
 
-  const isTyping = (status as string) === "submitted" || (status as string) === "streaming";
+  const isTyping = isLoading;
 
   const onFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -29,13 +27,13 @@ export default function ChatWidget({ agentName = "Phinovax AI" }: { agentName?: 
     
     // Safety timeout for mobile users
     const timer = setTimeout(() => {
-      if ((status as string) === "submitted" || (status as string) === "streaming") {
+      if (isLoading) {
          setErrorVisible(true);
       }
     }, 20000);
 
     try {
-      await sendMessage({ text: currentInput });
+      await append({ role: 'user', content: currentInput });
       clearTimeout(timer);
     } catch (err) {
       console.error("Chat Error:", err);

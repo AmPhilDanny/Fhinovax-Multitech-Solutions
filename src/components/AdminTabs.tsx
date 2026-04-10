@@ -71,6 +71,8 @@ export default function AdminTabs({
     heroBgValue: settings.heroBgValue || "",
     aiApiKey: settings.aiApiKey || ""
   });
+  const [testResult, setTestResult] = useState<{ success: boolean, message: string } | null>(null);
+  const [testing, setTesting] = useState(false);
 
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>, fieldName: string) => {
     const file = e.target.files?.[0];
@@ -121,6 +123,20 @@ export default function AdminTabs({
     } catch (err) {
       setSaveStatus('error');
       setSaveError(String(err));
+    }
+  };
+
+  const handleTestConnection = async () => {
+    setTesting(true);
+    setTestResult(null);
+    try {
+      const res = await fetch('/api/chat/test', { method: 'POST' });
+      const data = await res.json();
+      setTestResult(data);
+    } catch (err) {
+      setTestResult({ success: false, message: "Network error calling diagnostic." });
+    } finally {
+      setTesting(false);
     }
   };
 
