@@ -18,10 +18,19 @@ export const siteSettings = pgTable("site_settings", {
   googleMapsEmbed: text("google_maps_embed").default(""),
   googleBusinessDetails: text("google_business_details").default(""),
   aiInstructions: text("ai_instructions").default(""),
+  aiTrainingData: text("ai_training_data").default(""), // Deep training context
+  metaDescription: text("meta_description").default(""),
+  metaKeywords: text("meta_keywords").default(""),
+  ogImageUrl: text("og_image_url").default(""),
+  facebookUrl: text("facebook_url").default(""),
+  instagramUrl: text("instagram_url").default(""),
+  twitterUrl: text("twitter_url").default(""),
+  linkedinUrl: text("linkedin_url").default(""),
   footerText: text("footer_text").default(""),
   copyrightText: text("copyright_text").default(""),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
+
 
 // Services: Allows admin to define any amount of services dynamically
 export const services = pgTable("services", {
@@ -39,9 +48,11 @@ export const pages = pgTable("pages", {
   slug: varchar("slug", { length: 255 }).notNull().unique(),
   title: varchar("title", { length: 255 }).notNull(),
   content: text("content").notNull(),
+  metaDescription: text("meta_description").default(""),
   isPublished: boolean("is_published").default(false),
   createdAt: timestamp("created_at").defaultNow(),
 });
+
 
 // Navigation Items: Supports Dynamic Link creation and Submenus
 export const navItems = pgTable("nav_items", {

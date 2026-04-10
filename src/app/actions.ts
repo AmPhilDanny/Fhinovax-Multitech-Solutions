@@ -24,10 +24,19 @@ export async function getSiteSettings() {
       googleMapsEmbed: "",
       googleBusinessDetails: "",
       aiInstructions: "",
+      aiTrainingData: "",
+      metaDescription: "Professional generator and vehicle diagnostics in Makurdi, Benue State.",
+      metaKeywords: "generator repair, vehicle diagnostics, mechanic makurdi, fhinovax",
+      ogImageUrl: "",
+      facebookUrl: "",
+      instagramUrl: "",
+      twitterUrl: "",
+      linkedinUrl: "",
       footerText: "Leading the way in multitech solutions and professional diagnostics.",
       copyrightText: "Fhinovax Multitech Solutions Ltd",
       updatedAt: new Date(),
     };
+
 
   }
   return settings[0];
@@ -80,4 +89,9 @@ export async function getAllPages() {
 export async function getAllNavItems() {
   return await db.select().from(navItems).orderBy(navItems.orderIndex);
 }
+
+export async function getAiPosts() {
+  return await db.select().from(aiPosts).orderBy(aiPosts.createdAt);
+}
+
 

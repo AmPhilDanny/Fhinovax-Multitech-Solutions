@@ -12,7 +12,13 @@ import {
   Plus, 
   Trash2, 
   ChevronRight,
-  GripVertical
+  GripVertical,
+  Globe,
+  Share2,
+  Upload,
+  Loader2,
+  CheckCircle,
+  ExternalLink
 } from "lucide-react";
 import { saveSiteSettings, savePage, deletePage, saveService, deleteService, saveNavItem, deleteNavItem } from "@/app/admin/actions";
 
@@ -20,23 +26,56 @@ export default function AdminTabs({
   settings, 
   servicesList, 
   pagesList, 
-  navItemsList 
+  navItemsList,
+  aiPostsList = []
 }: { 
   settings: any, 
   servicesList: any[], 
   pagesList: any[], 
-  navItemsList: any[] 
+  navItemsList: any[],
+  aiPostsList?: any[]
 }) {
+
   const [activeTab, setActiveTab] = useState("general");
+  const [uploading, setUploading] = useState<string | null>(null);
+
+  const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>, fieldName: string) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploading(fieldName);
+    try {
+      const response = await fetch(`/api/upload?filename=${file.name}`, {
+        method: 'POST',
+        body: file,
+      });
+      const newBlob = await response.json();
+      
+      // Update the hidden input value
+      const hiddenInput = document.getElementById(`hidden_${fieldName}`) as HTMLInputElement;
+      if (hiddenInput) {
+        hiddenInput.value = newBlob.url;
+        alert(`${fieldName} uploaded successfully! Click save to apply changes.`);
+      }
+    } catch (error) {
+       console.error("Upload failed", error);
+       alert("Upload failed. please check console.");
+    } finally {
+       setUploading(null);
+    }
+  };
 
   const tabs = [
-    { id: "general", label: "General & Branding", icon: Settings },
-    { id: "hero", label: "Hero Section", icon: Layout },
-    { id: "menu", label: "Menu Builder", icon: MenuIcon },
-    { id: "pages", label: "Pages Manager", icon: FileText },
-    { id: "services", label: "Services master", icon: Wrench },
-    { id: "ai", label: "AI & Business", icon: Bot },
+    { id: "general", label: "Admin Dashboard", icon: Settings },
+    { id: "hero", label: "Hero Design", icon: Layout },
+    { id: "menu", label: "Navigator", icon: MenuIcon },
+    { id: "pages", label: "Pages", icon: FileText },
+    { id: "services", label: "Capabilities", icon: Wrench },
+    { id: "ai", label: "AI Training", icon: Bot },
+    { id: "marketing", label: "Daily Marketing", icon: Share2 },
+    { id: "seo", label: "SEO / Ranking", icon: Globe },
   ];
+
 
   return (
     <div className="flex flex-col md:flex-row gap-8">
@@ -73,13 +112,23 @@ export default function AdminTabs({
                   <input name="siteName" defaultValue={settings.siteName} className="admin-input" required />
                 </div>
                 <div className="space-y-1">
-                  <label className="text-xs font-bold uppercase text-gray-500">Logo URL</label>
-                  <input name="logoUrl" defaultValue={settings.logoUrl} className="admin-input" placeholder="/logo.png" />
+                  <label className="text-xs font-bold uppercase text-gray-500">Site Logo</label>
+                  <div className="flex gap-2">
+                     <input type="hidden" name="logoUrl" id="hidden_logoUrl" defaultValue={settings.logoUrl} />
+                     <input type="file" onChange={(e) => handleUpload(e, 'logoUrl')} className="admin-input text-xs" accept="image/*" />
+                     {uploading === 'logoUrl' && <Loader2 className="animate-spin text-brand-blue" />}
+                  </div>
+                  {settings.logoUrl && <img src={settings.logoUrl} className="h-8 object-contain mt-2 opacity-50" alt="logo preview" />}
                 </div>
                 <div className="space-y-1">
-                  <label className="text-xs font-bold uppercase text-gray-500">Favicon URL</label>
-                  <input name="faviconUrl" defaultValue={settings.faviconUrl} className="admin-input" placeholder="/favicon.ico" />
+                  <label className="text-xs font-bold uppercase text-gray-500">Favicon</label>
+                  <div className="flex gap-2">
+                     <input type="hidden" name="faviconUrl" id="hidden_faviconUrl" defaultValue={settings.faviconUrl} />
+                     <input type="file" onChange={(e) => handleUpload(e, 'faviconUrl')} className="admin-input text-xs" accept="image/*" />
+                     {uploading === 'faviconUrl' && <Loader2 className="animate-spin text-brand-blue" />}
+                  </div>
                 </div>
+
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4 border-t">
@@ -138,9 +187,19 @@ export default function AdminTabs({
                 </div>
 
                 <div className="space-y-1">
-                   <label className="text-xs font-bold uppercase text-gray-500">Background Value (Hex or URL)</label>
-                   <input name="heroBgValue" defaultValue={settings.heroBgValue} className="admin-input" placeholder="#000 / /hero-bg.jpg" />
+                   <label className="text-xs font-bold uppercase text-gray-500">Background Value (Hex or Local File)</label>
+                   {settings.heroBgType === 'color' ? (
+                     <input name="heroBgValue" defaultValue={settings.heroBgValue} className="admin-input" placeholder="#000" />
+                   ) : (
+                     <div className="flex flex-col gap-2">
+                        <input type="hidden" name="heroBgValue" id="hidden_heroBgValue" defaultValue={settings.heroBgValue} />
+                        <input type="file" onChange={(e) => handleUpload(e, 'heroBgValue')} className="admin-input text-xs" accept="image/*" />
+                        {uploading === 'heroBgValue' && <Loader2 className="animate-spin text-brand-blue" />}
+                        {settings.heroBgValue && <span className="text-[10px] text-gray-400 truncate">{settings.heroBgValue}</span>}
+                     </div>
+                   )}
                 </div>
+
               </div>
 
               <button type="submit" className="admin-btn-save">
@@ -325,11 +384,24 @@ export default function AdminTabs({
                   <label className="text-xs font-bold uppercase text-gray-500">AI Personality & Hidden Instructions</label>
                   <textarea name="aiInstructions" 
                     defaultValue={settings.aiInstructions} 
-                    className="admin-input h-32" 
+                    className="admin-input h-24" 
                     placeholder="Be professional, always mention workshop at Ankpa road, ask for phone number..." 
                   />
-                  <p className="text-[10px] text-gray-400 italic">This content is injected into the Gemini API system prompt but never shown to users.</p>
                </div>
+
+               <div className="space-y-1 border-t pt-4">
+                  <label className="text-xs font-bold uppercase text-gray-500 flex items-center gap-2">
+                     Deep Training Data / Business Context
+                     <span className="bg-brand-blue/10 text-brand-blue px-2 py-0.5 rounded text-[8px]">Requirement #3</span>
+                  </label>
+                  <textarea name="aiTrainingData" 
+                    defaultValue={settings.aiTrainingData} 
+                    className="admin-input h-48 font-mono text-xs" 
+                    placeholder="Paste technical data, history, or deep business context here..." 
+                  />
+                  <p className="text-[10px] text-gray-400 italic">This data is strictly for the AI logic (Gemini) to learn from and is not visible to public users.</p>
+               </div>
+
 
                <div className="border-t pt-6">
                   <button type="submit" className="admin-btn-save">
@@ -338,8 +410,121 @@ export default function AdminTabs({
                </div>
             </form>
           )}
+           {activeTab === "marketing" && (
+             <div className="space-y-8">
+                <div className="flex items-center justify-between">
+                   <div className="flex items-center gap-3">
+                      <div className="bg-brand-blue/10 p-2 rounded-lg text-brand-blue">
+                         <Share2 size={24} />
+                      </div>
+                      <div>
+                         <h2 className="text-xl font-bold text-gray-900 leading-tight">Daily AI Marketing</h2>
+                         <p className="text-xs text-gray-500">Auto-generated social media drafts for your review.</p>
+                      </div>
+                   </div>
+                   <button 
+                     onClick={async () => {
+                        const res = await fetch('/api/cron/generate-posts');
+                        if (res.ok) alert("New drafts generated! Refreshing page...");
+                        window.location.reload();
+                     }}
+                     className="bg-brand-blue text-white px-4 py-2 rounded-xl text-xs font-bold hover:bg-blue-800 transition-all flex items-center gap-2"
+                   >
+                      <Plus size={14} /> Generate Manual Drafts
+                   </button>
+                </div>
+
+                <div className="grid grid-cols-1 gap-6">
+                   <div className="bg-blue-50 border border-blue-100 p-4 rounded-xl text-xs text-blue-800 flex items-center gap-3">
+                      <Bot size={18} />
+                      <span>The AI generates 3 new drafts every day automatically. You can approve them here before posting.</span>
+                   </div>
+                   
+                   {aiPostsList.length === 0 ? (
+                      <p className="text-sm text-gray-400 italic text-center py-12">No marketing drafts found yet. Click "Generate Manual Drafts" to start.</p>
+                   ) : (
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                         {aiPostsList.map((post: any) => (
+                            <div key={post.id} className="bg-white border p-6 rounded-2xl shadow-sm hover:border-brand-blue transition-all group relative">
+                               <div className="flex items-center justify-between mb-4">
+                                  <span className="text-[10px] bg-brand-blue/10 text-brand-blue px-2 py-1 rounded font-bold uppercase">{post.platform}</span>
+                                  <span className="text-[10px] text-gray-400">{new Date(post.createdAt).toLocaleDateString()}</span>
+                               </div>
+                               <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-wrap">{post.content}</p>
+                               <div className="mt-6 pt-4 border-t flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                  <button className="text-xs font-bold text-gray-400 hover:text-red-500">Discard</button>
+                                  <button className="bg-brand-blue text-white px-3 py-1.5 rounded-lg text-[10px] font-bold">Approve Draft</button>
+                               </div>
+                            </div>
+                         ))}
+                      </div>
+                   )}
+                </div>
+
+             </div>
+           )}
+
+           {activeTab === "seo" && (
+             <form action={saveSiteSettings} className="space-y-8">
+               <div className="flex items-center gap-3">
+                  <div className="bg-brand-blue/10 p-2 rounded-lg text-brand-blue">
+                     <Globe size={24} />
+                  </div>
+                  <div>
+                     <h2 className="text-xl font-bold text-gray-900 leading-tight">SEO & Global Ranking</h2>
+                     <p className="text-xs text-gray-500">Control how Google and Social Media see your site.</p>
+                  </div>
+               </div>
+
+               <div className="space-y-4">
+                  <div className="space-y-1">
+                     <label className="text-xs font-bold uppercase text-gray-500">Meta Description</label>
+                     <textarea name="metaDescription" defaultValue={settings.metaDescription} className="admin-input h-24" placeholder="Describe your business for search engines..." />
+                  </div>
+                  <div className="space-y-1">
+                     <label className="text-xs font-bold uppercase text-gray-500">Keywords (Comma separated)</label>
+                     <input name="metaKeywords" defaultValue={settings.metaKeywords} className="admin-input" placeholder="mechanic, generator, makurdi..." />
+                  </div>
+                  <div className="space-y-1">
+                     <label className="text-xs font-bold uppercase text-gray-500">OpenGraph Image (Shared on Social)</label>
+                     <div className="flex gap-2">
+                        <input type="hidden" name="ogImageUrl" id="hidden_ogImageUrl" defaultValue={settings.ogImageUrl} />
+                        <input type="file" onChange={(e) => handleUpload(e, 'ogImageUrl')} className="admin-input text-xs" accept="image/*" />
+                        {uploading === 'ogImageUrl' && <Loader2 className="animate-spin text-brand-blue" />}
+                     </div>
+                  </div>
+               </div>
+
+               <div className="pt-6 border-t">
+                  <h3 className="text-sm font-bold uppercase text-gray-400 mb-4">Social Media Links</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                     <div className="space-y-1">
+                        <label className="text-[10px] font-bold uppercase text-gray-500">Facebook URL</label>
+                        <input name="facebookUrl" defaultValue={settings.facebookUrl} className="admin-input" placeholder="https://facebook.com/..." />
+                     </div>
+                     <div className="space-y-1">
+                        <label className="text-[10px] font-bold uppercase text-gray-500">Instagram URL</label>
+                        <input name="instagramUrl" defaultValue={settings.instagramUrl} className="admin-input" placeholder="https://instagram.com/..." />
+                     </div>
+                     <div className="space-y-1">
+                        <label className="text-[10px] font-bold uppercase text-gray-500">Twitter (X) URL</label>
+                        <input name="twitterUrl" defaultValue={settings.twitterUrl} className="admin-input" placeholder="https://x.com/..." />
+                     </div>
+                     <div className="space-y-1">
+                        <label className="text-[10px] font-bold uppercase text-gray-500">LinkedIn URL</label>
+                        <input name="linkedinUrl" defaultValue={settings.linkedinUrl} className="admin-input" placeholder="https://linkedin.com/..." />
+                     </div>
+                  </div>
+               </div>
+
+               <button type="submit" className="admin-btn-save">
+                  <Save size={18} /> Save Global SEO Changes
+               </button>
+             </form>
+           )}
         </div>
       </main>
     </div>
+
   );
 }

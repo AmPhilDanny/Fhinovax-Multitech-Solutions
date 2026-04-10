@@ -34,13 +34,18 @@ export async function POST(req: Request) {
     
     ADDITIONAL INSTRUCTIONS:
     ${settings.aiInstructions}
+
+    DEEP TRAINING DATA / CONTEXT:
+    ${settings.aiTrainingData}
     
     GUIDELINES:
     1. Always mention that the physical workshop is located at ${settings.address} if the user asks for location.
     2. If a user has a specific vehicle or generator issue, recommend they bring it in for a professional diagnostic.
     3. Keep responses concise and formatted for mobile view.
     4. Be friendly but efficient.
+    5. Use the DEEP TRAINING DATA to answer complex technical questions or provide specialized information if available.
   `;
+
 
   const result = streamText({
     model: google('gemini-1.5-flash'),

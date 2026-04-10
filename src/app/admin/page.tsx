@@ -1,4 +1,4 @@
-import { getSiteSettings, getActiveServices, getAllPages, getAllNavItems } from "@/app/actions";
+import { getSiteSettings, getActiveServices, getAllPages, getAllNavItems, getAiPosts } from "@/app/actions";
 import AdminTabs from "@/components/AdminTabs";
 
 export const dynamic = 'force-dynamic';
@@ -8,6 +8,7 @@ export default async function AdminDashboard() {
   const servicesList = await getActiveServices();
   const pagesList = await getAllPages();
   const navItemsList = await getAllNavItems();
+  const aiPostsList = await getAiPosts();
 
   return (
     <div className="max-w-6xl mx-auto">
@@ -21,8 +22,10 @@ export default async function AdminDashboard() {
         servicesList={servicesList} 
         pagesList={pagesList} 
         navItemsList={navItemsList} 
+        aiPostsList={aiPostsList}
       />
     </div>
   );
 }
+
 
