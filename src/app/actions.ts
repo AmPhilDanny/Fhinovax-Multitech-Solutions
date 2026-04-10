@@ -4,6 +4,7 @@ import { db } from "@/db";
 import { siteSettings, services, pages, navItems, aiPosts, leads, mediaAssets, pageHits } from "@/db/schema";
 
 import { eq, sql, desc, count } from "drizzle-orm";
+import { revalidatePath } from "next/cache";
 
 export async function getSiteSettings() {
   const settings = await db.select().from(siteSettings).limit(1);
