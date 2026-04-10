@@ -56,7 +56,6 @@ export async function POST(req: Request) {
     model: google('gemini-1.5-flash'),
     messages,
     system: systemInstructions,
-    maxSteps: 5, // Allow for tool call + follow-up response
     tools: {
       recordCustomerLead: tool({
         description: 'Save customer details for human contact follow-up when they express interest in services or repairs.',
