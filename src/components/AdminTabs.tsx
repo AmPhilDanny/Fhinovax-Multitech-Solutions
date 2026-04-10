@@ -20,7 +20,11 @@ import {
   ShieldCheck,
   CheckCircle,
   TrendingUp,
-  Search
+  Search,
+  Share2,
+  Globe,
+  Upload,
+  Loader2
 } from "lucide-react";
 import { 
   saveSiteSettings, 
