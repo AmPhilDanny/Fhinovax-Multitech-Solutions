@@ -24,7 +24,12 @@ export default function ChatWidget({ agentName = "Phinovax AI" }: { agentName?: 
     
     const currentInput = input;
     setInput(""); 
-    await sendMessage({ text: currentInput });
+    try {
+      await sendMessage({ text: currentInput });
+    } catch (err) {
+      console.error("Chat Error:", err);
+      alert("AI communication failed. Check your API key or see console for details.");
+    }
   };
 
   useEffect(() => {
