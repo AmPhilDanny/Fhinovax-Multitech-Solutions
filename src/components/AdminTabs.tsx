@@ -123,7 +123,6 @@ export default function AdminTabs({
       {/* Content Area */}
       <main className="flex-grow bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden min-h-[600px]">
         <div className="p-6 md:p-8">
-        <div className="p-6 md:p-8">
           {activeTab === "dashboard" && (
             <div className="space-y-8">
                <div className="flex items-center justify-between">
