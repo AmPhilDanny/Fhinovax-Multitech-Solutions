@@ -27,15 +27,16 @@ export default function AdminTabs({
   servicesList, 
   pagesList, 
   navItemsList,
-  aiPostsList = []
+  aiPostsList = [],
+  leadsList = []
 }: { 
   settings: any, 
   servicesList: any[], 
   pagesList: any[], 
   navItemsList: any[],
-  aiPostsList?: any[]
+  aiPostsList?: any[],
+  leadsList?: any[]
 }) {
-
   const [activeTab, setActiveTab] = useState("general");
   const [uploading, setUploading] = useState<string | null>(null);
 
@@ -67,6 +68,7 @@ export default function AdminTabs({
 
   const tabs = [
     { id: "general", label: "Admin Dashboard", icon: Settings },
+    { id: "leads", label: "Inbound Leads", icon: CheckCircle },
     { id: "hero", label: "Hero Design", icon: Layout },
     { id: "menu", label: "Navigator", icon: MenuIcon },
     { id: "pages", label: "Pages", icon: FileText },
@@ -75,6 +77,7 @@ export default function AdminTabs({
     { id: "marketing", label: "Daily Marketing", icon: Share2 },
     { id: "seo", label: "SEO / Ranking", icon: Globe },
   ];
+
 
 
   return (
@@ -424,6 +427,23 @@ export default function AdminTabs({
                    </div>
                    <button 
                      onClick={async () => {
+             </div>
+           )}
+
+           {activeTab === "marketing" && (
+             <div className="space-y-8">
+                <div className="flex items-center justify-between">
+                   <div className="flex items-center gap-3">
+                      <div className="bg-brand-blue/10 p-2 rounded-lg text-brand-blue">
+                         <Share2 size={24} />
+                      </div>
+                      <div>
+                         <h2 className="text-xl font-bold text-gray-900 leading-tight">Daily AI Marketing</h2>
+                         <p className="text-xs text-gray-500">Auto-generated social media drafts for your review.</p>
+                      </div>
+                   </div>
+                   <button 
+                     onClick={async () => {
                         const res = await fetch('/api/cron/generate-posts');
                         if (res.ok) alert("New drafts generated! Refreshing page...");
                         window.location.reload();
@@ -433,7 +453,6 @@ export default function AdminTabs({
                       <Plus size={14} /> Generate Manual Drafts
                    </button>
                 </div>
-
                 <div className="grid grid-cols-1 gap-6">
                    <div className="bg-blue-50 border border-blue-100 p-4 rounded-xl text-xs text-blue-800 flex items-center gap-3">
                       <Bot size={18} />
@@ -460,11 +479,79 @@ export default function AdminTabs({
                       </div>
                    )}
                 </div>
-
              </div>
            )}
 
-           {activeTab === "seo" && (
+           {activeTab === "leads" && (
+             <div className="space-y-8">
+               <div className="flex items-center gap-3">
+                  <div className="bg-green-500/10 p-2 rounded-lg text-green-600">
+                     <CheckCircle size={24} />
+                  </div>
+                  <div>
+                     <h2 className="text-xl font-bold text-gray-900 leading-tight">Inbound Customer Leads</h2>
+                     <p className="text-xs text-gray-500">Captured by the AI representative for follow-up.</p>
+                  </div>
+               </div>
+
+               <div className="grid grid-cols-1 gap-4">
+                  {leadsList.length === 0 ? (
+                    <div className="text-center py-20 bg-gray-50 rounded-2xl border-2 border-dashed border-gray-200">
+                       <Bot size={48} className="mx-auto text-gray-300 mb-4" />
+                       <p className="text-gray-500 font-medium">No leads captured yet. The AI is waiting for customers!</p>
+                    </div>
+                  ) : (
+                    <div className="bg-white border rounded-2xl overflow-hidden shadow-sm">
+                       <table className="w-full text-left border-collapse">
+                          <thead>
+                             <tr className="bg-gray-50 border-b">
+                                <th className="px-6 py-4 text-[10px] font-bold uppercase text-gray-500">Customer / Info</th>
+                                <th className="px-6 py-4 text-[10px] font-bold uppercase text-gray-500">Issue / Request</th>
+                                <th className="px-6 py-4 text-[10px] font-bold uppercase text-gray-500">Date</th>
+                                <th className="px-6 py-4 text-[10px] font-bold uppercase text-gray-500">Action</th>
+                             </tr>
+                          </thead>
+                          <tbody className="divide-y">
+                             {leadsList.map((lead: any) => (
+                                <tr key={lead.id} className="hover:bg-gray-50/50 transition-colors">
+                                   <td className="px-6 py-4">
+                                      <div className="font-bold text-gray-900">{lead.name}</div>
+                                      <div className="text-xs text-brand-blue font-medium">{lead.contactMethod}</div>
+                                   </td>
+                                   <td className="px-6 py-4">
+                                      <div className="text-sm text-gray-700 font-medium">{lead.issueType}</div>
+                                      <div className="flex items-center gap-2 mt-1">
+                                         <span className={`text-[8px] px-1.5 py-0.5 rounded font-bold uppercase ${
+                                            lead.urgency === 'High' ? 'bg-red-100 text-red-600' : 
+                                            lead.urgency === 'Medium' ? 'bg-blue-100 text-blue-600' : 'bg-gray-100 text-gray-600'
+                                         }`}>{lead.urgency} Urgency</span>
+                                      </div>
+                                   </td>
+                                   <td className="px-6 py-4 text-[10px] text-gray-400">
+                                      {new Date(lead.createdAt).toLocaleString()}
+                                   </td>
+                                   <td className="px-6 py-4">
+                                      <a 
+                                        href={`https://wa.me/${lead.contactMethod.replace(/\D/g, '')}`} 
+                                        target="_blank" 
+                                        rel="noopener noreferrer"
+                                        className="text-[10px] bg-green-500 text-white px-3 py-1.5 rounded-lg font-bold hover:bg-green-600 flex items-center justify-center gap-2 w-fit"
+                                      >
+                                         <Share2 size={12} /> Contact
+                                      </a>
+                                   </td>
+                                </tr>
+                             ))}
+                          </tbody>
+                       </table>
+                    </div>
+                  )}
+               </div>
+             </div>
+           )}
+
+           {activeTab === "hero" && (
+
              <form action={saveSiteSettings} className="space-y-8">
                <div className="flex items-center gap-3">
                   <div className="bg-brand-blue/10 p-2 rounded-lg text-brand-blue">

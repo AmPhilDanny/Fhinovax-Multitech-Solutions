@@ -94,4 +94,9 @@ export async function getAiPosts() {
   return await db.select().from(aiPosts).orderBy(aiPosts.createdAt);
 }
 
+export async function getLeads() {
+  return await db.select().from(leads).orderBy(leads.createdAt);
+}
+
+
 

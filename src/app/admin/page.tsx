@@ -9,6 +9,7 @@ export default async function AdminDashboard() {
   const pagesList = await getAllPages();
   const navItemsList = await getAllNavItems();
   const aiPostsList = await getAiPosts();
+  const leadsList = await getLeads();
 
   return (
     <div className="max-w-6xl mx-auto">
@@ -23,9 +24,11 @@ export default async function AdminDashboard() {
         pagesList={pagesList} 
         navItemsList={navItemsList} 
         aiPostsList={aiPostsList}
+        leadsList={leadsList}
       />
     </div>
   );
 }
+
 
 
