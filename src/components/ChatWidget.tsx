@@ -9,8 +9,10 @@ import { motion, AnimatePresence } from "framer-motion";
 export default function ChatWidget({ agentName = "Phinovax AI" }: { agentName?: string }) {
   const [isOpen, setIsOpen] = useState(false);
   const [input, setInput] = useState("");
-  const { messages, append, status, error, input: chatInput, handleInputChange, handleSubmit } = useChat({
-    api: "/api/chat",
+  const { messages, sendMessage, status } = useChat({
+    transport: new DefaultChatTransport({
+      api: "/api/chat",
+    }),
   });
   const chatParent = useRef<HTMLDivElement>(null);
 
@@ -20,8 +22,9 @@ export default function ChatWidget({ agentName = "Phinovax AI" }: { agentName?: 
     e.preventDefault();
     if (!input.trim() || isTyping) return;
     
-    await append({ role: 'user', content: input });
+    const currentInput = input;
     setInput(""); 
+    await sendMessage({ text: currentInput });
   };
 
   useEffect(() => {
@@ -77,45 +80,31 @@ export default function ChatWidget({ agentName = "Phinovax AI" }: { agentName?: 
                 </div>
               )}
               
-              {messages.map((m) => (
-                <div key={m.id} className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}>
-                  <div className={`max-w-[80%] p-4 rounded-2xl text-sm ${
-                    m.role === "user" 
-                      ? "bg-brand-blue text-white rounded-tr-none shadow-md" 
-                      : "bg-white border border-gray-100 text-gray-700 rounded-tl-none shadow-sm"
-                  }`}>
-                    <div className="flex items-center gap-2 mb-1">
-                       {m.role === 'user' ? <User size={12} className="opacity-50" /> : <Bot size={12} className="text-brand-blue" />}
-                       <span className="text-[10px] font-bold uppercase tracking-widest opacity-50">{m.role === 'user' ? 'You' : 'AI'}</span>
+              <div className="space-y-4">
+                {messages.map((m: any, i: number) => (
+                  <div key={i} className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+                    <div className={`max-w-[85%] p-3 rounded-2xl text-xs leading-relaxed shadow-sm ${
+                      m.role === 'user' 
+                        ? 'bg-brand-blue text-white rounded-tr-none' 
+                        : 'bg-white border border-gray-100 text-gray-700 rounded-tl-none'
+                    }`}>
+                      {m.content}
                     </div>
-                    {/* Render message parts for v6 compatibility */}
-                    {m.parts.map((part, i) => (
-                      part.type === 'text' ? <span key={i}>{part.text}</span> : null
-                    ))}
-
                   </div>
-                </div>
-              ))}
-              {isTyping && (
-                <div className="flex justify-start">
-                  <div className="bg-white border border-gray-100 p-4 rounded-2xl rounded-tl-none flex gap-1 items-center shadow-sm">
-                    <span className="w-1.5 h-1.5 bg-brand-blue rounded-full animate-bounce [animation-delay:-0.3s]" />
-                    <span className="w-1.5 h-1.5 bg-brand-blue rounded-full animate-bounce [animation-delay:-0.15s]" />
-                    <span className="w-1.5 h-1.5 bg-brand-blue rounded-full animate-bounce" />
-                    <span className="text-[10px] text-gray-400 font-bold ml-2">Agent is thinking...</span>
+                ))}
+                {isTyping && (
+                  <div className="flex justify-start">
+                    <div className="bg-white border border-gray-100 p-3 rounded-2xl rounded-tl-none shadow-sm space-y-2">
+                       <div className="flex gap-1">
+                          <span className="w-1.5 h-1.5 bg-brand-blue rounded-full animate-bounce" style={{ animationDelay: '0s' }} />
+                          <span className="w-1.5 h-1.5 bg-brand-blue rounded-full animate-bounce" style={{ animationDelay: '0.2s' }} />
+                          <span className="w-1.5 h-1.5 bg-brand-blue rounded-full animate-bounce" style={{ animationDelay: '0.4s' }} />
+                       </div>
+                       <p className="text-[10px] text-gray-400 font-bold italic">Agent is thinking...</p>
+                    </div>
                   </div>
-                </div>
-              )}
-
-              {error && (
-                <div className="p-4 bg-red-50 border border-red-100 rounded-2xl text-xs text-red-600 space-y-2">
-                   <p className="font-bold flex items-center gap-2">
-                      <X size={14} /> Connection issue
-                   </p>
-                   <p>{error.message || "I'm having trouble connecting to the brain. Check your API key in Admin panel."}</p>
-                </div>
-              )}
-            </div>
+                )}
+              </div>
 
             {/* Input Area */}
             <form onSubmit={onFormSubmit} className="p-4 bg-white border-t flex gap-2">
