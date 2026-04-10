@@ -63,6 +63,11 @@ export default function AdminTabs({
   const [uploading, setUploading] = useState<string | null>(null);
   const [selectedMediaTarget, setSelectedMediaTarget] = useState<string | null>(null);
   const [bgType, setBgType] = useState(settings.heroBgType || "color");
+  const [previews, setPreviews] = useState({
+    logoUrl: settings.logoUrl,
+    faviconUrl: settings.faviconUrl,
+    heroBgValue: settings.heroBgValue
+  });
 
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>, fieldName: string) => {
     const file = e.target.files?.[0];
@@ -76,11 +81,22 @@ export default function AdminTabs({
       });
       const newBlob = await response.json();
       
-      // Update the hidden input value
+      // Update local preview state if it's a branding field
+      if (fieldName in previews) {
+        setPreviews(prev => ({ ...prev, [fieldName]: newBlob.url }));
+        alert(`${fieldName} uploaded successfully! Click save to apply changes.`);
+      }
+
+      // Special case for media library
+      if (fieldName === 'media_library') {
+        alert("Image uploaded to library! Refreshing gallery...");
+        window.location.reload();
+      }
+      
+      // Update the hidden input value for form submission
       const hiddenInput = document.getElementById(`hidden_${fieldName}`) as HTMLInputElement;
       if (hiddenInput) {
         hiddenInput.value = newBlob.url;
-        alert(`${fieldName} uploaded successfully! Click save to apply changes.`);
       }
     } catch (error) {
        console.error("Upload failed", error);
@@ -273,19 +289,30 @@ export default function AdminTabs({
                 <div className="space-y-1">
                   <label className="text-xs font-bold uppercase text-gray-500">Site Logo</label>
                   <div className="flex gap-2">
-                     <input type="hidden" name="logoUrl" id="hidden_logoUrl" defaultValue={settings.logoUrl} />
+                     <input type="hidden" name="logoUrl" id="hidden_logoUrl" defaultValue={previews.logoUrl} />
                      <input type="file" onChange={(e) => handleUpload(e, 'logoUrl')} className="admin-input text-xs" accept="image/*" />
                      {uploading === 'logoUrl' && <Loader2 className="animate-spin text-brand-blue" />}
                   </div>
-                  {settings.logoUrl && <img src={settings.logoUrl} className="h-8 object-contain mt-2 opacity-50" alt="logo preview" />}
+                  {previews.logoUrl && (
+                    <div className="mt-2 p-2 bg-gray-50 rounded-lg border border-dashed border-gray-200 inline-block">
+                      <img src={previews.logoUrl} className="h-12 w-auto object-contain" alt="logo preview" />
+                      <p className="text-[8px] text-gray-400 mt-1 text-center font-bold">PREVIEW</p>
+                    </div>
+                  )}
                 </div>
                 <div className="space-y-1">
                   <label className="text-xs font-bold uppercase text-gray-500">Favicon</label>
                   <div className="flex gap-2">
-                     <input type="hidden" name="faviconUrl" id="hidden_faviconUrl" defaultValue={settings.faviconUrl} />
+                     <input type="hidden" name="faviconUrl" id="hidden_faviconUrl" defaultValue={previews.faviconUrl} />
                      <input type="file" onChange={(e) => handleUpload(e, 'faviconUrl')} className="admin-input text-xs" accept="image/*" />
                      {uploading === 'faviconUrl' && <Loader2 className="animate-spin text-brand-blue" />}
                   </div>
+                  {previews.faviconUrl && (
+                    <div className="mt-2 p-2 bg-gray-50 rounded-lg border border-dashed border-gray-200 inline-block">
+                      <img src={previews.faviconUrl} className="h-6 w-6 object-contain" alt="favicon preview" />
+                      <p className="text-[8px] text-gray-400 mt-1 text-center font-bold">PREVIEW</p>
+                    </div>
+                  )}
                 </div>
 
               </div>
@@ -363,13 +390,20 @@ export default function AdminTabs({
                      <input name="heroBgValue" defaultValue={settings.heroBgValue} className="admin-input" placeholder="#000" />
                    ) : (
                      <div className="flex flex-col gap-2">
-                        <input type="hidden" name="heroBgValue" id="hidden_heroBgValue" defaultValue={settings.heroBgValue} />
+                        <input type="hidden" name="heroBgValue" id="hidden_heroBgValue" defaultValue={previews.heroBgValue} />
                         <div className="relative">
                           <input type="file" onChange={(e) => handleUpload(e, 'heroBgValue')} className="admin-input text-xs pr-10" accept="image/*" />
                           <Upload size={14} className="absolute right-3 top-3 text-gray-400 pointer-events-none" />
                         </div>
                         {uploading === 'heroBgValue' && <div className="flex items-center gap-2 text-xs text-brand-blue"><Loader2 className="animate-spin" size={12} /> Uploading...</div>}
-                        {settings.heroBgValue && <span className="text-[10px] text-gray-400 truncate block bg-gray-100 p-1 rounded italic">{settings.heroBgValue}</span>}
+                        {previews.heroBgValue && (
+                          <div className="mt-2 relative aspect-[21/9] w-full bg-gray-100 rounded-xl overflow-hidden border border-gray-200">
+                             <img src={previews.heroBgValue} className="w-full h-full object-cover" alt="hero preview" />
+                             <div className="absolute inset-0 flex items-center justify-center bg-black/20">
+                                <span className="bg-white/90 px-3 py-1 rounded-full text-[10px] font-black uppercase text-brand-blue border border-brand-blue/20">HERO PREVIEW</span>
+                             </div>
+                          </div>
+                        )}
                      </div>
                    )}
                 </div>
