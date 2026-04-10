@@ -1,6 +1,7 @@
 "use client";
 
 import { useChat } from "@ai-sdk/react";
+import { DefaultChatTransport } from "ai";
 import { useState, useEffect, useRef } from "react";
 import { MessageCircle, X, Send, Bot, User, ChevronDown } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -8,17 +9,24 @@ import { motion, AnimatePresence } from "framer-motion";
 export default function ChatWidget() {
   const [isOpen, setIsOpen] = useState(false);
   const [input, setInput] = useState("");
-  const { messages, append, isLoading } = useChat();
+  const { messages, sendMessage, status } = useChat({
+    transport: new DefaultChatTransport({
+      api: "/api/chat",
+    }),
+  });
   const chatParent = useRef<HTMLDivElement>(null);
+
+  const isTyping = status === "submitted" || status === "streaming";
 
   const onFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!input.trim() || isLoading) return;
+    if (!input.trim() || isTyping) return;
     
     const currentInput = input;
     setInput(""); // Clear immediately for better UX
-    await append({ role: "user", content: currentInput });
+    await sendMessage({ text: currentInput });
   };
+
 
 
 
@@ -84,11 +92,15 @@ export default function ChatWidget() {
                        {m.role === 'user' ? <User size={12} className="opacity-50" /> : <Bot size={12} className="text-brand-blue" />}
                        <span className="text-[10px] font-bold uppercase tracking-widest opacity-50">{m.role === 'user' ? 'You' : 'AI'}</span>
                     </div>
-                    {m.content}
+                    {/* Render message parts for v6 compatibility */}
+                    {m.parts ? m.parts.map((part, i) => (
+                      part.type === 'text' ? <span key={i}>{part.text}</span> : null
+                    )) : m.content}
                   </div>
                 </div>
               ))}
-              {isLoading && (
+              {isTyping && (
+
                 <div className="flex justify-start">
                   <div className="bg-white border border-gray-100 p-4 rounded-2xl rounded-tl-none flex gap-1">
                     <span className="w-1.5 h-1.5 bg-gray-300 rounded-full animate-bounce [animation-delay:-0.3s]" />
@@ -108,9 +120,10 @@ export default function ChatWidget() {
 
                  className="flex-grow bg-gray-100 border-none rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-brand-blue outline-none transition-all"
                />
-               <button 
-                 type="submit" 
-                 disabled={!input || isLoading}
+                <button 
+                  type="submit" 
+                  disabled={!input || isTyping}
+
                  className="bg-brand-blue text-white p-3 rounded-xl hover:bg-blue-800 disabled:opacity-50 disabled:bg-gray-300 transition-all shadow-md active:scale-95"
                >
                  <Send size={18} />
