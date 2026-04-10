@@ -64,9 +64,10 @@ export default function AdminTabs({
   const [selectedMediaTarget, setSelectedMediaTarget] = useState<string | null>(null);
   const [bgType, setBgType] = useState(settings.heroBgType || "color");
   const [previews, setPreviews] = useState({
-    logoUrl: settings.logoUrl,
-    faviconUrl: settings.faviconUrl,
-    heroBgValue: settings.heroBgValue
+    logoUrl: settings.logoUrl || "",
+    faviconUrl: settings.faviconUrl || "",
+    heroBgValue: settings.heroBgValue || "",
+    aiApiKey: settings.aiApiKey || ""
   });
 
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>, fieldName: string) => {
@@ -81,22 +82,16 @@ export default function AdminTabs({
       });
       const newBlob = await response.json();
       
-      // Update local preview state if it's a branding field
+      // Sync with React State (This automatically updates hidden inputs)
       if (fieldName in previews) {
         setPreviews(prev => ({ ...prev, [fieldName]: newBlob.url }));
-        alert(`${fieldName} uploaded successfully! Click save to apply changes.`);
+        alert(`New ${fieldName} uploaded! Don't forget to click Save below.`);
       }
 
-      // Special case for media library
+      // Special case for media library (Gallery)
       if (fieldName === 'media_library') {
         alert("Image uploaded to library! Refreshing gallery...");
         window.location.reload();
-      }
-      
-      // Update the hidden input value for form submission
-      const hiddenInput = document.getElementById(`hidden_${fieldName}`) as HTMLInputElement;
-      if (hiddenInput) {
-        hiddenInput.value = newBlob.url;
       }
     } catch (error) {
        console.error("Upload failed", error);
@@ -289,7 +284,7 @@ export default function AdminTabs({
                 <div className="space-y-1">
                   <label className="text-xs font-bold uppercase text-gray-500">Site Logo</label>
                   <div className="flex gap-2">
-                     <input type="hidden" name="logoUrl" id="hidden_logoUrl" defaultValue={previews.logoUrl} />
+                     <input type="hidden" name="logoUrl" value={previews.logoUrl} readOnly />
                      <input type="file" onChange={(e) => handleUpload(e, 'logoUrl')} className="admin-input text-xs" accept="image/*" />
                      {uploading === 'logoUrl' && <Loader2 className="animate-spin text-brand-blue" />}
                   </div>
@@ -303,7 +298,7 @@ export default function AdminTabs({
                 <div className="space-y-1">
                   <label className="text-xs font-bold uppercase text-gray-500">Favicon</label>
                   <div className="flex gap-2">
-                     <input type="hidden" name="faviconUrl" id="hidden_faviconUrl" defaultValue={previews.faviconUrl} />
+                     <input type="hidden" name="faviconUrl" value={previews.faviconUrl} readOnly />
                      <input type="file" onChange={(e) => handleUpload(e, 'faviconUrl')} className="admin-input text-xs" accept="image/*" />
                      {uploading === 'faviconUrl' && <Loader2 className="animate-spin text-brand-blue" />}
                   </div>
@@ -390,7 +385,7 @@ export default function AdminTabs({
                      <input name="heroBgValue" defaultValue={settings.heroBgValue} className="admin-input" placeholder="#000" />
                    ) : (
                      <div className="flex flex-col gap-2">
-                        <input type="hidden" name="heroBgValue" id="hidden_heroBgValue" defaultValue={previews.heroBgValue} />
+                        <input type="hidden" name="heroBgValue" value={previews.heroBgValue} readOnly />
                         <div className="relative">
                           <input type="file" onChange={(e) => handleUpload(e, 'heroBgValue')} className="admin-input text-xs pr-10" accept="image/*" />
                           <Upload size={14} className="absolute right-3 top-3 text-gray-400 pointer-events-none" />
@@ -614,7 +609,8 @@ export default function AdminTabs({
                    <input 
                      type="password"
                      name="aiApiKey" 
-                     defaultValue={settings.aiApiKey} 
+                     value={previews.aiApiKey} 
+                      onChange={(e) => setPreviews(prev => ({ ...prev, aiApiKey: e.target.value }))} 
                      className="admin-input bg-white border-brand-blue/20" 
                      placeholder="Paste your AI API Key here..." 
                    />
