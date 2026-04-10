@@ -35,6 +35,7 @@ export async function getSiteSettings() {
       facebookUrl: "",
       instagramUrl: "",
       twitterUrl: "",
+      linkedinUrl: "",
       footerText: "Leading the way in multitech solutions and professional diagnostics.",
       copyrightText: "Fhinovax Multitech Solutions Ltd",
       aiApiKey: "",
