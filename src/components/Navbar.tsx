@@ -9,9 +9,11 @@ export interface NavItem {
   label: string;
   href: string;
   parentId: number | null;
-  isActive: boolean;
+  isActive: boolean | null;
   orderIndex: number;
+  createdAt?: Date | null;
 }
+
 
 export default function Navbar({ 
   siteName, 

@@ -58,17 +58,18 @@ export default async function AdminLayout({ children }: { children: React.ReactN
           </div>
           <Link href="/" className="text-xs text-blue-600 hover:underline">View Site &rarr;</Link>
         </div>
-        <nav className="p-4 space-y-1">
-          <Link href="/admin" className="block px-4 py-2 rounded-lg bg-blue-50 text-brand-blue font-medium">
-            Site Settings
+        <nav className="p-4 space-y-2">
+          <Link href="/admin" className="block px-4 py-2 rounded-lg bg-blue-50 text-brand-blue font-bold text-sm">
+            Dashboard Home
           </Link>
-          <Link href="/admin/services" className="block px-4 py-2 rounded-lg text-gray-600 hover:bg-gray-50 hover:text-gray-900">
-            Manage Services
-          </Link>
-          <Link href="/admin/leads" className="block px-4 py-2 rounded-lg text-gray-600 hover:bg-gray-50 hover:text-gray-900">
-            View Leads
-          </Link>
+          <div className="pt-4 border-t border-gray-100 flex flex-col gap-2">
+            <Link href="/" className="px-4 py-2 text-xs text-gray-500 hover:text-brand-blue flex items-center gap-2">
+              <span className="w-1.5 h-1.5 rounded-full bg-blue-400"></span>
+              Live Site
+            </Link>
+          </div>
         </nav>
+
       </aside>
 
       {/* Main Content Area */}

@@ -55,6 +55,7 @@ export async function savePage(formData: FormData) {
   const content = formData.get("content") as string;
   const isPublished = formData.get("isPublished") === "on";
 
+
   if (id) {
     await db.update(pages).set({ title, slug, content, isPublished }).where(eq(pages.id, id));
   } else {
@@ -82,7 +83,8 @@ export async function saveNavItem(formData: FormData) {
   const href = formData.get("href") as string;
   const parentId = formData.get("parentId") ? parseInt(formData.get("parentId") as string) : null;
   const orderIndex = formData.get("orderIndex") ? parseInt(formData.get("orderIndex") as string) : 0;
-  const isActive = formData.get("isActive") !== "off";
+  const isActive = formData.get("isActive") === "on" || formData.get("isActive") === null; // Default to true if not present, but handle "on" correctly
+
 
   if (id) {
     await db.update(navItems).set({ label, href, parentId, orderIndex, isActive }).where(eq(navItems.id, id));
@@ -107,7 +109,8 @@ export async function saveService(formData: FormData) {
   const title = formData.get("title") as string;
   const description = formData.get("description") as string;
   const iconName = formData.get("iconName") as string;
-  const isActive = formData.get("isActive") !== "off";
+  const isActive = formData.get("isActive") === "on" || formData.get("isActive") === null;
+
 
   if (id) {
     await db.update(services).set({ title, description, iconName, isActive }).where(eq(services.id, id));
