@@ -7,8 +7,20 @@ import { motion, AnimatePresence } from "framer-motion";
 
 export default function ChatWidget() {
   const [isOpen, setIsOpen] = useState(false);
-  const { messages, input, handleInputChange, handleSubmit, isLoading } = useChat();
+  const [input, setInput] = useState("");
+  const { messages, append, isLoading } = useChat();
   const chatParent = useRef<HTMLDivElement>(null);
+
+  const onFormSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!input.trim() || isLoading) return;
+    
+    const currentInput = input;
+    setInput(""); // Clear immediately for better UX
+    await append({ role: "user", content: currentInput });
+  };
+
+
 
   useEffect(() => {
     if (chatParent.current) {
@@ -88,11 +100,12 @@ export default function ChatWidget() {
             </div>
 
             {/* Input Area */}
-            <form onSubmit={handleSubmit} className="p-4 bg-white border-t flex gap-2">
+            <form onSubmit={onFormSubmit} className="p-4 bg-white border-t flex gap-2">
                <input
                  value={input}
-                 onChange={handleInputChange}
+                 onChange={(e) => setInput(e.target.value)}
                  placeholder="Type your question..."
+
                  className="flex-grow bg-gray-100 border-none rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-brand-blue outline-none transition-all"
                />
                <button 
