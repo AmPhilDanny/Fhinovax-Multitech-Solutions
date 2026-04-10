@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { Facebook, Instagram, Twitter, Linkedin, ExternalLink } from "lucide-react";
+import { ExternalLink } from "lucide-react";
+import { Facebook, Instagram, Twitter, Linkedin } from "@/components/Icons";
+
 
 export async function generateMetadata(): Promise<Metadata> {
   const settings = await getSiteSettings();
