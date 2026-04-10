@@ -23,8 +23,10 @@ export async function getSiteSettings() {
       address: "No. 83 Ankpa Road, Makurdi, Benue State",
       googleMapsEmbed: "",
       googleBusinessDetails: "",
+      aiName: "Phinovax Agent",
       aiInstructions: "",
       aiTrainingData: "",
+
       metaDescription: "Professional generator and vehicle diagnostics in Makurdi, Benue State.",
       metaKeywords: "generator repair, vehicle diagnostics, mechanic makurdi, fhinovax",
       ogImageUrl: "",

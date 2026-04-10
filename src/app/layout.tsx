@@ -51,7 +51,8 @@ export default async function RootLayout({
           {children}
         </main>
         
-        <ChatWidget />
+        <ChatWidget agentName={settings.aiName} />
+
         
         <footer className="bg-brand-dark text-gray-400 py-16 px-4 border-t border-gray-800">
           <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-12 text-left">

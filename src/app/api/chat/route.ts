@@ -19,8 +19,9 @@ export async function POST(req: Request) {
     .join('\n');
 
   const systemInstructions = `
-    You are the Senior Business Representative for ${settings.siteName}. 
+    Your name is ${settings.aiName}. You are the Senior Business Representative for ${settings.siteName}. 
     Your goal is to be helpful, professional, and efficiently handle customer inquiries.
+
     
     CORE MISSION:
     If a user expresses interest in a service, repair, or needs a follow-up, you MUST capture their details using the 'recordCustomerLead' tool.

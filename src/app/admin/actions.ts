@@ -20,8 +20,10 @@ export async function saveSiteSettings(formData: FormData) {
   const operatingHours = formData.get("operatingHours") as string;
   const googleMapsEmbed = formData.get("googleMapsEmbed") as string;
   const googleBusinessDetails = formData.get("googleBusinessDetails") as string;
+  const aiName = formData.get("aiName") as string;
   const aiInstructions = formData.get("aiInstructions") as string;
   const aiTrainingData = formData.get("aiTrainingData") as string;
+
   const metaDescription = formData.get("metaDescription") as string;
   const metaKeywords = formData.get("metaKeywords") as string;
   const ogImageUrl = formData.get("ogImageUrl") as string;
@@ -40,9 +42,10 @@ export async function saveSiteSettings(formData: FormData) {
     phoneNumber, whatsappNumber, address, siteName, 
     logoUrl, faviconUrl, emailAddress, operatingHours,
     googleMapsEmbed, googleBusinessDetails, 
-    aiInstructions, aiTrainingData,
+    aiName, aiInstructions, aiTrainingData,
     metaDescription, metaKeywords, ogImageUrl,
     facebookUrl, instagramUrl, twitterUrl, linkedinUrl,
+
     footerText, copyrightText,
     updatedAt: new Date()
   };

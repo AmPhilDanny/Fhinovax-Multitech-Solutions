@@ -369,10 +369,20 @@ export default function AdminTabs({
                   </div>
                </div>
 
-               <div className="space-y-1">
-                  <label className="text-xs font-bold uppercase text-gray-500">Google Maps Embed URL (Iframe Src)</label>
-                  <input name="googleMapsEmbed" defaultValue={settings.googleMapsEmbed} className="admin-input" placeholder="https://www.google.com/maps/embed?..." />
-               </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                   <div className="space-y-1">
+                      <label className="text-xs font-bold uppercase text-gray-500">Google Maps Embed URL (Iframe Src)</label>
+                      <input name="googleMapsEmbed" defaultValue={settings.googleMapsEmbed} className="admin-input" placeholder="https://www.google.com/maps/embed?..." />
+                   </div>
+                   <div className="space-y-1">
+                      <label className="text-xs font-bold uppercase text-gray-500 text-brand-blue font-extrabold flex items-center gap-2">
+                         AI Agent Display Name
+                         <span className="bg-brand-blue/10 text-brand-blue px-2 py-0.5 rounded text-[8px]">New</span>
+                      </label>
+                      <input name="aiName" defaultValue={settings.aiName} className="admin-input border-brand-blue/30 focus:border-brand-blue" placeholder="e.g. Phinovax Rep" />
+                   </div>
+                </div>
+
 
                <div className="space-y-1">
                   <label className="text-xs font-bold uppercase text-gray-500">Google Business Details (SEO & AI Context)</label>

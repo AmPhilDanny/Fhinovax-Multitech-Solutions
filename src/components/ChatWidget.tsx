@@ -6,7 +6,7 @@ import { useState, useEffect, useRef } from "react";
 import { MessageCircle, X, Send, Bot, User, ChevronDown } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
-export default function ChatWidget() {
+export default function ChatWidget({ agentName = "Phinovax AI" }: { agentName?: string }) {
   const [isOpen, setIsOpen] = useState(false);
   const [input, setInput] = useState("");
   const { messages, sendMessage, status } = useChat({
@@ -27,9 +27,6 @@ export default function ChatWidget() {
     await sendMessage({ text: currentInput });
   };
 
-
-
-
   useEffect(() => {
     if (chatParent.current) {
       chatParent.current.scrollTop = chatParent.current.scrollHeight;
@@ -37,29 +34,31 @@ export default function ChatWidget() {
   }, [messages]);
 
   return (
-    <div className="fixed bottom-6 right-6 z-[100] flex flex-col items-end">
+    <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end">
+      {/* Chat Window */}
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            initial={{ opacity: 0, scale: 0.9, y: 20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.9, y: 20 }}
-            className="mb-4 w-[90vw] sm:w-[380px] h-[500px] bg-white rounded-3xl shadow-2xl border border-gray-100 flex flex-col overflow-hidden"
+            initial={{ opacity: 0, y: 20, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 20, scale: 0.95 }}
+            className="mb-4 w-[350px] md:w-[400px] h-[550px] bg-white rounded-3xl shadow-2xl border border-gray-100 flex flex-col overflow-hidden"
           >
             {/* Header */}
             <div className="bg-brand-blue p-5 text-white flex items-center justify-between shadow-lg">
-               <div className="flex items-center gap-3">
-                  <div className="bg-white/20 p-2 rounded-xl">
-                     <Bot size={20} />
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-white/20 rounded-2xl flex items-center justify-center backdrop-blur-sm border border-white/10">
+                  <Bot size={22} className="text-white" />
+                </div>
+                <div>
+                  <h3 className="font-bold text-base leading-tight">{agentName}</h3>
+                  <div className="flex items-center gap-1.5 mt-0.5">
+                    <span className="w-1.5 h-1.5 bg-brand-gold rounded-full animate-pulse shadow-[0_0_8px_rgba(255,215,0,0.5)]"></span>
+                    <span className="text-[10px] text-white/70 font-bold uppercase tracking-widest">Active Specialist</span>
                   </div>
-                  <div>
-                     <div className="font-extrabold text-sm leading-tight">Fhinovax Assistant</div>
-                     <div className="text-[10px] opacity-80 flex items-center gap-1">
-                        <span className="w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse" />
-                        Online & Ready to Help
-                     </div>
-                  </div>
-               </div>
+                </div>
+              </div>
+
                <button onClick={() => setIsOpen(false)} className="hover:bg-white/10 p-2 rounded-lg transition-colors">
                   <ChevronDown size={20} />
                </button>
@@ -76,7 +75,7 @@ export default function ChatWidget() {
                       <Bot size={24} />
                    </div>
                    <p className="text-sm text-gray-400 font-medium px-6">
-                      Hello! I'm your Phinovax Assistant. How can I help you today?
+                      Hello! I'm your {agentName}. How can I help you today?
                    </p>
                 </div>
               )}
@@ -101,7 +100,6 @@ export default function ChatWidget() {
                 </div>
               ))}
               {isTyping && (
-
                 <div className="flex justify-start">
                   <div className="bg-white border border-gray-100 p-4 rounded-2xl rounded-tl-none flex gap-1">
                     <span className="w-1.5 h-1.5 bg-gray-300 rounded-full animate-bounce [animation-delay:-0.3s]" />
@@ -118,13 +116,11 @@ export default function ChatWidget() {
                  value={input}
                  onChange={(e) => setInput(e.target.value)}
                  placeholder="Type your question..."
-
                  className="flex-grow bg-gray-100 border-none rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-brand-blue outline-none transition-all"
                />
                 <button 
                   type="submit" 
                   disabled={!input || isTyping}
-
                  className="bg-brand-blue text-white p-3 rounded-xl hover:bg-blue-800 disabled:opacity-50 disabled:bg-gray-300 transition-all shadow-md active:scale-95"
                >
                  <Send size={18} />

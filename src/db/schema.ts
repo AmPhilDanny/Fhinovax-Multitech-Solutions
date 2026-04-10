@@ -17,6 +17,7 @@ export const siteSettings = pgTable("site_settings", {
   address: text("address").notNull().default("No. 83 Ankpa Road, Makurdi, Benue State"),
   googleMapsEmbed: text("google_maps_embed").default(""),
   googleBusinessDetails: text("google_business_details").default(""),
+  aiName: varchar("ai_name", { length: 150 }).notNull().default("Phinovax Agent"),
   aiInstructions: text("ai_instructions").default(""),
   aiTrainingData: text("ai_training_data").default(""), // Deep training context
   metaDescription: text("meta_description").default(""),
