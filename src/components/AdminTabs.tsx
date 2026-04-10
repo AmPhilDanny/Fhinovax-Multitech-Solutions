@@ -24,7 +24,9 @@ import {
   Share2,
   Globe,
   Upload,
-  Loader2
+  Loader2,
+  ChevronRight,
+  GripVertical
 } from "lucide-react";
 import { 
   saveSiteSettings, 
