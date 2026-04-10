@@ -14,6 +14,7 @@ export default function ChatWidget({ agentName = "Phinovax AI" }: { agentName?: 
       api: "/api/chat",
     }),
   });
+  const [errorVisible, setErrorVisible] = useState(false);
   const chatParent = useRef<HTMLDivElement>(null);
 
   const isTyping = status === "submitted" || status === "streaming";
@@ -22,13 +23,24 @@ export default function ChatWidget({ agentName = "Phinovax AI" }: { agentName?: 
     e.preventDefault();
     if (!input.trim() || isTyping) return;
     
+    setErrorVisible(false);
     const currentInput = input;
     setInput(""); 
+    
+    // Safety timeout for mobile users
+    const timer = setTimeout(() => {
+      if (status === "submitted" || status === "streaming") {
+         setErrorVisible(true);
+      }
+    }, 20000);
+
     try {
       await sendMessage({ text: currentInput });
+      clearTimeout(timer);
     } catch (err) {
       console.error("Chat Error:", err);
-      alert("AI communication failed. Check your API key or see console for details.");
+      setErrorVisible(true);
+      clearTimeout(timer);
     }
   };
 
@@ -88,26 +100,41 @@ export default function ChatWidget({ agentName = "Phinovax AI" }: { agentName?: 
               <div className="space-y-4">
                 {messages.map((m: any, i: number) => (
                   <div key={i} className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                    <div className={`max-w-[85%] p-3 rounded-2xl text-xs leading-relaxed shadow-sm ${
+                    <div className={`max-w-[85%] p-4 rounded-3xl text-[13px] leading-relaxed shadow-sm ${
                       m.role === 'user' 
-                        ? 'bg-brand-blue text-white rounded-tr-none' 
-                        : 'bg-white border border-gray-100 text-gray-700 rounded-tl-none'
+                        ? 'bg-gradient-to-br from-brand-blue to-blue-700 text-white rounded-br-none border-t border-l border-white/10' 
+                        : 'bg-white border border-gray-100 text-gray-700 rounded-bl-none shadow-[0_2px_10px_rgba(0,0,0,0.03)]'
                     }`}>
-                      {m.content}
+                       <div className="flex items-center gap-1.5 mb-1 opacity-70">
+                          {m.role === 'user' ? <User size={10} /> : <Bot size={10} />}
+                          <span className="text-[9px] font-black uppercase tracking-widest">{m.role === 'user' ? 'You' : agentName}</span>
+                       </div>
+                       {m.content}
                     </div>
                   </div>
                 ))}
-                {isTyping && (
+                {isTyping && !errorVisible && (
                   <div className="flex justify-start">
-                    <div className="bg-white border border-gray-100 p-3 rounded-2xl rounded-tl-none shadow-sm space-y-2">
-                       <div className="flex gap-1">
-                          <span className="w-1.5 h-1.5 bg-brand-blue rounded-full animate-bounce" style={{ animationDelay: '0s' }} />
-                          <span className="w-1.5 h-1.5 bg-brand-blue rounded-full animate-bounce" style={{ animationDelay: '0.2s' }} />
-                          <span className="w-1.5 h-1.5 bg-brand-blue rounded-full animate-bounce" style={{ animationDelay: '0.4s' }} />
+                    <div className="bg-white border border-gray-100 p-4 rounded-3xl rounded-bl-none shadow-sm space-y-2">
+                       <div className="flex gap-1.5">
+                          <span className="w-1.5 h-1.5 bg-brand-blue rounded-full animate-bounce [animation-delay:-0.3s]" />
+                          <span className="w-1.5 h-1.5 bg-brand-blue rounded-full animate-bounce [animation-delay:-0.15s]" />
+                          <span className="w-1.5 h-1.5 bg-brand-blue rounded-full animate-bounce" />
                        </div>
-                       <p className="text-[10px] text-gray-400 font-bold italic">Agent is thinking...</p>
+                       <p className="text-[10px] text-gray-400 font-bold italic">Agent is analyzing...</p>
                     </div>
                   </div>
+                )}
+                {errorVisible && (
+                   <div className="p-4 bg-red-50 border border-red-100 rounded-3xl text-center space-y-3">
+                      <p className="text-[11px] text-red-600 font-bold">⚠️ Connection taking too long...</p>
+                      <button 
+                        onClick={() => window.location.reload()} 
+                        className="text-[10px] bg-red-600 text-white px-4 py-1.5 rounded-full font-black uppercase tracking-tighter hover:bg-red-700 transition-colors"
+                      >
+                        Refresh Connection
+                      </button>
+                   </div>
                 )}
               </div>
             </div>
