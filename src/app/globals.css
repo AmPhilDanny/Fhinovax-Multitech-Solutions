@@ -23,7 +23,37 @@
 body {
   background-color: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: 'Inter', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+
+@layer components {
+  .admin-input {
+    @apply w-full border border-gray-200 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-brand-blue bg-gray-50 text-sm transition-all text-brand-dark;
+  }
+
+  .admin-btn-save {
+    @apply w-full md:w-auto px-10 bg-brand-blue text-white font-extrabold py-4 rounded-xl hover:bg-blue-800 transition-all shadow-lg hover:shadow-blue-500/20 flex items-center justify-center gap-2 active:scale-95;
+  }
+
+  .admin-btn-save-sm {
+    @apply px-4 py-2 bg-brand-blue text-white font-bold rounded-lg hover:bg-blue-800 transition-all text-xs flex items-center justify-center gap-2;
+  }
+}
+
+/* Custom Scrollbar for sleek look */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
