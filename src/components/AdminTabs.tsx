@@ -435,33 +435,6 @@ export default function AdminTabs({
                          <p className="text-xs text-gray-500">Auto-generated social media drafts for your review.</p>
                       </div>
                    </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                   <div className="space-y-1">
-                      <label className="text-xs font-bold uppercase text-gray-500">Google Maps Embed URL (Iframe Src)</label>
-                      <input name="googleMapsEmbed" defaultValue={settings.googleMapsEmbed} className="admin-input" placeholder="https://www.google.com/maps/embed?..." />
-                   </div>
-                   <div className="space-y-1">
-                      <label className="text-xs font-bold uppercase text-gray-500 text-brand-blue font-extrabold flex items-center gap-2">
-                         AI Agent Display Name
-                         <span className="bg-brand-blue/10 text-brand-blue px-2 py-0.5 rounded text-[8px]">New</span>
-                      </label>
-                      <input name="aiName" defaultValue={settings.aiName} className="admin-input border-brand-blue/30 focus:border-brand-blue" placeholder="e.g. Phinovax Rep" />
-                   </div>
-                </div>
-
-
-           {activeTab === "marketing" && (
-             <div className="space-y-8">
-                <div className="flex items-center justify-between">
-                   <div className="flex items-center gap-3">
-                      <div className="bg-brand-blue/10 p-2 rounded-lg text-brand-blue">
-                         <Share2 size={24} />
-                      </div>
-                      <div>
-                         <h2 className="text-xl font-bold text-gray-900 leading-tight">Daily AI Marketing</h2>
-                         <p className="text-xs text-gray-500">Auto-generated social media drafts for your review.</p>
-                      </div>
-                   </div>
                    <button 
                      onClick={async () => {
                         const res = await fetch('/api/cron/generate-posts');
@@ -570,7 +543,8 @@ export default function AdminTabs({
              </div>
            )}
 
-           {activeTab === "hero" && (
+           {activeTab === "seo" && (
+
 
              <form action={saveSiteSettings} className="space-y-8">
                <div className="flex items-center gap-3">
