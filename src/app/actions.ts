@@ -8,16 +8,27 @@ export async function getSiteSettings() {
   const settings = await db.select().from(siteSettings).limit(1);
   if (settings.length === 0) {
     return {
+      id: 0,
+      siteName: "Fhinovax Multitech Solutions Ltd",
+      logoUrl: "",
+      faviconUrl: "",
       heroTitle: "Generator & Vehicle Diagnostics in Makurdi",
       heroSubtitle: "Professional diagnostics, honest repairs, physical workshop available at Ankpa Road.",
+      heroBgType: "color",
+      heroBgValue: "#1c519d",
       phoneNumber: "+2348000000000",
       whatsappNumber: "2348000000000",
       emailAddress: "info@fhinovax.com",
       operatingHours: "Mon-Sat: 8am - 6pm",
       address: "No. 83 Ankpa Road, Makurdi, Benue State",
-      siteName: "Fhinovax Multitech Solutions Ltd",
-      logoUrl: "",
+      googleMapsEmbed: "",
+      googleBusinessDetails: "",
+      aiInstructions: "",
+      footerText: "Leading the way in multitech solutions and professional diagnostics.",
+      copyrightText: "Fhinovax Multitech Solutions Ltd",
+      updatedAt: new Date(),
     };
+
   }
   return settings[0];
 }
