@@ -1,5 +1,6 @@
 import { google } from '@ai-sdk/google';
-import { streamText } from 'ai';
+import { streamText, tool } from 'ai';
+
 import { getSiteSettings, getActiveServices } from '@/app/actions';
 import { db } from '@/db';
 import { leads } from '@/db/schema';
@@ -57,7 +58,7 @@ export async function POST(req: Request) {
     system: systemInstructions,
     maxSteps: 5, // Allow for tool call + follow-up response
     tools: {
-      recordCustomerLead: {
+      recordCustomerLead: tool({
         description: 'Save customer details for human contact follow-up when they express interest in services or repairs.',
         parameters: z.object({
           name: z.string().describe('The name of the customer'),
@@ -84,7 +85,8 @@ export async function POST(req: Request) {
             return { success: false, message: 'Internal error recording lead.' };
           }
         },
-      },
+      }),
+
     },
   });
 
