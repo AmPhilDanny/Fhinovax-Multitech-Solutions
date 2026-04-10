@@ -9,7 +9,7 @@ import { motion, AnimatePresence } from "framer-motion";
 export default function ChatWidget({ agentName = "Phinovax AI" }: { agentName?: string }) {
   const [isOpen, setIsOpen] = useState(false);
   const [input, setInput] = useState("");
-  const { messages, sendMessage, status, error, reload } = useChat({
+  const { messages, append, status, error, input: chatInput, handleInputChange, handleSubmit } = useChat({
     api: "/api/chat",
   });
   const chatParent = useRef<HTMLDivElement>(null);
@@ -20,9 +20,8 @@ export default function ChatWidget({ agentName = "Phinovax AI" }: { agentName?: 
     e.preventDefault();
     if (!input.trim() || isTyping) return;
     
-    const currentInput = input;
-    setInput(""); // Clear immediately for better UX
-    await sendMessage({ text: currentInput });
+    await append({ role: 'user', content: input });
+    setInput(""); 
   };
 
   useEffect(() => {
@@ -114,12 +113,6 @@ export default function ChatWidget({ agentName = "Phinovax AI" }: { agentName?: 
                       <X size={14} /> Connection issue
                    </p>
                    <p>{error.message || "I'm having trouble connecting to the brain. Check your API key in Admin panel."}</p>
-                   <button 
-                     onClick={() => reload()} 
-                     className="bg-red-600 text-white px-3 py-1 rounded-lg font-bold hover:bg-red-700"
-                   >
-                     Retry Connection
-                   </button>
                 </div>
               )}
             </div>
