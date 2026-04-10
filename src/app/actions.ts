@@ -1,7 +1,8 @@
 'use server';
 
 import { db } from "@/db";
-import { siteSettings, services, pages, navItems } from "@/db/schema";
+import { siteSettings, services, pages, navItems, aiPosts, leads } from "@/db/schema";
+
 import { eq } from "drizzle-orm";
 
 export async function getSiteSettings() {
