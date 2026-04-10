@@ -1,4 +1,5 @@
-import { getSiteSettings, getActiveServices, getAllPages, getAllNavItems, getAiPosts } from "@/app/actions";
+import { getSiteSettings, getActiveServices, getAllPages, getAllNavItems, getAiPosts, getLeads } from "@/app/actions";
+
 import AdminTabs from "@/components/AdminTabs";
 
 export const dynamic = 'force-dynamic';
