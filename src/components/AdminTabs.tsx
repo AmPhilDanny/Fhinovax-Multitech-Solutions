@@ -62,6 +62,7 @@ export default function AdminTabs({
   const [activeTab, setActiveTab] = useState("dashboard");
   const [uploading, setUploading] = useState<string | null>(null);
   const [selectedMediaTarget, setSelectedMediaTarget] = useState<string | null>(null);
+  const [bgType, setBgType] = useState(settings.heroBgType || "color");
 
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>, fieldName: string) => {
     const file = e.target.files?.[0];
@@ -109,19 +110,20 @@ export default function AdminTabs({
     <div className="flex flex-col md:flex-row gap-8">
       {/* Sidebar Tabs */}
       <aside className="w-full md:w-64 flex-shrink-0">
-        <nav className="flex md:flex-col overflow-x-auto md:overflow-visible gap-2 p-1 bg-gray-100 rounded-xl md:bg-transparent">
+        <nav className="flex md:flex-col overflow-x-auto md:overflow-visible gap-2 p-1.5 bg-gray-100/50 backdrop-blur-sm rounded-2xl md:bg-transparent no-scrollbar">
           {tabs.map((tab) => (
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-sm font-bold whitespace-nowrap ${
+              className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-xs md:text-sm font-bold whitespace-nowrap border-2 ${
                 activeTab === tab.id 
-                  ? "bg-brand-blue text-white shadow-md active:scale-95" 
-                  : "text-gray-600 hover:bg-gray-100 h-full"
+                  ? "bg-brand-blue text-white border-brand-blue shadow-lg shadow-brand-blue/20 active:scale-95" 
+                  : "text-gray-500 border-transparent hover:bg-white hover:text-brand-blue h-full"
               }`}
             >
-              <tab.icon size={18} />
+              <tab.icon size={16} />
               {tab.label}
+              {activeTab === tab.id && <span className="md:hidden w-1.5 h-1.5 bg-white rounded-full ml-1" />}
             </button>
           ))}
         </nav>
@@ -333,26 +335,41 @@ export default function AdminTabs({
                   <label className="text-xs font-bold uppercase text-gray-500 block">Background Type</label>
                   <div className="flex gap-4">
                     <label className="flex items-center gap-2 cursor-pointer">
-                      <input type="radio" name="heroBgType" value="color" defaultChecked={settings.heroBgType === 'color'} />
+                      <input 
+                        type="radio" 
+                        name="heroBgType" 
+                        value="color" 
+                        checked={bgType === 'color'} 
+                        onChange={() => setBgType('color')}
+                      />
                       <span className="text-sm font-medium">Solid Color</span>
                     </label>
                     <label className="flex items-center gap-2 cursor-pointer">
-                      <input type="radio" name="heroBgType" value="image" defaultChecked={settings.heroBgType === 'image'} />
+                      <input 
+                        type="radio" 
+                        name="heroBgType" 
+                        value="image" 
+                        checked={bgType === 'image'} 
+                        onChange={() => setBgType('image')}
+                      />
                       <span className="text-sm font-medium">Image</span>
                     </label>
                   </div>
                 </div>
 
                 <div className="space-y-1">
-                   <label className="text-xs font-bold uppercase text-gray-500">Background Value (Hex or Local File)</label>
-                   {settings.heroBgType === 'color' ? (
+                   <label className="text-xs font-bold uppercase text-gray-500">Background Value (Hex or Image URL)</label>
+                   {bgType === 'color' ? (
                      <input name="heroBgValue" defaultValue={settings.heroBgValue} className="admin-input" placeholder="#000" />
                    ) : (
                      <div className="flex flex-col gap-2">
                         <input type="hidden" name="heroBgValue" id="hidden_heroBgValue" defaultValue={settings.heroBgValue} />
-                        <input type="file" onChange={(e) => handleUpload(e, 'heroBgValue')} className="admin-input text-xs" accept="image/*" />
-                        {uploading === 'heroBgValue' && <Loader2 className="animate-spin text-brand-blue" />}
-                        {settings.heroBgValue && <span className="text-[10px] text-gray-400 truncate">{settings.heroBgValue}</span>}
+                        <div className="relative">
+                          <input type="file" onChange={(e) => handleUpload(e, 'heroBgValue')} className="admin-input text-xs pr-10" accept="image/*" />
+                          <Upload size={14} className="absolute right-3 top-3 text-gray-400 pointer-events-none" />
+                        </div>
+                        {uploading === 'heroBgValue' && <div className="flex items-center gap-2 text-xs text-brand-blue"><Loader2 className="animate-spin" size={12} /> Uploading...</div>}
+                        {settings.heroBgValue && <span className="text-[10px] text-gray-400 truncate block bg-gray-100 p-1 rounded italic">{settings.heroBgValue}</span>}
                      </div>
                    )}
                 </div>

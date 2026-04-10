@@ -6,56 +6,38 @@ import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 
 export async function saveSiteSettings(formData: FormData) {
-  const heroTitle = formData.get("heroTitle") as string;
-  const heroSubtitle = formData.get("heroSubtitle") as string;
-  const heroBgType = formData.get("heroBgType") as string;
-  const heroBgValue = formData.get("heroBgValue") as string;
-  const phoneNumber = formData.get("phoneNumber") as string;
-  const whatsappNumber = formData.get("whatsappNumber") as string;
-  const address = formData.get("address") as string;
-  const siteName = formData.get("siteName") as string;
-  const logoUrl = formData.get("logoUrl") as string;
-  const faviconUrl = formData.get("faviconUrl") as string;
-  const emailAddress = formData.get("emailAddress") as string;
-  const operatingHours = formData.get("operatingHours") as string;
-  const googleMapsEmbed = formData.get("googleMapsEmbed") as string;
-  const googleBusinessDetails = formData.get("googleBusinessDetails") as string;
-  const aiName = formData.get("aiName") as string;
-  const aiInstructions = formData.get("aiInstructions") as string;
-  const aiTrainingData = formData.get("aiTrainingData") as string;
-  const aiApiKey = formData.get("aiApiKey") as string;
+  // Capture all possible fields from the schema
+  const fields = [
+    "heroTitle", "heroSubtitle", "heroBgType", "heroBgValue", 
+    "phoneNumber", "whatsappNumber", "address", "siteName", 
+    "logoUrl", "faviconUrl", "emailAddress", "operatingHours",
+    "googleMapsEmbed", "googleBusinessDetails", 
+    "aiName", "aiInstructions", "aiTrainingData", "aiApiKey",
+    "metaDescription", "metaKeywords", "ogImageUrl",
+    "facebookUrl", "instagramUrl", "twitterUrl", "linkedinUrl",
+    "footerText", "copyrightText"
+  ];
 
-  const metaDescription = formData.get("metaDescription") as string;
-  const metaKeywords = formData.get("metaKeywords") as string;
-  const ogImageUrl = formData.get("ogImageUrl") as string;
-  const facebookUrl = formData.get("facebookUrl") as string;
-  const instagramUrl = formData.get("instagramUrl") as string;
-  const twitterUrl = formData.get("twitterUrl") as string;
-  const linkedinUrl = formData.get("linkedinUrl") as string;
-  const footerText = formData.get("footerText") as string;
-  const copyrightText = formData.get("copyrightText") as string;
+  const updateData: Record<string, any> = {
+    updatedAt: new Date()
+  };
+
+  // Only include fields that were actually present in the formData
+  // This allows partial updates from different admin tabs
+  for (const field of fields) {
+    const value = formData.get(field);
+    if (value !== null) {
+      updateData[field] = value as string;
+    }
+  }
 
   // Check if a row exists
   const existing = await db.select().from(siteSettings).limit(1);
 
-  const values = {
-    heroTitle, heroSubtitle, heroBgType, heroBgValue, 
-    phoneNumber, whatsappNumber, address, siteName, 
-    logoUrl, faviconUrl, emailAddress, operatingHours,
-    googleMapsEmbed, googleBusinessDetails, 
-    aiName, aiInstructions, aiTrainingData, aiApiKey,
-    metaDescription, metaKeywords, ogImageUrl,
-    facebookUrl, instagramUrl, twitterUrl, linkedinUrl,
-
-    footerText, copyrightText,
-    updatedAt: new Date()
-  };
-
-
   if (existing.length === 0) {
-    await db.insert(siteSettings).values(values);
+    await db.insert(siteSettings).values(updateData as any);
   } else {
-    await db.update(siteSettings).set(values).where(eq(siteSettings.id, existing[0].id));
+    await db.update(siteSettings).set(updateData).where(eq(siteSettings.id, existing[0].id));
   }
 
   revalidatePath("/");
