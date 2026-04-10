@@ -105,6 +105,7 @@ export default function ChatWidget({ agentName = "Phinovax AI" }: { agentName?: 
                   </div>
                 )}
               </div>
+            </div>
 
             {/* Input Area */}
             <form onSubmit={onFormSubmit} className="p-4 bg-white border-t flex gap-2">
