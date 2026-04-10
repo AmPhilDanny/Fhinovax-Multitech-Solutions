@@ -2,6 +2,9 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { ExternalLink } from "lucide-react";
 import { Facebook, Instagram, Twitter, Linkedin } from "@/components/Icons";
+import { getSiteSettings, getAllNavItems } from "@/app/actions";
+import Navbar from "@/components/Navbar";
+import ChatWidget from "@/components/ChatWidget";
 
 
 export async function generateMetadata(): Promise<Metadata> {
