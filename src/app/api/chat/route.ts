@@ -48,5 +48,6 @@ export async function POST(req: Request) {
     system: systemInstructions,
   });
 
-  return result.toDataStreamResponse();
+  return result.toTextStreamResponse();
 }
+
