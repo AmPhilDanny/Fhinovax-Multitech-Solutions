@@ -59,13 +59,14 @@ export async function POST(req: Request) {
     tools: {
       recordCustomerLead: tool({
         description: 'Save customer details for human contact follow-up when they express interest in services or repairs.',
-        parameters: z.object({
+        inputSchema: z.object({
           name: z.string().describe('The name of the customer'),
           contactMethod: z.string().describe('Their phone number or WhatsApp handle'),
           issueType: z.string().describe('Brief description of the problem (e.g., Generator service, Vehicle diagnostic)'),
           urgency: z.string().optional().describe('How quickly they need a response (Low, Medium, High)'),
           location: z.string().optional().describe('User current location if relevant'),
         }),
+        // @ts-ignore - 'execute' property type mismatch in this specific SDK version
         execute: async ({ name, contactMethod, issueType, urgency, location }) => {
           try {
             await db.insert(leads).values({
@@ -85,6 +86,7 @@ export async function POST(req: Request) {
           }
         },
       }),
+
 
     },
   });
