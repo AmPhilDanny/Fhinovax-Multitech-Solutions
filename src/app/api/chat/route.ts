@@ -1,6 +1,9 @@
 import { google } from '@ai-sdk/google';
 import { streamText } from 'ai';
 import { getSiteSettings, getActiveServices } from '@/app/actions';
+import { db } from '@/db';
+import { leads } from '@/db/schema';
+import { z } from 'zod';
 
 export const maxDuration = 30;
 
@@ -16,9 +19,16 @@ export async function POST(req: Request) {
     .join('\n');
 
   const systemInstructions = `
-    You are the official AI Assistant for ${settings.siteName}. 
-    Your goal is to be helpful, professional, and drive customers to visit the workshop or contact the team.
+    You are the Senior Business Representative for ${settings.siteName}. 
+    Your goal is to be helpful, professional, and efficiently handle customer inquiries.
     
+    CORE MISSION:
+    If a user expresses interest in a service, repair, or needs a follow-up, you MUST capture their details using the 'recordCustomerLead' tool.
+    Politely ask for:
+    1. Their Name
+    2. Best contact method (WhatsApp or Phone number)
+    3. The specific issue they are facing.
+
     BUSINESS CONTEXT:
     - Address: ${settings.address}
     - Operating Hours: ${settings.operatingHours}
@@ -29,30 +39,55 @@ export async function POST(req: Request) {
     SERVICES WE PROVIDE:
     ${servicesContext}
     
-    BUSINESS DETAILS:
-    ${settings.googleBusinessDetails}
-    
-    ADDITIONAL INSTRUCTIONS:
-    ${settings.aiInstructions}
-
     DEEP TRAINING DATA / CONTEXT:
+    ${settings.aiInstructions}
     ${settings.aiTrainingData}
     
     GUIDELINES:
     1. Always mention that the physical workshop is located at ${settings.address} if the user asks for location.
-    2. If a user has a specific vehicle or generator issue, recommend they bring it in for a professional diagnostic.
+    2. When you capture a lead, inform the user that a human expert will contact them shortly.
     3. Keep responses concise and formatted for mobile view.
-    4. Be friendly but efficient.
-    5. Use the DEEP TRAINING DATA to answer complex technical questions or provide specialized information if available.
+    4. Be a proactive sales agent while maintaining professional integrity.
   `;
-
 
   const result = streamText({
     model: google('gemini-1.5-flash'),
     messages,
     system: systemInstructions,
+    maxSteps: 5, // Allow for tool call + follow-up response
+    tools: {
+      recordCustomerLead: {
+        description: 'Save customer details for human contact follow-up when they express interest in services or repairs.',
+        parameters: z.object({
+          name: z.string().describe('The name of the customer'),
+          contactMethod: z.string().describe('Their phone number or WhatsApp handle'),
+          issueType: z.string().describe('Brief description of the problem (e.g., Generator service, Vehicle diagnostic)'),
+          urgency: z.string().optional().describe('How quickly they need a response (Low, Medium, High)'),
+          location: z.string().optional().describe('User current location if relevant'),
+        }),
+        execute: async ({ name, contactMethod, issueType, urgency, location }) => {
+          try {
+            await db.insert(leads).values({
+              name,
+              contactMethod,
+              issueType,
+              urgency: urgency || 'Medium',
+              location: location || 'Not provided',
+            });
+            return {
+              success: true,
+              message: `Lead for ${name} recorded successfully.`,
+            };
+          } catch (error) {
+            console.error('Failed to record lead:', error);
+            return { success: false, message: 'Internal error recording lead.' };
+          }
+        },
+      },
+    },
   });
 
   return result.toTextStreamResponse();
 }
+
 
