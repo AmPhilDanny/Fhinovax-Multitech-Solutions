@@ -1,4 +1,4 @@
-import { google } from '@ai-sdk/google';
+import { createGoogleGenerativeAI } from '@ai-sdk/google';
 import { streamText, tool } from 'ai';
 
 import { getSiteSettings, getActiveServices } from '@/app/actions';
@@ -51,6 +51,14 @@ export async function POST(req: Request) {
     3. Keep responses concise and formatted for mobile view.
     4. Be a proactive sales agent while maintaining professional integrity.
   `;
+
+  if (!settings.aiApiKey && !process.env.GOOGLE_GENERATIVE_AI_API_KEY) {
+    return new Response('AI API Key is missing. Please configure it in the Admin Panel.', { status: 500 });
+  }
+
+  const google = createGoogleGenerativeAI({
+    apiKey: settings.aiApiKey || process.env.GOOGLE_GENERATIVE_AI_API_KEY,
+  });
 
   const result = streamText({
     model: google('gemini-1.5-flash'),

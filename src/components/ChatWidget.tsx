@@ -9,10 +9,8 @@ import { motion, AnimatePresence } from "framer-motion";
 export default function ChatWidget({ agentName = "Phinovax AI" }: { agentName?: string }) {
   const [isOpen, setIsOpen] = useState(false);
   const [input, setInput] = useState("");
-  const { messages, sendMessage, status } = useChat({
-    transport: new DefaultChatTransport({
-      api: "/api/chat",
-    }),
+  const { messages, sendMessage, status, error, reload } = useChat({
+    api: "/api/chat",
   });
   const chatParent = useRef<HTMLDivElement>(null);
 
@@ -101,11 +99,27 @@ export default function ChatWidget({ agentName = "Phinovax AI" }: { agentName?: 
               ))}
               {isTyping && (
                 <div className="flex justify-start">
-                  <div className="bg-white border border-gray-100 p-4 rounded-2xl rounded-tl-none flex gap-1">
-                    <span className="w-1.5 h-1.5 bg-gray-300 rounded-full animate-bounce [animation-delay:-0.3s]" />
-                    <span className="w-1.5 h-1.5 bg-gray-300 rounded-full animate-bounce [animation-delay:-0.15s]" />
-                    <span className="w-1.5 h-1.5 bg-gray-300 rounded-full animate-bounce" />
+                  <div className="bg-white border border-gray-100 p-4 rounded-2xl rounded-tl-none flex gap-1 items-center shadow-sm">
+                    <span className="w-1.5 h-1.5 bg-brand-blue rounded-full animate-bounce [animation-delay:-0.3s]" />
+                    <span className="w-1.5 h-1.5 bg-brand-blue rounded-full animate-bounce [animation-delay:-0.15s]" />
+                    <span className="w-1.5 h-1.5 bg-brand-blue rounded-full animate-bounce" />
+                    <span className="text-[10px] text-gray-400 font-bold ml-2">Agent is thinking...</span>
                   </div>
+                </div>
+              )}
+
+              {error && (
+                <div className="p-4 bg-red-50 border border-red-100 rounded-2xl text-xs text-red-600 space-y-2">
+                   <p className="font-bold flex items-center gap-2">
+                      <X size={14} /> Connection issue
+                   </p>
+                   <p>{error.message || "I'm having trouble connecting to the brain. Check your API key in Admin panel."}</p>
+                   <button 
+                     onClick={() => reload()} 
+                     className="bg-red-600 text-white px-3 py-1 rounded-lg font-bold hover:bg-red-700"
+                   >
+                     Retry Connection
+                   </button>
                 </div>
               )}
             </div>

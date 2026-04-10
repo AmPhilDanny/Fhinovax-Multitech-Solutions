@@ -1,5 +1,6 @@
 import { put } from '@vercel/blob';
 import { NextResponse } from 'next/server';
+import { registerMediaAsset } from '@/app/actions';
 
 export async function POST(request: Request): Promise<NextResponse> {
   const { searchParams } = new URL(request.url);
@@ -13,6 +14,8 @@ export async function POST(request: Request): Promise<NextResponse> {
     const blob = await put(filename, request.body, {
       access: 'public',
     });
+
+    await registerMediaAsset(blob.url, filename);
 
     return NextResponse.json(blob);
   } catch (error) {

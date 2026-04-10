@@ -23,6 +23,7 @@ export async function saveSiteSettings(formData: FormData) {
   const aiName = formData.get("aiName") as string;
   const aiInstructions = formData.get("aiInstructions") as string;
   const aiTrainingData = formData.get("aiTrainingData") as string;
+  const aiApiKey = formData.get("aiApiKey") as string;
 
   const metaDescription = formData.get("metaDescription") as string;
   const metaKeywords = formData.get("metaKeywords") as string;
@@ -42,7 +43,7 @@ export async function saveSiteSettings(formData: FormData) {
     phoneNumber, whatsappNumber, address, siteName, 
     logoUrl, faviconUrl, emailAddress, operatingHours,
     googleMapsEmbed, googleBusinessDetails, 
-    aiName, aiInstructions, aiTrainingData,
+    aiName, aiInstructions, aiTrainingData, aiApiKey,
     metaDescription, metaKeywords, ogImageUrl,
     facebookUrl, instagramUrl, twitterUrl, linkedinUrl,
 
@@ -140,6 +141,25 @@ export async function saveService(formData: FormData) {
 export async function deleteService(id: number) {
   await db.delete(services).where(eq(services.id, id));
   revalidatePath("/");
+  revalidatePath("/admin");
+}
+
+/* --- MARKETING & POSTS ACTIONS --- */
+
+export async function approveAiPost(id: number) {
+  await db.update(aiPosts)
+    .set({ isApproved: true, status: 'approved' })
+    .where(eq(aiPosts.id, id));
+  revalidatePath("/admin");
+}
+
+export async function discardAiPost(id: number) {
+  await db.delete(aiPosts).where(eq(aiPosts.id, id));
+  revalidatePath("/admin");
+}
+
+export async function updatePostStatus(id: number, status: string) {
+  await db.update(aiPosts).set({ status }).where(eq(aiPosts.id, id));
   revalidatePath("/admin");
 }
 

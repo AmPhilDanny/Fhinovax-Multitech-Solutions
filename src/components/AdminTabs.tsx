@@ -11,16 +11,27 @@ import {
   Save, 
   Plus, 
   Trash2, 
-  ChevronRight,
-  GripVertical,
-  Globe,
-  Share2,
-  Upload,
-  Loader2,
-  CheckCircle,
-  ExternalLink
+  ExternalLink,
+  Activity,
+  Image as ImageIcon,
+  Copy,
+  Check,
+  Zap,
+  ShieldCheck,
+  TrendingUp,
+  Search
 } from "lucide-react";
-import { saveSiteSettings, savePage, deletePage, saveService, deleteService, saveNavItem, deleteNavItem } from "@/app/admin/actions";
+import { 
+  saveSiteSettings, 
+  savePage, 
+  deletePage, 
+  saveService, 
+  deleteService, 
+  saveNavItem, 
+  deleteNavItem,
+  approveAiPost,
+  discardAiPost
+} from "@/app/admin/actions";
 
 export default function AdminTabs({ 
   settings, 
@@ -28,17 +39,22 @@ export default function AdminTabs({
   pagesList, 
   navItemsList,
   aiPostsList = [],
-  leadsList = []
+  leadsList = [],
+  metrics = { dailyHits: 0, totalHits: 0, totalLeads: 0, seoScore: 0, aiStatus: "Key Missing", marketingHealth: "Neutral" },
+  mediaAssetsList = []
 }: { 
   settings: any, 
   servicesList: any[], 
   pagesList: any[], 
   navItemsList: any[],
   aiPostsList?: any[],
-  leadsList?: any[]
+  leadsList?: any[],
+  metrics?: any,
+  mediaAssetsList?: any[]
 }) {
-  const [activeTab, setActiveTab] = useState("general");
+  const [activeTab, setActiveTab] = useState("dashboard");
   const [uploading, setUploading] = useState<string | null>(null);
+  const [selectedMediaTarget, setSelectedMediaTarget] = useState<string | null>(null);
 
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>, fieldName: string) => {
     const file = e.target.files?.[0];
@@ -67,15 +83,17 @@ export default function AdminTabs({
   };
 
   const tabs = [
-    { id: "general", label: "Admin Dashboard", icon: Settings },
+    { id: "dashboard", label: "Live Site Status", icon: Activity },
+    { id: "general", label: "Identity", icon: Settings },
+    { id: "media", label: "Media Manager", icon: ImageIcon },
     { id: "leads", label: "Inbound Leads", icon: CheckCircle },
     { id: "hero", label: "Hero Design", icon: Layout },
     { id: "menu", label: "Navigator", icon: MenuIcon },
     { id: "pages", label: "Pages", icon: FileText },
     { id: "services", label: "Capabilities", icon: Wrench },
-    { id: "ai", label: "AI Training", icon: Bot },
+    { id: "ai", label: "AI & Logic", icon: Bot },
     { id: "marketing", label: "Daily Marketing", icon: Share2 },
-    { id: "seo", label: "SEO / Ranking", icon: Globe },
+    { id: "seo", label: "Global SEO", icon: Globe },
   ];
 
 
@@ -105,6 +123,136 @@ export default function AdminTabs({
       {/* Content Area */}
       <main className="flex-grow bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden min-h-[600px]">
         <div className="p-6 md:p-8">
+        <div className="p-6 md:p-8">
+          {activeTab === "dashboard" && (
+            <div className="space-y-8">
+               <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                     <div className="bg-brand-blue/10 p-2 rounded-lg text-brand-blue">
+                        <Activity size={24} />
+                     </div>
+                     <div>
+                        <h2 className="text-xl font-bold text-gray-900 leading-tight">Live Site Status</h2>
+                        <p className="text-xs text-gray-500">Real-time metrics and system health monitoring.</p>
+                     </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                     <span className="flex items-center gap-1.5 px-3 py-1 bg-green-500/10 text-green-600 rounded-full text-[10px] font-bold uppercase tracking-widest border border-green-500/20">
+                        <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse" />
+                        System Online
+                     </span>
+                  </div>
+               </div>
+
+               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                  <div className="p-5 bg-white border border-gray-100 rounded-2xl shadow-sm space-y-2">
+                     <div className="flex items-center justify-between">
+                        <span className="text-[10px] font-bold uppercase text-gray-400">Traffic (24h)</span>
+                        <TrendingUp size={14} className="text-brand-blue" />
+                     </div>
+                     <div className="text-2xl font-black text-gray-900">{metrics.dailyHits}</div>
+                     <p className="text-[10px] text-gray-400">Unique visitors today</p>
+                  </div>
+                  <div className="p-5 bg-white border border-gray-100 rounded-2xl shadow-sm space-y-2">
+                     <div className="flex items-center justify-between">
+                        <span className="text-[10px] font-bold uppercase text-gray-400">Lifetime Hits</span>
+                        <Zap size={14} className="text-brand-gold" />
+                     </div>
+                     <div className="text-2xl font-black text-gray-900">{metrics.totalHits}</div>
+                     <p className="text-[10px] text-gray-400">Total requests logged</p>
+                  </div>
+                  <div className="p-5 bg-white border border-gray-100 rounded-2xl shadow-sm space-y-2">
+                     <div className="flex items-center justify-between">
+                        <span className="text-[10px] font-bold uppercase text-gray-400">SEO Strength</span>
+                        <Search size={14} className="text-green-500" />
+                     </div>
+                     <div className="text-2xl font-black text-gray-900">{metrics.seoScore}%</div>
+                     <div className="w-full bg-gray-100 h-1 rounded-full overflow-hidden">
+                        <div className="bg-green-500 h-full" style={{ width: `${metrics.seoScore}%` }} />
+                     </div>
+                  </div>
+                  <div className="p-5 bg-white border border-gray-100 rounded-2xl shadow-sm space-y-2">
+                     <div className="flex items-center justify-between">
+                        <span className="text-[10px] font-bold uppercase text-gray-400">AI Health</span>
+                        <Bot size={14} className="text-brand-blue" />
+                     </div>
+                     <div className={`text-sm font-bold flex items-center gap-2 ${metrics.aiStatus === 'Active' ? 'text-green-600' : 'text-red-500'}`}>
+                        <ShieldCheck size={14} />
+                        {metrics.aiStatus}
+                     </div>
+                     <p className="text-[10px] text-gray-400">Google Gemini API</p>
+                  </div>
+               </div>
+
+               <div className="bg-gray-50 border border-gray-100 p-8 rounded-3xl space-y-4">
+                  <h3 className="font-bold text-gray-900 flex items-center gap-2">
+                     <Zap size={18} className="text-brand-gold" />
+                     Marketing Pulse
+                  </h3>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                     <div className="space-y-1">
+                        <span className="text-[10px] font-bold uppercase text-gray-400">Last Post Run</span>
+                        <div className="font-bold text-sm text-gray-700">{settings.lastMarketingRun ? new Date(settings.lastMarketingRun).toLocaleDateString() : 'Never'}</div>
+                     </div>
+                     <div className="space-y-1">
+                        <span className="text-[10px] font-bold uppercase text-gray-400">Inbound Leads</span>
+                        <div className="font-bold text-sm text-gray-700">{metrics.totalLeads} potential customers</div>
+                     </div>
+                     <div className="space-y-1">
+                        <span className="text-[10px] font-bold uppercase text-gray-400">Status</span>
+                        <div className="font-bold text-sm text-green-600">{metrics.marketingHealth}</div>
+                     </div>
+                  </div>
+               </div>
+            </div>
+          )}
+
+          {activeTab === "media" && (
+            <div className="space-y-8">
+               <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                     <div className="bg-brand-blue/10 p-2 rounded-lg text-brand-blue">
+                        <ImageIcon size={24} />
+                     </div>
+                     <div>
+                        <h2 className="text-xl font-bold text-gray-900 leading-tight">Media File Section</h2>
+                        <p className="text-xs text-gray-500">Manage all your local uploads for site branding.</p>
+                     </div>
+                  </div>
+                  <label className="bg-brand-blue text-white px-4 py-2 rounded-xl text-xs font-bold hover:bg-blue-800 transition-all cursor-pointer flex items-center gap-2">
+                     <Upload size={14} /> Upload New Media
+                     <input type="file" className="hidden" onChange={(e) => handleUpload(e, 'media_library')} accept="image/*" />
+                  </label>
+               </div>
+
+               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+                  {mediaAssetsList.length === 0 && (
+                     <div className="col-span-full py-20 text-center bg-gray-50 rounded-2xl border-2 border-dashed border-gray-200">
+                        <ImageIcon size={48} className="mx-auto text-gray-200 mb-2" />
+                        <p className="text-sm text-gray-400 italic">No media files found. Upload your first branding image.</p>
+                     </div>
+                  )}
+                  {mediaAssetsList.map((asset: any) => (
+                    <div key={asset.id} className="group relative aspect-square bg-gray-50 rounded-xl overflow-hidden border border-gray-100 hover:border-brand-blue transition-all cursor-pointer shadow-sm">
+                       <img src={asset.url} alt={asset.fileName} className="w-full h-full object-cover group-hover:scale-110 transition-transform" />
+                       <div className="absolute inset-x-0 bottom-0 p-2 bg-gradient-to-t from-black/60 to-transparent translate-y-full group-hover:translate-y-0 transition-transform">
+                          <p className="text-[8px] text-white font-bold truncate">{asset.fileName}</p>
+                       </div>
+                       <button 
+                         onClick={() => {
+                            navigator.clipboard.writeText(asset.url);
+                            alert("URL copied to clipboard!");
+                         }}
+                         className="absolute top-2 right-2 p-1.5 bg-white/90 text-gray-800 rounded-lg opacity-0 group-hover:opacity-100 transition-all shadow-sm active:scale-95"
+                       >
+                          <Copy size={12} />
+                       </button>
+                    </div>
+                  ))}
+               </div>
+            </div>
+          )}
+          
           {activeTab === "general" && (
             <form action={saveSiteSettings} className="space-y-6">
               <h2 className="text-xl font-bold text-gray-900 mb-6">Site Identity & Global Settings</h2>
@@ -394,15 +542,29 @@ export default function AdminTabs({
                </div>
 
                <div className="space-y-1">
-                  <label className="text-xs font-bold uppercase text-gray-500">AI Personality & Hidden Instructions</label>
-                  <textarea name="aiInstructions" 
-                    defaultValue={settings.aiInstructions} 
-                    className="admin-input h-24" 
-                    placeholder="Be professional, always mention workshop at Ankpa road, ask for phone number..." 
-                  />
-               </div>
+                   <label className="text-xs font-bold uppercase text-gray-500">AI Personality & Hidden Instructions</label>
+                   <textarea name="aiInstructions" 
+                     defaultValue={settings.aiInstructions} 
+                     className="admin-input h-24" 
+                     placeholder="Be professional, always mention workshop at Ankpa road, ask for phone number..." 
+                   />
+                </div>
 
-               <div className="space-y-1 border-t pt-4">
+                <div className="space-y-1 rounded-2xl border-2 border-brand-blue/20 p-4 bg-brand-blue/5">
+                   <label className="text-[10px] font-extrabold uppercase text-brand-blue flex items-center gap-2 mb-2">
+                      <Zap size={14} /> Essential: Google Gemini API Key
+                   </label>
+                   <input 
+                     type="password"
+                     name="aiApiKey" 
+                     defaultValue={settings.aiApiKey} 
+                     className="admin-input bg-white border-brand-blue/20" 
+                     placeholder="Paste your AI API Key here..." 
+                   />
+                   <p className="text-[9px] text-brand-blue/60 mt-2 font-medium">This key is required for the AI Chatbot and Marketing Post Generator to function. Get one from Google AI Studio.</p>
+                </div>
+
+                <div className="space-y-1 border-t pt-4">
                   <label className="text-xs font-bold uppercase text-gray-500 flex items-center gap-2">
                      Deep Training Data / Business Context
                      <span className="bg-brand-blue/10 text-brand-blue px-2 py-0.5 rounded text-[8px]">Requirement #3</span>
@@ -463,9 +625,33 @@ export default function AdminTabs({
                                   <span className="text-[10px] text-gray-400">{new Date(post.createdAt).toLocaleDateString()}</span>
                                </div>
                                <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-wrap">{post.content}</p>
-                               <div className="mt-6 pt-4 border-t flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                                  <button className="text-xs font-bold text-gray-400 hover:text-red-500">Discard</button>
-                                  <button className="bg-brand-blue text-white px-3 py-1.5 rounded-lg text-[10px] font-bold">Approve Draft</button>
+                               <div className="mt-6 pt-4 border-t flex justify-between items-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                  <div className="flex gap-1">
+                                     <button 
+                                       onClick={() => {
+                                          navigator.clipboard.writeText(post.content);
+                                          alert("Content copied!");
+                                       }}
+                                       className="p-2 bg-gray-100 text-gray-600 rounded-lg hover:bg-brand-blue hover:text-white transition-all shadow-sm"
+                                       title="Copy to clipboard"
+                                     >
+                                        <Copy size={14} />
+                                     </button>
+                                  </div>
+                                  <div className="flex gap-2">
+                                     <button 
+                                       onClick={() => discardAiPost(post.id)}
+                                       className="text-[10px] font-bold text-gray-400 hover:text-red-500 px-2"
+                                     >
+                                       Discard
+                                     </button>
+                                     <button 
+                                       onClick={() => approveAiPost(post.id)}
+                                       className="bg-brand-blue text-white px-3 py-1.5 rounded-lg text-[10px] font-bold shadow-md hover:bg-blue-800 active:scale-95"
+                                     >
+                                        Approve Draft
+                                     </button>
+                                  </div>
                                </div>
                             </div>
                          ))}

@@ -2,9 +2,10 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { ExternalLink } from "lucide-react";
 import { Facebook, Instagram, Twitter, Linkedin } from "@/components/Icons";
-import { getSiteSettings, getAllNavItems } from "@/app/actions";
+import { getSiteSettings, getAllNavItems, trackPageHit } from "@/app/actions";
 import Navbar from "@/components/Navbar";
 import ChatWidget from "@/components/ChatWidget";
+import { headers } from "next/headers";
 
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -34,6 +35,11 @@ export default async function RootLayout({
 }>) {
   const settings = await getSiteSettings();
   const navItems = await getAllNavItems();
+  
+  // Track hit
+  const headerList = await headers();
+  const userAgent = headerList.get("user-agent") || undefined;
+  await trackPageHit("/", userAgent);
 
   const socialLinks = [
     { icon: Facebook, href: settings.facebookUrl, label: "Facebook" },

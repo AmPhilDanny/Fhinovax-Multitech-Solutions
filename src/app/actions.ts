@@ -3,7 +3,7 @@
 import { db } from "@/db";
 import { siteSettings, services, pages, navItems, aiPosts, leads } from "@/db/schema";
 
-import { eq } from "drizzle-orm";
+import { eq, sql, desc, count } from "drizzle-orm";
 
 export async function getSiteSettings() {
   const settings = await db.select().from(siteSettings).limit(1);
@@ -98,7 +98,66 @@ export async function getAiPosts() {
 }
 
 export async function getLeads() {
-  return await db.select().from(leads).orderBy(leads.createdAt);
+  return await db.select().from(leads).orderBy(desc(leads.createdAt));
+}
+
+/* --- MEDIA & TRACKING --- */
+
+export async function getMediaAssets() {
+  return await db.select().from(mediaAssets).orderBy(desc(mediaAssets.createdAt));
+}
+
+export async function registerMediaAsset(url: string, fileName: string, fileSize?: number, mimeType?: string) {
+  await db.insert(mediaAssets).values({
+    url,
+    fileName,
+    fileSize,
+    mimeType
+  });
+  revalidatePath("/admin");
+}
+
+export async function trackPageHit(slug: string, userAgent?: string) {
+  try {
+     await db.insert(pageHits).values({
+       slug,
+       userAgent
+     });
+  } catch (e) {
+     console.error("Hit tracking failed", e);
+  }
+}
+
+export async function getSystemMetrics() {
+  const settings = await getSiteSettings();
+  
+  // Get hits in last 24h
+  const dailyHits = await db.select({ count: count() })
+    .from(pageHits)
+    .where(sql`created_at > now() - interval '24 hours'`);
+    
+  // Get total hits
+  const totalHits = await db.select({ count: count() }).from(pageHits);
+  
+  // Total leads
+  const totalLeads = await db.select({ count: count() }).from(leads);
+  
+  // SEO Score (basic heuristic)
+  let seoScore = 0;
+  if (settings.metaDescription) seoScore += 30;
+  if (settings.metaKeywords) seoScore += 20;
+  if (settings.ogImageUrl) seoScore += 20;
+  if (settings.faviconUrl) seoScore += 10;
+  if (settings.siteName !== "webapp") seoScore += 20;
+
+  return {
+    dailyHits: dailyHits[0]?.count || 0,
+    totalHits: totalHits[0]?.count || 0,
+    totalLeads: totalLeads[0]?.count || 0,
+    seoScore,
+    aiStatus: settings.aiApiKey ? "Active" : "Key Missing",
+    marketingHealth: settings.lastMarketingRun ? "Healthy" : "Neutral"
+  };
 }
 
 

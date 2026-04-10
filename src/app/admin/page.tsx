@@ -1,4 +1,4 @@
-import { getSiteSettings, getActiveServices, getAllPages, getAllNavItems, getAiPosts, getLeads } from "@/app/actions";
+import { getSiteSettings, getActiveServices, getAllPages, getAllNavItems, getAiPosts, getLeads, getSystemMetrics, getMediaAssets } from "@/app/actions";
 
 import AdminTabs from "@/components/AdminTabs";
 
@@ -11,6 +11,8 @@ export default async function AdminDashboard() {
   const navItemsList = await getAllNavItems();
   const aiPostsList = await getAiPosts();
   const leadsList = await getLeads();
+  const metrics = await getSystemMetrics();
+  const mediaAssets = await getMediaAssets();
 
   return (
     <div className="max-w-6xl mx-auto">
@@ -26,6 +28,8 @@ export default async function AdminDashboard() {
         navItemsList={navItemsList} 
         aiPostsList={aiPostsList}
         leadsList={leadsList}
+        metrics={metrics}
+        mediaAssetsList={mediaAssets}
       />
     </div>
   );

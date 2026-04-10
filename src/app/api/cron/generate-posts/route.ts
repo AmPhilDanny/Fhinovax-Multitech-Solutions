@@ -1,4 +1,4 @@
-import { google } from '@ai-sdk/google';
+import { createGoogleGenerativeAI } from '@ai-sdk/google';
 import { generateText } from 'ai';
 import { db } from '@/db';
 import { aiPosts } from '@/db/schema';
@@ -28,6 +28,10 @@ export async function GET(request: Request) {
     const platforms = ['Facebook', 'Instagram', 'LinkedIn'];
     
     for (const platform of platforms) {
+      const google = createGoogleGenerativeAI({
+        apiKey: settings.aiApiKey || process.env.GOOGLE_GENERATIVE_AI_API_KEY,
+      });
+
       const { text } = await generateText({
         model: google('gemini-1.5-flash'),
         system: `You are a social media marketing expert for a technical mechanical company. 
@@ -40,6 +44,7 @@ export async function GET(request: Request) {
         platform: platform.toLowerCase(),
         content: text,
         isApproved: false,
+        status: 'draft',
       });
     }
 

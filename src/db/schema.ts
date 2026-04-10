@@ -29,7 +29,28 @@ export const siteSettings = pgTable("site_settings", {
   linkedinUrl: text("linkedin_url").default(""),
   footerText: text("footer_text").default(""),
   copyrightText: text("copyright_text").default(""),
+  aiApiKey: text("ai_api_key"),
+  lastMarketingRun: timestamp("last_marketing_run"),
   updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Media Assets: Center repository for all uploaded files
+export const mediaAssets = pgTable("media_assets", {
+  id: serial("id").primaryKey(),
+  url: text("url").notNull(),
+  fileName: varchar("file_name", { length: 255 }).notNull(),
+  fileSize: integer("file_size"),
+  mimeType: varchar("mime_type", { length: 100 }),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Page Hits: Real-time traffic tracking
+export const pageHits = pgTable("page_hits", {
+  id: serial("id").primaryKey(),
+  slug: varchar("slug", { length: 255 }).notNull().default("/"),
+  ipHash: varchar("ip_hash", { length: 255 }), // Basic unique tracking
+  userAgent: text("user_agent"),
+  createdAt: timestamp("created_at").defaultNow(),
 });
 
 
@@ -83,6 +104,7 @@ export const aiPosts = pgTable("ai_posts", {
   platform: text("platform").notNull(), // "facebook", "google", "whatsapp"
   content: text("content").notNull(),
   isApproved: boolean("is_approved").default(false),
+  status: varchar("status", { length: 50 }).default("draft"), // "draft", "approved", "published"
   createdAt: timestamp("created_at").defaultNow(),
 });
 
