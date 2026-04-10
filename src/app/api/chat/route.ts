@@ -53,53 +53,59 @@ export async function POST(req: Request) {
   `;
 
   if (!settings.aiApiKey && !process.env.GOOGLE_GENERATIVE_AI_API_KEY) {
+    console.error("Chat API: Missing API Key");
     return new Response('AI API Key is missing. Please configure it in the Admin Panel.', { status: 500 });
   }
 
-  const google = createGoogleGenerativeAI({
-    apiKey: settings.aiApiKey || process.env.GOOGLE_GENERATIVE_AI_API_KEY,
-  });
+  console.log("Chat API: Initiating stream with key:", settings.aiApiKey ? `${settings.aiApiKey.substring(0, 5)}...` : "ENV_KEY");
 
-  const result = streamText({
-    model: google('gemini-1.5-flash'),
-    messages,
-    system: systemInstructions,
-    tools: {
-      recordCustomerLead: tool({
-        description: 'Save customer details for human contact follow-up when they express interest in services or repairs.',
-        inputSchema: z.object({
-          name: z.string().describe('The name of the customer'),
-          contactMethod: z.string().describe('Their phone number or WhatsApp handle'),
-          issueType: z.string().describe('Brief description of the problem (e.g., Generator service, Vehicle diagnostic)'),
-          urgency: z.string().optional().describe('How quickly they need a response (Low, Medium, High)'),
-          location: z.string().optional().describe('User current location if relevant'),
+  try {
+    const google = createGoogleGenerativeAI({
+      apiKey: settings.aiApiKey || process.env.GOOGLE_GENERATIVE_AI_API_KEY,
+    });
+
+    const result = streamText({
+      model: google('gemini-1.5-flash'),
+      messages,
+      system: systemInstructions,
+      tools: {
+        recordCustomerLead: tool({
+          description: 'Save customer details for human contact follow-up when they express interest in services or repairs.',
+          inputSchema: z.object({
+            name: z.string().describe('The name of the customer'),
+            contactMethod: z.string().describe('Their phone number or WhatsApp handle'),
+            issueType: z.string().describe('Brief description of the problem (e.g., Generator service, Vehicle diagnostic)'),
+            urgency: z.string().optional().describe('How quickly they need a response (Low, Medium, High)'),
+            location: z.string().optional().describe('User current location if relevant'),
+          }),
+          // @ts-ignore - 'execute' property type mismatch in this specific SDK version
+          execute: async ({ name, contactMethod, issueType, urgency, location }) => {
+            try {
+              await db.insert(leads).values({
+                name,
+                contactMethod,
+                issueType,
+                urgency: urgency || 'Medium',
+                location: location || 'Not provided',
+              });
+              return {
+                success: true,
+                message: `Lead for ${name} recorded successfully.`,
+              };
+            } catch (error) {
+              console.error('Failed to record lead:', error);
+              return { success: false, message: 'Internal error recording lead.' };
+            }
+          },
         }),
-        // @ts-ignore - 'execute' property type mismatch in this specific SDK version
-        execute: async ({ name, contactMethod, issueType, urgency, location }) => {
-          try {
-            await db.insert(leads).values({
-              name,
-              contactMethod,
-              issueType,
-              urgency: urgency || 'Medium',
-              location: location || 'Not provided',
-            });
-            return {
-              success: true,
-              message: `Lead for ${name} recorded successfully.`,
-            };
-          } catch (error) {
-            console.error('Failed to record lead:', error);
-            return { success: false, message: 'Internal error recording lead.' };
-          }
-        },
-      }),
+      },
+    });
 
-
-    },
-  });
-
-  return result.toTextStreamResponse();
+    return result.toTextStreamResponse();
+  } catch (err: any) {
+    console.error("Chat API Error:", err);
+    return new Response(JSON.stringify({ error: err.message }), { status: 500, headers: { 'Content-Type': 'application/json' } });
+  }
 }
 
 
