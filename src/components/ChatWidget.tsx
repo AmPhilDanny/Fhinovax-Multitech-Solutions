@@ -93,9 +93,10 @@ export default function ChatWidget() {
                        <span className="text-[10px] font-bold uppercase tracking-widest opacity-50">{m.role === 'user' ? 'You' : 'AI'}</span>
                     </div>
                     {/* Render message parts for v6 compatibility */}
-                    {m.parts ? m.parts.map((part, i) => (
+                    {m.parts.map((part, i) => (
                       part.type === 'text' ? <span key={i}>{part.text}</span> : null
-                    )) : m.content}
+                    ))}
+
                   </div>
                 </div>
               ))}
