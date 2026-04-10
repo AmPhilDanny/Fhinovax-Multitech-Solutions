@@ -1,7 +1,7 @@
 'use server';
 
 import { db } from "@/db";
-import { siteSettings, services, pages, navItems } from "@/db/schema";
+import { siteSettings, services, pages, navItems, aiPosts } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 

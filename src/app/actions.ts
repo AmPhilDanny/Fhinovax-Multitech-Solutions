@@ -1,7 +1,7 @@
 'use server';
 
 import { db } from "@/db";
-import { siteSettings, services, pages, navItems, aiPosts, leads } from "@/db/schema";
+import { siteSettings, services, pages, navItems, aiPosts, leads, mediaAssets, pageHits } from "@/db/schema";
 
 import { eq, sql, desc, count } from "drizzle-orm";
 
