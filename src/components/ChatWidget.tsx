@@ -17,7 +17,7 @@ export default function ChatWidget({ agentName = "Phinovax AI" }: { agentName?: 
   const [errorVisible, setErrorVisible] = useState(false);
   const chatParent = useRef<HTMLDivElement>(null);
 
-  const isTyping = status === "submitted" || status === "streaming";
+  const isTyping = (status as string) === "submitted" || (status as string) === "streaming";
 
   const onFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -29,7 +29,7 @@ export default function ChatWidget({ agentName = "Phinovax AI" }: { agentName?: 
     
     // Safety timeout for mobile users
     const timer = setTimeout(() => {
-      if (status === "submitted" || status === "streaming") {
+      if ((status as string) === "submitted" || (status as string) === "streaming") {
          setErrorVisible(true);
       }
     }, 20000);
