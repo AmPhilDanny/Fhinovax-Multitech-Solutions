@@ -18,6 +18,7 @@ import {
   Check,
   Zap,
   ShieldCheck,
+  CheckCircle,
   TrendingUp,
   Search
 } from "lucide-react";
