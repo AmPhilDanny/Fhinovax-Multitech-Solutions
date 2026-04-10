@@ -46,7 +46,7 @@ export default async function RootLayout({
     { icon: Instagram, href: settings.instagramUrl, label: "Instagram" },
     { icon: Twitter, href: settings.twitterUrl, label: "Twitter" },
     { icon: Linkedin, href: settings.linkedinUrl, label: "LinkedIn" },
-  ].filter(link => link.href);
+  ].filter((link): link is { icon: any, href: string, label: string } => !!link.href);
 
   return (
     <html lang="en" className="scroll-smooth h-full">
