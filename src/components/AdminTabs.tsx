@@ -404,29 +404,29 @@ export default function AdminTabs({
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-4 bg-gray-50 rounded-xl border border-gray-100">
                 <div className="space-y-4">
-                  <label className="text-xs font-bold uppercase text-gray-500 block">Background Type</label>
-                  <div className="flex gap-4">
-                    <label className="flex items-center gap-2 cursor-pointer">
-                      <input 
-                        type="radio" 
-                        name="heroBgType" 
-                        value="color" 
-                        checked={bgType === 'color'} 
-                        onChange={() => setBgType('color')}
-                      />
-                      <span className="text-sm font-medium">Solid Color</span>
-                    </label>
-                    <label className="flex items-center gap-2 cursor-pointer">
-                      <input 
-                        type="radio" 
-                        name="heroBgType" 
-                        value="image" 
-                        checked={bgType === 'image'} 
-                        onChange={() => setBgType('image')}
-                      />
-                      <span className="text-sm font-medium">Image</span>
-                    </label>
-                  </div>
+                   <label className="text-xs font-bold uppercase text-gray-500 block">Background Type</label>
+                   <div className="flex gap-4">
+                     <label className="flex items-center gap-2 cursor-pointer">
+                       <input 
+                         type="radio" 
+                         name="heroBgType" 
+                         value="color" 
+                         checked={bgType === 'color'} 
+                         onChange={() => setBgType('color')}
+                       />
+                       <span className="text-sm font-medium">Solid Color</span>
+                     </label>
+                     <label className="flex items-center gap-2 cursor-pointer">
+                       <input 
+                         type="radio" 
+                         name="heroBgType" 
+                         value="image" 
+                         checked={bgType === 'image'} 
+                         onChange={() => setBgType('image')}
+                       />
+                       <span className="text-sm font-medium">Image</span>
+                     </label>
+                   </div>
                 </div>
 
                 <div className="space-y-1">
@@ -505,7 +505,7 @@ export default function AdminTabs({
                        <input name="href" placeholder="/" className="admin-input text-xs" required />
                     </div>
                     <div className="md:col-span-1">
-                       <label className="text-[10px] font-bold uppercase text-gray-500 mb-1 block">Parent Link</label>
+                       <label className="text-[10px) font-bold uppercase text-gray-500 mb-1 block">Parent Link</label>
                        <select name="parentId" className="admin-input text-xs appearance-none">
                           <option value="">None (Top Level)</option>
                           {navItemsList.filter(i => !i.parentId).map(i => <option key={i.id} value={i.id}>{i.label}</option>)}
@@ -657,33 +657,53 @@ export default function AdminTabs({
                    />
                 </div>
 
-                <div className="space-y-1 rounded-2xl border-2 border-brand-blue/20 p-4 bg-brand-blue/5">
-                   <label className="text-[10px] font-extrabold uppercase text-brand-blue flex items-center gap-2 mb-2">
-                      <Zap size={14} /> Essential: Google Gemini API Key
-                   </label>
-                   <input 
-                     type="password"
-                     name="aiApiKey" 
-                     value={previews.aiApiKey} 
-                      onChange={(e) => setPreviews(prev => ({ ...prev, aiApiKey: e.target.value }))} 
-                     className="admin-input bg-white border-brand-blue/20" 
-                     placeholder="Paste your AI API Key here..." 
-                   />
-                   <p className="text-[9px] text-brand-blue/60 mt-2 font-medium">This key is required for the AI Chatbot and Marketing Post Generator to function. Get one from Google AI Studio.</p>
-                </div>
+                 <div className="space-y-1 rounded-2xl border-2 border-brand-blue/20 p-4 bg-brand-blue/5">
+                    <div className="flex items-center justify-between mb-2">
+                       <label className="text-[10px] font-extrabold uppercase text-brand-blue flex items-center gap-2">
+                          <Zap size={14} /> Essential: Google Gemini API Key
+                       </label>
+                       <button 
+                         type="button"
+                         onClick={handleTestConnection}
+                         disabled={testing}
+                         className={`text-[9px] font-black px-3 py-1 rounded-full transition-all border ${
+                           testing ? 'bg-gray-100 text-gray-400 border-gray-200' :
+                           testResult?.success ? 'bg-green-500 text-white border-green-600 shadow-sm shadow-green-200' :
+                           testResult?.success === false ? 'bg-red-500 text-white border-red-600' :
+                           'bg-white text-brand-blue border-brand-blue/20 hover:border-brand-blue'
+                         }`}
+                       >
+                         {testing ? 'Testing...' : testResult?.success ? '✓ Connected!' : 'Test Connectivity'}
+                       </button>
+                    </div>
+                    <input 
+                      type="password"
+                      name="aiApiKey" 
+                      value={previews.aiApiKey} 
+                      onChange={(e) => setPreviews(prev => ({ ...prev, aiApiKey: e.target.value }))}
+                      className="admin-input bg-white border-brand-blue/20" 
+                      placeholder="Paste your AI API Key here..." 
+                    />
+                    {testResult && (
+                      <p className={`text-[9px] mt-2 font-bold ${testResult.success ? 'text-green-600' : 'text-red-500'}`}>
+                        {testResult.success ? '✓ Google AI Studio Link Verified' : `⚠ ${testResult.message}`}
+                      </p>
+                    )}
+                    <p className="text-[9px] text-brand-blue/60 mt-2 font-medium">This key is required for the AI Chatbot and Marketing Post Generator to function. Get one from Google AI Studio.</p>
+                 </div>
 
-                <div className="space-y-1 border-t pt-4">
-                  <label className="text-xs font-bold uppercase text-gray-500 flex items-center gap-2">
-                     Deep Training Data / Business Context
-                     <span className="bg-brand-blue/10 text-brand-blue px-2 py-0.5 rounded text-[8px]">Requirement #3</span>
-                  </label>
-                  <textarea name="aiTrainingData" 
-                    defaultValue={settings.aiTrainingData} 
-                    className="admin-input h-48 font-mono text-xs" 
-                    placeholder="Paste technical data, history, or deep business context here..." 
-                  />
-                  <p className="text-[10px] text-gray-400 italic">This data is strictly for the AI logic (Gemini) to learn from and is not visible to public users.</p>
-               </div>
+                 <div className="space-y-1 border-t pt-4">
+                   <label className="text-xs font-bold uppercase text-gray-500 flex items-center gap-2">
+                      Deep Training Data / Business Context
+                      <span className="bg-brand-blue/10 text-brand-blue px-2 py-0.5 rounded text-[8px]">Requirement #3</span>
+                   </label>
+                   <textarea name="aiTrainingData" 
+                     defaultValue={settings.aiTrainingData} 
+                     className="admin-input h-48 font-mono text-xs" 
+                     placeholder="Paste technical data, history, or deep business context here..." 
+                   />
+                   <p className="text-[10px] text-gray-400 italic">This data is strictly for the AI logic (Gemini) to learn from and is not visible to public users.</p>
+                </div>
 
 
                <div className="border-t pt-6">
