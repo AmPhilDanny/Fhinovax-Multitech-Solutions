@@ -93,7 +93,25 @@ export async function getAllPages() {
 }
 
 export async function getAllNavItems() {
-  return await db.select().from(navItems).orderBy(navItems.orderIndex);
+  const items = await db.select().from(navItems).orderBy(navItems.orderIndex);
+  
+  // Ensure "Online Diagnosis" exists if not already there
+  const hasDiag = items.some(i => i.href === '/diagnosis');
+  if (!hasDiag) {
+    return [
+      ...items,
+      {
+        id: 999, // Virtual ID
+        label: "Online Diagnosis",
+        href: "/diagnosis",
+        parentId: null,
+        orderIndex: 9,
+        isActive: true,
+      }
+    ];
+  }
+  
+  return items;
 }
 
 export async function getAiPosts() {

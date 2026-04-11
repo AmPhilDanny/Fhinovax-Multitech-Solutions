@@ -109,3 +109,11 @@ export const aiPosts = pgTable("ai_posts", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+// AI Memory: Stores long-term context for specialized diagnosis
+export const aiMemory = pgTable("ai_memory", {
+  id: serial("id").primaryKey(),
+  userId: varchar("user_id", { length: 255 }).notNull(), // Session focus
+  metadata: text("metadata"), // Technical specs (JSON string)
+  history: text("history"), // Full troubleshooting logs
+  createdAt: timestamp("created_at").defaultNow(),
+});

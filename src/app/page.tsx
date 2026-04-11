@@ -43,6 +43,41 @@ export default async function Home() {
           </div>
         </div>
       </section>
+      
+      {/* SMART AI DIAGNOSIS TEASER */}
+      <section className="relative -mt-10 mb-10 px-4 z-20">
+         <div className="max-w-6xl mx-auto">
+            <div className="bg-brand-dark rounded-[2.5rem] p-8 md:p-12 shadow-2xl shadow-blue-900/40 flex flex-col md:flex-row items-center gap-8 border border-white/10 relative overflow-hidden group">
+               {/* Decorative background circle */}
+               <div className="absolute -top-24 -right-24 w-64 h-64 bg-brand-blue/20 rounded-full blur-3xl group-hover:bg-brand-blue/30 transition-colors" />
+               
+               <div className="relative z-10 bg-brand-blue/20 p-6 rounded-[2rem] text-white">
+                  <div className="relative">
+                    <LucideIcons.Cpu size={48} className="animate-pulse" />
+                    <LucideIcons.Activity size={24} className="absolute -bottom-2 -right-2 text-brand-gold" />
+                  </div>
+               </div>
+               
+               <div className="flex-1 space-y-4 text-center md:text-left relative z-10">
+                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-blue/30 border border-brand-blue/50 text-[10px] font-black uppercase tracking-widest text-brand-light">
+                     <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
+                     Live Fault Scanner Active
+                  </div>
+                  <h2 className="text-3xl font-black text-white uppercase tracking-tighter leading-none">Instant Online Diagnosis</h2>
+                  <p className="text-gray-400 text-sm md:text-base font-medium max-w-xl">
+                    Facing a technical fault? Our AI Assistant can scan your symptoms and profer immediate mechanical or generator solutions using long-term learning patterns.
+                  </p>
+               </div>
+               
+               <div className="relative z-10">
+                  <Link href="/diagnosis" className="flex items-center gap-3 px-8 py-5 bg-white text-brand-dark font-black uppercase tracking-widest text-xs rounded-2xl hover:bg-brand-gold hover:scale-105 transition-all shadow-xl active:scale-95">
+                    Start Scanning
+                    <LucideIcons.ArrowRight size={18} />
+                  </Link>
+               </div>
+            </div>
+         </div>
+      </section>
 
       {/* SERVICES QUICK CARDS */}
       <section id="services" className="px-4 py-20 bg-brand-light">
