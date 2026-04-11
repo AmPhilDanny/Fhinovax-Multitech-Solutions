@@ -101,7 +101,7 @@ export async function POST(req: Request) {
       },
     });
 
-    return result.toDataStreamResponse();
+    return result.toUIMessageStreamResponse();
   } catch (err: any) {
     console.error("AI CHAT ERROR:", err);
     // Return a more descriptive error if possible
