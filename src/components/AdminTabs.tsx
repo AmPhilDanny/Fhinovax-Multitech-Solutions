@@ -38,6 +38,7 @@ import {
   deletePage, 
   saveService, 
   deleteService, 
+  saveNavItem,
   updateNavItem,
   deleteNavItem,
   approveAiPost,
