@@ -1,4 +1,4 @@
-import { getSiteSettings, getActiveServices, getAllPages, getAllNavItems, getAiPosts, getLeads, getSystemMetrics, getMediaAssets } from "@/app/actions";
+import { getSiteSettings, getActiveServices, getAllPages, getAllNavItems, getAiPosts, getLeads, getSystemMetrics, getMediaAssets, getArtisans, getBookings } from "@/app/actions";
 
 import AdminTabs from "@/components/AdminTabs";
 
@@ -13,6 +13,8 @@ export default async function AdminDashboard() {
   const leadsList = await getLeads();
   const metrics = await getSystemMetrics();
   const mediaAssets = await getMediaAssets();
+  const artisansList = await getArtisans(false); // Fetch all for management
+  const bookingsList = await getBookings();
 
   return (
     <div className="max-w-6xl mx-auto">
@@ -30,6 +32,8 @@ export default async function AdminDashboard() {
         leadsList={leadsList}
         metrics={metrics}
         mediaAssetsList={mediaAssets}
+        artisansList={artisansList}
+        bookingsList={bookingsList}
       />
     </div>
   );

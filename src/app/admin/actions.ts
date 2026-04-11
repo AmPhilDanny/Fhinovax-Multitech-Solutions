@@ -1,7 +1,7 @@
 'use server';
 
 import { db } from "@/db";
-import { siteSettings, services, pages, navItems, aiPosts, leads } from "@/db/schema";
+import { siteSettings, services, pages, navItems, aiPosts, leads, artisans, bookings } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 
@@ -182,3 +182,19 @@ export async function updateLeadStatus(id: number, status: string) {
 }
 
 
+// --- Artisan & Booking Admin Actions ---
+
+export async function updateArtisanStatus(id: number, status: 'active' | 'pending' | 'rejected') {
+  await db.update(artisans).set({ status }).where(eq(artisans.id, id));
+  revalidatePath("/admin");
+}
+
+export async function updateBookingStatus(id: number, status: 'new' | 'assigned' | 'completed' | 'cancelled') {
+  await db.update(bookings).set({ status }).where(eq(bookings.id, id));
+  revalidatePath("/admin");
+}
+
+export async function assignArtisanToBooking(bookingId: number, artisanId: number) {
+  await db.update(bookings).set({ assignedArtisanId: artisanId, status: 'assigned' }).where(eq(bookings.id, bookingId));
+  revalidatePath("/admin");
+}

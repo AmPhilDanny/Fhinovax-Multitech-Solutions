@@ -120,3 +120,30 @@ export const aiMemory = pgTable("ai_memory", {
   history: text("history"), // Full troubleshooting logs
   createdAt: timestamp("created_at").defaultNow(),
 });
+// Artisans: Mechanics and Technicians who join the network
+export const artisans = pgTable("artisans", {
+  id: serial("id").primaryKey(),
+  name: varchar("name", { length: 255 }).notNull(),
+  specialty: text("specialty").notNull(),
+  yearsExperience: integer("years_experience"),
+  location: text("location").notNull(),
+  phoneNumber: varchar("phone_number", { length: 50 }).notNull(),
+  bio: text("bio"),
+  photoUrl: text("photo_url"),
+  status: varchar("status", { length: 50 }).default("pending"), // "pending", "active", "rejected"
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Bookings: Inspection and repair requests
+export const bookings = pgTable("bookings", {
+  id: serial("id").primaryKey(),
+  clientName: varchar("client_name", { length: 255 }).notNull(),
+  clientPhone: varchar("client_phone", { length: 50 }).notNull(),
+  location: text("location").notNull(),
+  issueDescription: text("issue_description").notNull(),
+  preferredDate: text("preferred_date"),
+  serviceId: integer("service_id"), // Optional link to a specific service
+  assignedArtisanId: integer("assigned_artisan_id"), // The person doing the work
+  status: varchar("status", { length: 50 }).default("new"), // "new", "assigned", "completed", "cancelled"
+  createdAt: timestamp("created_at").defaultNow(),
+});

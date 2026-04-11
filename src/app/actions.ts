@@ -1,7 +1,7 @@
 'use server';
 
 import { db } from "@/db";
-import { siteSettings, services, pages, navItems, aiPosts, leads, mediaAssets, pageHits } from "@/db/schema";
+import { siteSettings, services, pages, navItems, aiPosts, leads, mediaAssets, pageHits, artisans, bookings } from "@/db/schema";
 
 import { eq, sql, desc, count } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
@@ -100,9 +100,11 @@ export async function getAllNavItems() {
   // Virtual defaults if DB is empty or missing core items
   const virtualDefaults = [
     { id: 990, label: "Home", href: "/", parentId: null, orderIndex: 0, isActive: true, createdAt: null },
-    { id: 991, label: "Services", href: "/services", parentId: null, orderIndex: 1, isActive: true, createdAt: null },
-    { id: 992, label: "About Us", href: "/about", parentId: null, orderIndex: 2, isActive: true, createdAt: null },
-    { id: 993, label: "Contact Us", href: "/contact", parentId: null, orderIndex: 3, isActive: true, createdAt: null },
+    { id: 991, label: "Book Inspection", href: "/book", parentId: null, orderIndex: 1, isActive: true, createdAt: null },
+    { id: 992, label: "Services", href: "/services", parentId: null, orderIndex: 2, isActive: true, createdAt: null },
+    { id: 993, label: "About Us", href: "/about", parentId: null, orderIndex: 3, isActive: true, createdAt: null },
+    { id: 994, label: "Contact Us", href: "/contact", parentId: null, orderIndex: 4, isActive: true, createdAt: null },
+    { id: 995, label: "Join Network", href: "/onboard", parentId: null, orderIndex: 5, isActive: true, createdAt: null },
     { id: 999, label: "Online Diagnosis", href: "/diagnosis", parentId: null, orderIndex: 9, isActive: true, createdAt: null },
   ];
 
@@ -131,6 +133,73 @@ export async function getLeads() {
 
 export async function getMediaAssets() {
   return await db.select().from(mediaAssets).orderBy(desc(mediaAssets.createdAt));
+}
+
+// --- Artisan Network Actions ---
+
+export async function getArtisans(onlyActive = true) {
+  if (onlyActive) {
+    return await db.select().from(artisans).where(eq(artisans.status, 'active')).orderBy(desc(artisans.createdAt));
+  }
+  return await db.select().from(artisans).orderBy(desc(artisans.createdAt));
+}
+
+export async function onboardArtisan(formData: FormData) {
+  const name = formData.get('name') as string;
+  const specialty = formData.get('specialty') as string;
+  const location = formData.get('location') as string;
+  const phoneNumber = formData.get('phoneNumber') as string;
+  const yearsExperience = parseInt(formData.get('yearsExperience') as string) || 0;
+  const bio = formData.get('bio') as string;
+  const photoUrl = formData.get('photoUrl') as string;
+
+  try {
+    await db.insert(artisans).values({
+      name,
+      specialty,
+      location,
+      phoneNumber,
+      yearsExperience,
+      bio,
+      photoUrl,
+      status: 'pending'
+    });
+    revalidatePath("/admin");
+    return { success: true };
+  } catch (e) {
+    return { success: false, error: String(e) };
+  }
+}
+
+// --- Booking Actions ---
+
+export async function getBookings() {
+  return await db.select().from(bookings).orderBy(desc(bookings.createdAt));
+}
+
+export async function saveBooking(formData: FormData) {
+  const clientName = formData.get('clientName') as string;
+  const clientPhone = formData.get('clientPhone') as string;
+  const location = formData.get('location') as string;
+  const issueDescription = formData.get('issueDescription') as string;
+  const preferredDate = formData.get('preferredDate') as string;
+  const serviceId = parseInt(formData.get('serviceId') as string) || null;
+
+  try {
+    await db.insert(bookings).values({
+      clientName,
+      clientPhone,
+      location,
+      issueDescription,
+      preferredDate,
+      serviceId,
+      status: 'new'
+    });
+    revalidatePath("/admin");
+    return { success: true };
+  } catch (e) {
+    return { success: false, error: String(e) };
+  }
 }
 
 export async function registerMediaAsset(url: string, fileName: string, fileSize?: number, mimeType?: string) {
