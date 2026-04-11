@@ -1,6 +1,7 @@
 "use client";
 
 import { useChat } from '@ai-sdk/react';
+import { DefaultChatTransport } from 'ai';
 import { useState, useEffect, useRef } from 'react';
 import { Wrench, Car, Zap, History, Send, Cpu, AlertTriangle, CheckCircle2 } from 'lucide-react';
 import Link from 'next/link';
@@ -20,8 +21,10 @@ export default function DiagnosisPage() {
   }, []);
 
   const { messages, sendMessage, status } = useChat({
-    api: '/api/diagnosis',
-    body: { userId },
+    transport: new DefaultChatTransport({
+      url: '/api/diagnosis',
+      body: { userId },
+    }),
   });
 
   const isLoading = status === 'streaming' || status === 'submitted';
