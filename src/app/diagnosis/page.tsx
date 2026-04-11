@@ -158,7 +158,7 @@ export default function DiagnosisPage() {
                     {m.content || (m.parts && m.parts.filter((p: any) => p.type === 'text').map((p: any) => p.text).join(''))}
                   </div>
                   
-                  {m.toolInvocations?.map((tool) => (
+                  {m.toolInvocations?.map((tool: any) => (
                     <div key={tool.toolCallId} className="mt-4 pt-4 border-t border-white/10">
                        {tool.state === 'result' && (
                          <div className="flex items-center gap-2 text-[10px] font-bold text-green-400 uppercase tracking-widest">
