@@ -139,7 +139,7 @@ export default function DiagnosisPage() {
               </div>
             )}
 
-            {messages.map((m) => (
+            {messages.map((m: any) => (
               <motion.div 
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -155,7 +155,7 @@ export default function DiagnosisPage() {
                     {m.role === 'user' ? 'Operator' : 'AI Diagnostic System'}
                   </div>
                   <div className="text-sm md:text-base leading-relaxed whitespace-pre-wrap font-medium">
-                    {m.content}
+                    {m.content || (m.parts && m.parts.filter((p: any) => p.type === 'text').map((p: any) => p.text).join(''))}
                   </div>
                   
                   {m.toolInvocations?.map((tool) => (
