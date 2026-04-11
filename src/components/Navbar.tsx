@@ -95,52 +95,75 @@ export default function Navbar({
       </header>
 
       {/* Mobile Menu Dropdown */}
-      {isOpen && (
-        <div className="md:hidden fixed inset-x-0 top-[60px] bottom-0 bg-white z-[60] p-6 flex flex-col gap-4 animate-in fade-in slide-in-from-top-4">
-          {topLevelItems.map((item) => {
-            const subItems = getSubItems(item.id);
-            const hasSub = subItems.length > 0;
-            const isSubOpen = activeSubmenu === item.id;
+      <AnimatePresence>
+        {isOpen && (
+          <div className="md:hidden fixed inset-0 top-[60px] bg-white z-[60] overflow-y-auto p-6 flex flex-col gap-2 animate-in fade-in slide-in-from-top-4">
+            {/* Optional: Add Home link specifically for mobile if needed, or ensure it's in navItems */}
+            <Link 
+              href="/" 
+              onClick={() => setIsOpen(false)}
+              className="flex items-center justify-between border-b border-gray-50 py-4 text-xl font-black text-brand-blue italic uppercase tracking-tighter"
+            >
+              Home
+            </Link>
 
-            return (
-              <div key={item.id} className="flex flex-col">
-                <div className="flex items-center justify-between border-b border-gray-50 py-3">
-                   <Link 
-                     href={item.href} 
-                     onClick={() => setIsOpen(false)}
-                     className="text-xl font-bold text-gray-800"
-                   >
-                     {item.label}
-                   </Link>
-                   {hasSub && (
-                     <button 
-                       onClick={() => setActiveSubmenu(isSubOpen ? null : item.id)}
-                       className={`p-2 rounded-lg bg-gray-50 ${isSubOpen ? 'rotate-180' : ''} transition-transform`}
+            {topLevelItems.map((item) => {
+              const subItems = getSubItems(item.id);
+              const hasSub = subItems.length > 0;
+              const isSubOpen = activeSubmenu === item.id;
+
+              return (
+                <div key={item.id} className="flex flex-col">
+                  <div className="flex items-center justify-between border-b border-gray-50 py-4">
+                     <Link 
+                       href={item.href} 
+                       onClick={() => setIsOpen(false)}
+                       className="text-xl font-bold text-gray-800"
                      >
-                       <ChevronDown size={20} />
-                     </button>
-                   )}
-                </div>
-                
-                {hasSub && isSubOpen && (
-                  <div className="pl-4 mt-2 space-y-3 animate-in slide-in-from-left-2">
-                     {subItems.map(sub => (
-                       <Link 
-                         key={sub.id} 
-                         href={sub.href}
-                         onClick={() => setIsOpen(false)}
-                         className="block text-gray-500 font-medium py-2 border-l-2 border-brand-blue/20 pl-4"
+                       {item.label}
+                     </Link>
+                     {hasSub && (
+                       <button 
+                         onClick={() => setActiveSubmenu(isSubOpen ? null : item.id)}
+                         className={`p-2 rounded-xl bg-gray-50 ${isSubOpen ? 'rotate-180 text-brand-blue' : 'text-gray-400'} transition-all`}
                        >
-                         {sub.label}
-                       </Link>
-                     ))}
+                         <ChevronDown size={22} />
+                       </button>
+                     )}
                   </div>
-                )}
-              </div>
-            );
-          })}
-        </div>
-      )}
+                  
+                  {hasSub && isSubOpen && (
+                    <div className="pl-6 mt-2 space-y-4 py-2 animate-in slide-in-from-left-4 duration-300">
+                       {subItems.map(sub => (
+                         <Link 
+                           key={sub.id} 
+                           href={sub.href}
+                           onClick={() => setIsOpen(false)}
+                           className="block text-gray-500 font-semibold py-2 border-l-4 border-brand-blue/10 pl-4 hover:border-brand-blue transition-colors"
+                         >
+                           {sub.label}
+                         </Link>
+                       ))}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+
+            {/* Support/Call CTA in Mobile Menu */}
+            <div className="mt-8 space-y-3">
+               <p className="text-[10px] font-black uppercase text-gray-400 tracking-widest px-1">Technical Assistance</p>
+               <Link 
+                 href="/diagnosis" 
+                 onClick={() => setIsOpen(false)}
+                 className="flex items-center justify-center gap-3 w-full bg-brand-blue text-white py-4 rounded-2xl font-black uppercase tracking-tighter shadow-xl shadow-brand-blue/20"
+               >
+                 <Bot size={20} /> AI Diag Lab
+               </Link>
+            </div>
+          </div>
+        )}
+      </AnimatePresence>
     </>
   );
 }

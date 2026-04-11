@@ -37,6 +37,9 @@ export async function POST(req: Request) {
     3. Memory Check: ${userContext ? "The user has previous history below. Use it to see if this is a recurring issue." : "This is a new user."}
     ${userContext}
     
+    ADDITIONAL CUSTOMER CONTEXT:
+    ${settings.labSystemPrompt || "Be professional and thorough."}
+
     SPECIALIZED DOMAINS:
     - VEHICLES: OBD-II codes, mechanical engine issues, electrical faults, transmission, suspension.
     - GENERATORS: Diesel/Petrol engines, Alternators, Control panels (Deep Sea, etc.), Fuel systems, AVR issues.

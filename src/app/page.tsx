@@ -91,8 +91,14 @@ export default async function Home() {
             {servicesList.filter(s => s.isActive).map((service) => {
               // @ts-ignore
               const IconComp = LucideIcons[service.iconName] || LucideIcons.Wrench;
+              const anchorId = service.title.toLowerCase().replace(/\s+/g, '-');
+              
               return (
-                <div key={service.id} className="bg-white p-8 rounded-3xl shadow-sm border border-gray-100 flex flex-col items-center text-center gap-4 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group">
+                <Link 
+                  key={service.id} 
+                  href={`/services#${anchorId}`}
+                  className="bg-white p-8 rounded-3xl shadow-sm border border-gray-100 flex flex-col items-center text-center gap-4 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group cursor-pointer"
+                >
                   <div className="bg-brand-blue/5 p-4 rounded-2xl text-brand-blue group-hover:bg-brand-blue group-hover:text-white transition-colors duration-300">
                     <IconComp size={32} />
                   </div>
@@ -100,7 +106,10 @@ export default async function Home() {
                     <h3 className="font-extrabold text-gray-900 mb-2 text-xl">{service.title}</h3>
                     <p className="text-sm text-gray-500 leading-relaxed">{service.description}</p>
                   </div>
-                </div>
+                  <div className="mt-auto pt-4 flex items-center gap-2 text-[10px] font-black uppercase text-brand-blue opacity-0 group-hover:opacity-100 transition-opacity">
+                     Learn More <LucideIcons.ChevronRight size={12} />
+                  </div>
+                </Link>
               );
             })}
           </div>

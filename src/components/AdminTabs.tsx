@@ -26,8 +26,10 @@ import {
   Upload,
   Loader2,
   ChevronRight,
-  GripVertical
+  GripVertical,
+  MousePointer2
 } from "lucide-react";
+import MediaPicker from "./MediaPicker";
 import { 
   saveSiteSettings, 
   savePage, 
@@ -71,6 +73,7 @@ export default function AdminTabs({
     logoUrl: settings.logoUrl || "",
     faviconUrl: settings.faviconUrl || "",
     heroBgValue: settings.heroBgValue || "",
+    ogImageUrl: settings.ogImageUrl || "",
     aiApiKey: settings.aiApiKey || ""
   });
   const [testResult, setTestResult] = useState<{ success: boolean, message: string } | null>(null);
@@ -368,8 +371,11 @@ export default function AdminTabs({
                   <label className="text-xs font-bold uppercase text-gray-500">Site Logo</label>
                   <div className="flex gap-2">
                      <input type="hidden" name="logoUrl" value={previews.logoUrl} readOnly />
-                     <input type="file" onChange={(e) => handleUpload(e, 'logoUrl')} className="admin-input text-xs" accept="image/*" />
-                     {uploading === 'logoUrl' && <Loader2 className="animate-spin text-brand-blue" />}
+                      <input type="file" onChange={(e) => handleUpload(e, 'logoUrl')} className="admin-input text-xs" accept="image/*" />
+                      <button type="button" onClick={() => setSelectedMediaTarget('logoUrl')} className="p-2 bg-gray-100 hover:bg-gray-200 rounded-lg text-gray-500" title="Pick from Library">
+                         <ImageIcon size={16} />
+                      </button>
+                      {uploading === 'logoUrl' && <Loader2 className="animate-spin text-brand-blue" />}
                   </div>
                   {previews.logoUrl && (
                     <div className="mt-2 p-2 bg-gray-50 rounded-lg border border-dashed border-gray-200 inline-block">
@@ -382,8 +388,11 @@ export default function AdminTabs({
                   <label className="text-xs font-bold uppercase text-gray-500">Favicon</label>
                   <div className="flex gap-2">
                      <input type="hidden" name="faviconUrl" value={previews.faviconUrl} readOnly />
-                     <input type="file" onChange={(e) => handleUpload(e, 'faviconUrl')} className="admin-input text-xs" accept="image/*" />
-                     {uploading === 'faviconUrl' && <Loader2 className="animate-spin text-brand-blue" />}
+                      <input type="file" onChange={(e) => handleUpload(e, 'faviconUrl')} className="admin-input text-xs" accept="image/*" />
+                      <button type="button" onClick={() => setSelectedMediaTarget('faviconUrl')} className="p-2 bg-gray-100 hover:bg-gray-200 rounded-lg text-gray-500" title="Pick from Library">
+                         <ImageIcon size={16} />
+                      </button>
+                      {uploading === 'faviconUrl' && <Loader2 className="animate-spin text-brand-blue" />}
                   </div>
                   {previews.faviconUrl && (
                     <div className="mt-2 p-2 bg-gray-50 rounded-lg border border-dashed border-gray-200 inline-block">
@@ -477,7 +486,10 @@ export default function AdminTabs({
                         <input type="hidden" name="heroBgValue" value={previews.heroBgValue} readOnly />
                         <div className="relative">
                           <input type="file" onChange={(e) => handleUpload(e, 'heroBgValue')} className="admin-input text-xs pr-10" accept="image/*" />
-                          <Upload size={14} className="absolute right-3 top-3 text-gray-400 pointer-events-none" />
+                           <button type="button" onClick={() => setSelectedMediaTarget('heroBgValue')} className="absolute right-10 top-2 p-1.5 bg-gray-100 hover:bg-gray-200 rounded text-gray-500">
+                              <ImageIcon size={14} />
+                           </button>
+                           <Upload size={14} className="absolute right-3 top-3 text-gray-400 pointer-events-none" />
                         </div>
                         {uploading === 'heroBgValue' && <div className="flex items-center gap-2 text-xs text-brand-blue"><Loader2 className="animate-spin" size={12} /> Uploading...</div>}
                         {previews.heroBgValue && (
@@ -617,10 +629,14 @@ export default function AdminTabs({
                      <label className="text-xs font-bold uppercase text-gray-500">New Service Title</label>
                      <input name="title" className="admin-input" required />
                   </div>
-                  <div className="md:col-span-2">
-                     <label className="text-xs font-bold uppercase text-gray-500">Description</label>
-                     <textarea name="description" className="admin-input h-20" required />
-                  </div>
+                   <div className="md:col-span-2">
+                      <label className="text-xs font-bold uppercase text-gray-500">Description (Quick Teaser)</label>
+                      <textarea name="description" className="admin-input h-20" required />
+                   </div>
+                   <div className="md:col-span-2">
+                      <label className="text-xs font-bold uppercase text-gray-500">Detailed Content (Full Service Page)</label>
+                      <textarea name="detailedContent" className="admin-input h-40 font-mono text-xs" placeholder="HTML or long text for the specialized service page..." />
+                   </div>
                   <div>
                      <label className="text-xs font-bold uppercase text-gray-500">Lucide Icon Name</label>
                      <input name="iconName" placeholder="Wrench, Car, Search..." className="admin-input" defaultValue="Wrench" />
@@ -638,9 +654,12 @@ export default function AdminTabs({
                         <button onClick={() => deleteService(service.id)} className="absolute top-2 right-2 p-2 bg-red-50 text-red-500 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity">
                            <Trash2 size={14} />
                         </button>
-                        <div className="text-brand-blue font-bold text-lg">{service.title}</div>
-                        <div className="text-xs text-gray-500 line-clamp-2">{service.description}</div>
-                        <div className="text-[10px] text-gray-400 font-mono">Icon: {service.iconName}</div>
+                         <div className="text-brand-blue font-bold text-lg">{service.title}</div>
+                         <div className="text-xs text-gray-500 line-clamp-2">{service.description}</div>
+                         {service.detailedContent && (
+                           <div className="text-[9px] bg-green-50 text-green-600 px-2 py-0.5 rounded font-black uppercase w-fit">Detailed Content Added</div>
+                         )}
+                         <div className="text-[10px] text-gray-400 font-mono">Icon: {service.iconName}</div>
                     </div>
                   ))}
                </div>
@@ -695,6 +714,21 @@ export default function AdminTabs({
                      placeholder="Be professional, always mention workshop at Ankpa road, ask for phone number..." 
                    />
                 </div>
+
+                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 border-t pt-6">
+                    <div className="space-y-1">
+                       <label className="text-xs font-bold uppercase text-brand-blue flex items-center gap-2">
+                          <ImageIcon size={14} /> Diagnostic Lab Welcome Message
+                       </label>
+                       <textarea name="labWelcomeMessage" defaultValue={settings.labWelcomeMessage} className="admin-input h-24" placeholder="e.g. Welcome to the Lab! What seems to be the trouble?" />
+                    </div>
+                    <div className="space-y-1">
+                       <label className="text-xs font-bold uppercase text-brand-blue flex items-center gap-2">
+                          <Bot size={14} /> Lab Specialized System Prompt
+                       </label>
+                       <textarea name="labSystemPrompt" defaultValue={settings.labSystemPrompt} className="admin-input h-24" placeholder="Special instructions for the diagnostic engine..." />
+                    </div>
+                 </div>
 
                  <div className="space-y-1 rounded-2xl border-2 border-brand-blue/20 p-4 bg-brand-blue/5">
                     <div className="flex items-center justify-between mb-2">
@@ -1020,10 +1054,13 @@ export default function AdminTabs({
                   <div className="space-y-1">
                      <label className="text-xs font-bold uppercase text-gray-500">OpenGraph Image (Shared on Social)</label>
                      <div className="flex gap-2">
-                        <input type="hidden" name="ogImageUrl" id="hidden_ogImageUrl" defaultValue={settings.ogImageUrl} />
-                        <input type="file" onChange={(e) => handleUpload(e, 'ogImageUrl')} className="admin-input text-xs" accept="image/*" />
-                        {uploading === 'ogImageUrl' && <Loader2 className="animate-spin text-brand-blue" />}
-                     </div>
+                         <input type="hidden" name="ogImageUrl" value={previews.ogImageUrl} readOnly />
+                         <input type="file" onChange={(e) => handleUpload(e, 'ogImageUrl')} className="admin-input text-xs" accept="image/*" />
+                         <button type="button" onClick={() => setSelectedMediaTarget('ogImageUrl')} className="p-2 bg-gray-100 hover:bg-gray-200 rounded-lg text-gray-500" title="Pick from Library">
+                            <ImageIcon size={16} />
+                         </button>
+                         {uploading === 'ogImageUrl' && <Loader2 className="animate-spin text-brand-blue" />}
+                      </div>
                   </div>
                </div>
 
@@ -1057,6 +1094,18 @@ export default function AdminTabs({
            )}
         </div>
       </main>
+
+      {/* Media Picker Portal */}
+      {selectedMediaTarget && (
+        <MediaPicker 
+           mediaList={mediaAssetsList}
+           onClose={() => setSelectedMediaTarget(null)}
+           onSelect={(url) => {
+             setPreviews(prev => ({ ...prev, [selectedMediaTarget]: url }));
+             setSelectedMediaTarget(null);
+           }}
+        />
+      )}
     </div>
 
   );

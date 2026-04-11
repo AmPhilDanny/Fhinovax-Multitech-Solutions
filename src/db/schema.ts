@@ -30,6 +30,8 @@ export const siteSettings = pgTable("site_settings", {
   footerText: text("footer_text").default(""),
   copyrightText: text("copyright_text").default(""),
   aiApiKey: text("ai_api_key"),
+  labSystemPrompt: text("lab_system_prompt"), // Specialized prompt for diagnosis
+  labWelcomeMessage: text("lab_welcome_message"), // Initial AI message in diagnosis page
   lastMarketingRun: timestamp("last_marketing_run"),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
@@ -59,6 +61,7 @@ export const services = pgTable("services", {
   id: serial("id").primaryKey(),
   title: text("title").notNull(),
   description: text("description").notNull(),
+  detailedContent: text("detailed_content"), // Deep details for specialized page
   iconName: varchar("icon_name", { length: 100 }), // Store the string name of the Lucide icon
   isActive: boolean("is_active").default(true),
   createdAt: timestamp("created_at").defaultNow(),

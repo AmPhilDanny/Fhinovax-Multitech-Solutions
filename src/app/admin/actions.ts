@@ -15,7 +15,7 @@ export async function saveSiteSettings(formData: FormData) {
     "aiName", "aiInstructions", "aiTrainingData", "aiApiKey",
     "metaDescription", "metaKeywords", "ogImageUrl",
     "facebookUrl", "instagramUrl", "twitterUrl", "linkedinUrl",
-    "footerText", "copyrightText"
+    "footerText", "copyrightText", "labSystemPrompt", "labWelcomeMessage"
   ];
 
   const updateData: Record<string, any> = {
@@ -119,14 +119,15 @@ export async function saveService(formData: FormData) {
   const id = formData.get("id") ? parseInt(formData.get("id") as string) : null;
   const title = formData.get("title") as string;
   const description = formData.get("description") as string;
+  const detailedContent = formData.get("detailedContent") as string;
   const iconName = formData.get("iconName") as string;
   const isActive = formData.get("isActive") === "on" || formData.get("isActive") === null;
 
 
   if (id) {
-    await db.update(services).set({ title, description, iconName, isActive }).where(eq(services.id, id));
+    await db.update(services).set({ title, description, detailedContent, iconName, isActive }).where(eq(services.id, id));
   } else {
-    await db.insert(services).values({ title, description, iconName, isActive });
+    await db.insert(services).values({ title, description, detailedContent, iconName, isActive });
   }
 
   revalidatePath("/");
