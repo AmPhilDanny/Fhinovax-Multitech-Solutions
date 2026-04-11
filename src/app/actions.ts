@@ -39,6 +39,8 @@ export async function getSiteSettings() {
       footerText: "Leading the way in multitech solutions and professional diagnostics.",
       copyrightText: "Fhinovax Multitech Solutions Ltd",
       aiApiKey: "",
+      labSystemPrompt: "",
+      labWelcomeMessage: "",
       lastMarketingRun: null as Date | null,
       updatedAt: new Date(),
     };
