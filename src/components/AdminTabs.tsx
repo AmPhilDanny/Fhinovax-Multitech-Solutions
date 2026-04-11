@@ -81,6 +81,62 @@ export default function AdminTabs({
     aiApiKey: settings.aiApiKey || ""
   });
 
+  const handleMoveNavItem = async (id: number, direction: 'up' | 'down') => {
+    if (id >= 990) {
+      alert("This is a system default link. To rearrange it, please create a new 'Home' link manually with your preferred order.");
+      return;
+    }
+
+    const filtered = navItemsList.filter((i: any) => !i.parentId).sort((a: any, b: any) => a.orderIndex - b.orderIndex);
+    const currentIndex = filtered.findIndex((i: any) => i.id === id);
+    if (currentIndex === -1) return;
+
+    const targetIndex = direction === 'up' ? currentIndex - 1 : currentIndex + 1;
+    if (targetIndex < 0 || targetIndex >= filtered.length) return;
+
+    const currentItem = filtered[currentIndex];
+    const targetItem = filtered[targetIndex];
+
+    setUploading('menu');
+    try {
+      const oldIndex = currentItem.orderIndex || 0;
+      const newIndex = targetItem.orderIndex || 0;
+      
+      await updateNavItem(currentItem.id, { orderIndex: newIndex });
+      if (targetItem.id < 990) {
+        await updateNavItem(targetItem.id, { orderIndex: oldIndex });
+      }
+      router.refresh();
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setUploading(null);
+    }
+  };
+
+  const handleMoveSubItem = async (parentId: number, id: number, direction: 'up' | 'down') => {
+    const filtered = navItemsList.filter((i: any) => i.parentId === parentId).sort((a: any, b: any) => a.orderIndex - b.orderIndex);
+    const currentIndex = filtered.findIndex((i: any) => i.id === id);
+    if (currentIndex === -1) return;
+
+    const targetIndex = direction === 'up' ? currentIndex - 1 : currentIndex + 1;
+    if (targetIndex < 0 || targetIndex >= filtered.length) return;
+
+    const currentItem = filtered[currentIndex];
+    const targetItem = filtered[targetIndex];
+
+    setUploading('menu');
+    try {
+      await updateNavItem(currentItem.id, { orderIndex: targetItem.orderIndex || 0 });
+      await updateNavItem(targetItem.id, { orderIndex: currentItem.orderIndex || 0 });
+      router.refresh();
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setUploading(null);
+    }
+  };
+
   // Keep internal state in sync with server-side props after a refresh
   useEffect(() => {
     setPreviews({
@@ -573,16 +629,18 @@ export default function AdminTabs({
                          <div className="flex items-center gap-2 mt-4 sm:mt-0">
                             <div className="flex items-center p-1 bg-gray-50 rounded-xl border border-gray-100">
                                <button 
-                                 onClick={() => updateNavItem(parent.id, { orderIndex: (parent.orderIndex || 0) - 1 })} 
-                                 className="p-2 hover:bg-white rounded-lg text-gray-400 hover:text-brand-blue transition-all" 
+                                 onClick={() => handleMoveNavItem(parent.id, 'up')} 
+                                 className="p-2 hover:bg-white rounded-lg text-gray-400 hover:text-brand-blue transition-all disabled:opacity-20" 
+                                 disabled={parent.id >= 990}
                                  title="Move Up"
                                >
                                  <ChevronDown size={14} className="rotate-180" />
                                </button>
                                <div className="w-px h-4 bg-gray-200 mx-1" />
                                <button 
-                                 onClick={() => updateNavItem(parent.id, { orderIndex: (parent.orderIndex || 0) + 1 })} 
-                                 className="p-2 hover:bg-white rounded-lg text-gray-400 hover:text-brand-blue transition-all" 
+                                 onClick={() => handleMoveNavItem(parent.id, 'down')} 
+                                 className="p-2 hover:bg-white rounded-lg text-gray-400 hover:text-brand-blue transition-all disabled:opacity-20" 
+                                 disabled={parent.id >= 990}
                                  title="Move Down"
                                >
                                  <ChevronDown size={14} />
@@ -609,8 +667,8 @@ export default function AdminTabs({
                                </div>
                                <div className="flex items-center gap-3 mt-4 sm:mt-0 opacity-40 group-hover/sub:opacity-100 transition-opacity">
                                   <div className="flex items-center p-1 bg-white rounded-lg border border-gray-100">
-                                     <button onClick={() => updateNavItem(sub.id, { orderIndex: (sub.orderIndex || 0) - 1 })} className="p-1.5 hover:bg-gray-50 rounded text-gray-400 hover:text-brand-blue"><ChevronDown size={14} className="rotate-180" /></button>
-                                     <button onClick={() => updateNavItem(sub.id, { orderIndex: (sub.orderIndex || 0) + 1 })} className="p-1.5 hover:bg-gray-50 rounded text-gray-400 hover:text-brand-blue"><ChevronDown size={14} /></button>
+                                     <button onClick={() => handleMoveSubItem(parent.id, sub.id, 'up')} className="p-1.5 hover:bg-gray-50 rounded text-gray-400 hover:text-brand-blue"><ChevronDown size={14} className="rotate-180" /></button>
+                                     <button onClick={() => handleMoveSubItem(parent.id, sub.id, 'down')} className="p-1.5 hover:bg-gray-50 rounded text-gray-400 hover:text-brand-blue"><ChevronDown size={14} /></button>
                                   </div>
                                   <select 
                                     onChange={(e) => updateNavItem(sub.id, { parentId: e.target.value ? parseInt(e.target.value) : null })}

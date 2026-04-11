@@ -99,6 +99,7 @@ export async function getAllNavItems() {
   
   // Virtual defaults if DB is empty or missing core items
   const virtualDefaults = [
+    { id: 990, label: "Home", href: "/", parentId: null, orderIndex: 0, isActive: true, createdAt: null },
     { id: 991, label: "Services", href: "/services", parentId: null, orderIndex: 1, isActive: true, createdAt: null },
     { id: 992, label: "About Us", href: "/about", parentId: null, orderIndex: 2, isActive: true, createdAt: null },
     { id: 993, label: "Contact Us", href: "/contact", parentId: null, orderIndex: 3, isActive: true, createdAt: null },
