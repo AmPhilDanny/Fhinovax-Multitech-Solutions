@@ -9,9 +9,7 @@ import { motion, AnimatePresence } from "framer-motion";
 export default function ChatWidget({ agentName = "Phinovax AI" }: { agentName?: string }) {
   const [isOpen, setIsOpen] = useState(false);
   const [input, setInput] = useState("");
-  const { messages, sendMessage, status } = useChat({
-    api: "/api/chat",
-  });
+  const { messages, sendMessage, status } = useChat();
   const [errorVisible, setErrorVisible] = useState(false);
   const chatParent = useRef<HTMLDivElement>(null);
 
@@ -33,7 +31,7 @@ export default function ChatWidget({ agentName = "Phinovax AI" }: { agentName?: 
     }, 20000);
 
     try {
-      await sendMessage({ content: currentInput, role: 'user' } as any);
+      await sendMessage({ text: currentInput });
       clearTimeout(timer);
     } catch (err) {
       console.error("Chat Error:", err);
