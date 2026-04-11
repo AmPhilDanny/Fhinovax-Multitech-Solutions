@@ -37,7 +37,9 @@ import {
   saveNavItem, 
   deleteNavItem,
   approveAiPost,
-  discardAiPost
+  discardAiPost,
+  deleteLead,
+  updateLeadStatus
 } from "@/app/admin/actions";
 
 export default function AdminTabs({ 
@@ -154,6 +156,12 @@ export default function AdminTabs({
     { id: "seo", label: "Global SEO", icon: Globe },
   ];
 
+  // Auto-test connection on mount
+  useEffect(() => {
+    handleTestConnection();
+  }, []);
+
+
 
 
   return (
@@ -232,14 +240,19 @@ export default function AdminTabs({
                   <div className="p-5 bg-white border border-gray-100 rounded-2xl shadow-sm space-y-2">
                      <div className="flex items-center justify-between">
                         <span className="text-[10px] font-bold uppercase text-gray-400">AI Health</span>
-                        <Bot size={14} className="text-brand-blue" />
+                        <Bot size={14} className={testResult?.success ? "text-green-500" : "text-brand-blue"} />
                      </div>
-                     <div className={`text-sm font-bold flex items-center gap-2 ${metrics.aiStatus === 'Active' ? 'text-green-600' : 'text-red-500'}`}>
+                     <div className={`text-sm font-bold flex items-center gap-2 ${
+                       testing ? 'text-gray-400' :
+                       testResult?.success ? 'text-green-600' : 
+                       'text-red-500'
+                     }`}>
                         <ShieldCheck size={14} />
-                        {metrics.aiStatus}
+                        {testing ? 'Checking...' : testResult?.success ? 'Connected' : 'Offline'}
                      </div>
-                     <p className="text-[10px] text-gray-400">Google Gemini API</p>
+                     <p className="text-[10px] text-gray-400">{testResult?.message || 'Google Gemini API'}</p>
                   </div>
+
                </div>
 
                <div className="bg-gray-50 border border-gray-100 p-8 rounded-3xl space-y-4">
@@ -818,13 +831,15 @@ export default function AdminTabs({
                                 <th className="px-6 py-4 text-[10px] font-bold uppercase text-gray-500">Date</th>
                                 <th className="px-6 py-4 text-[10px] font-bold uppercase text-gray-500">Action</th>
                              </tr>
-                          </thead>
-                          <tbody className="divide-y">
+                                            <tbody className="divide-y">
                              {leadsList.map((lead: any) => (
                                 <tr key={lead.id} className="hover:bg-gray-50/50 transition-colors">
                                    <td className="px-6 py-4">
                                       <div className="font-bold text-gray-900">{lead.name}</div>
                                       <div className="text-xs text-brand-blue font-medium">{lead.contactMethod}</div>
+                                      {lead.status === 'new' && (
+                                         <span className="inline-flex items-center gap-1 mt-1 px-2 py-0.5 bg-brand-blue/10 text-brand-blue text-[8px] font-black uppercase rounded">New Lead</span>
+                                      )}
                                    </td>
                                    <td className="px-6 py-4">
                                       <div className="text-sm text-gray-700 font-medium">{lead.issueType}</div>
@@ -833,24 +848,48 @@ export default function AdminTabs({
                                             lead.urgency === 'High' ? 'bg-red-100 text-red-600' : 
                                             lead.urgency === 'Medium' ? 'bg-blue-100 text-blue-600' : 'bg-gray-100 text-gray-600'
                                          }`}>{lead.urgency} Urgency</span>
+                                         <span className={`text-[8px] px-1.5 py-0.5 rounded font-bold uppercase ${
+                                            lead.status === 'resolved' ? 'bg-green-100 text-green-600' : 'bg-gray-100 text-gray-400'
+                                         }`}>{lead.status || 'new'}</span>
                                       </div>
                                    </td>
                                    <td className="px-6 py-4 text-[10px] text-gray-400">
                                       {new Date(lead.createdAt).toLocaleString()}
                                    </td>
                                    <td className="px-6 py-4">
-                                      <a 
-                                        href={`https://wa.me/${lead.contactMethod.replace(/\D/g, '')}`} 
-                                        target="_blank" 
-                                        rel="noopener noreferrer"
-                                        className="text-[10px] bg-green-500 text-white px-3 py-1.5 rounded-lg font-bold hover:bg-green-600 flex items-center justify-center gap-2 w-fit"
-                                      >
-                                         <Share2 size={12} /> Contact
-                                      </a>
+                                      <div className="flex items-center gap-2">
+                                         <a 
+                                           href={`https://wa.me/${lead.contactMethod?.replace(/\D/g, '') || ''}`} 
+                                           target="_blank" 
+                                           rel="noopener noreferrer"
+                                           className="text-[10px] bg-green-500 text-white px-3 py-1.5 rounded-lg font-bold hover:bg-green-600 flex items-center justify-center gap-2"
+                                         >
+                                            <Share2 size={12} /> Contact
+                                         </a>
+                                         
+                                         <button 
+                                           onClick={() => updateLeadStatus(lead.id, lead.status === 'resolved' ? 'new' : 'resolved')}
+                                           className={`p-2 rounded-lg transition-colors ${lead.status === 'resolved' ? 'text-green-600 bg-green-50' : 'text-gray-400 hover:bg-gray-100'}`}
+                                           title={lead.status === 'resolved' ? "Mark as New" : "Mark as Resolved"}
+                                         >
+                                            <CheckCircle size={14} />
+                                         </button>
+
+                                         <button 
+                                           onClick={() => {
+                                              if (confirm("Delete this lead?")) deleteLead(lead.id);
+                                           }}
+                                           className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                                           title="Delete Lead"
+                                         >
+                                            <Trash2 size={14} />
+                                         </button>
+                                      </div>
                                    </td>
                                 </tr>
                              ))}
                           </tbody>
+          </tbody>
                        </table>
                     </div>
                   )}

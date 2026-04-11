@@ -113,26 +113,36 @@ export default function ChatWidget({ agentName = "Phinovax AI" }: { agentName?: 
                 ))}
                 {isTyping && !errorVisible && (
                   <div className="flex justify-start">
-                    <div className="bg-white border border-gray-100 p-4 rounded-3xl rounded-bl-none shadow-sm space-y-2">
-                       <div className="flex gap-1.5">
+                    <div className="bg-white border border-gray-100 p-4 rounded-2xl rounded-bl-none shadow-[0_4px_15px_rgba(0,0,0,0.05)] space-y-2">
+                       <div className="flex gap-1.5 px-1 pt-1">
                           <span className="w-1.5 h-1.5 bg-brand-blue rounded-full animate-bounce [animation-delay:-0.3s]" />
                           <span className="w-1.5 h-1.5 bg-brand-blue rounded-full animate-bounce [animation-delay:-0.15s]" />
                           <span className="w-1.5 h-1.5 bg-brand-blue rounded-full animate-bounce" />
                        </div>
-                       <p className="text-[10px] text-gray-400 font-bold italic">Agent is analyzing...</p>
+                       <p className="text-[9px] text-brand-blue font-black uppercase tracking-widest opacity-40">Phinovax Thinking...</p>
                     </div>
                   </div>
                 )}
                 {errorVisible && (
-                   <div className="p-4 bg-red-50 border border-red-100 rounded-3xl text-center space-y-3">
-                      <p className="text-[11px] text-red-600 font-bold">⚠️ Connection taking too long...</p>
+                   <motion.div 
+                     initial={{ opacity: 0, scale: 0.9 }}
+                     animate={{ opacity: 1, scale: 1 }}
+                     className="p-5 bg-red-50/80 backdrop-blur-sm border border-red-100 rounded-3xl text-center space-y-3 shadow-xl"
+                   >
+                      <div className="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center mx-auto text-red-600">
+                         <Bot size={20} />
+                      </div>
+                      <div className="space-y-1">
+                         <p className="text-xs text-red-700 font-black uppercase tracking-tight">Technical Delay Detected</p>
+                         <p className="text-[10px] text-red-600/70 font-medium">The AI is taking longer than usual to respond. This might be due to server load or a key issue.</p>
+                      </div>
                       <button 
                         onClick={() => window.location.reload()} 
-                        className="text-[10px] bg-red-600 text-white px-4 py-1.5 rounded-full font-black uppercase tracking-tighter hover:bg-red-700 transition-colors"
+                        className="w-full text-[10px] bg-red-600 text-white py-2.5 rounded-xl font-black uppercase tracking-tighter hover:bg-red-700 transition-all shadow-md active:scale-95"
                       >
-                        Refresh Connection
+                        Try Refreshing Assistant
                       </button>
-                   </div>
+                   </motion.div>
                 )}
               </div>
             </div>

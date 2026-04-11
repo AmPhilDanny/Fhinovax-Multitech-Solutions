@@ -1,7 +1,7 @@
 'use server';
 
 import { db } from "@/db";
-import { siteSettings, services, pages, navItems, aiPosts } from "@/db/schema";
+import { siteSettings, services, pages, navItems, aiPosts, leads } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 
@@ -157,4 +157,17 @@ export async function updatePostStatus(id: number, status: string) {
   await db.update(aiPosts).set({ status }).where(eq(aiPosts.id, id));
   revalidatePath("/admin");
 }
+
+/* --- LEADS ACTIONS --- */
+
+export async function deleteLead(id: number) {
+  await db.delete(leads).where(eq(leads.id, id));
+  revalidatePath("/admin");
+}
+
+export async function updateLeadStatus(id: number, status: string) {
+  await db.update(leads).set({ status }).where(eq(leads.id, id));
+  revalidatePath("/admin");
+}
+
 

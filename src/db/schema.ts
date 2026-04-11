@@ -95,6 +95,7 @@ export const leads = pgTable("leads", {
   issueType: text("issue_type"), // "generator" or "vehicle"
   location: text("location"),
   urgency: text("urgency"),
+  status: varchar("status", { length: 50 }).default("new"), // "new", "contacted", "resolved"
   createdAt: timestamp("created_at").defaultNow(),
 });
 
