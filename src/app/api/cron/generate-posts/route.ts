@@ -33,7 +33,7 @@ export async function GET(request: Request) {
       });
 
       const { text } = await generateText({
-        model: google('gemini-2.0-flash'),
+        model: google('gemini-1.5-flash'),
         system: `You are a social media marketing expert for a technical mechanical company. 
                 Generate a catchy, professional post for ${platform}. Include relevant emojis and hashtags.
                 Focus on trust, precision, and availability. Use this context: ${context}`,
