@@ -22,7 +22,7 @@ export default function DiagnosisPage() {
 
   const { messages, sendMessage, status } = useChat({
     transport: new DefaultChatTransport({
-      url: '/api/diagnosis',
+      api: '/api/diagnosis',
       body: { userId },
     }),
   });
