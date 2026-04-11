@@ -18,7 +18,6 @@ export async function POST(req: Request) {
 
     const google = createGoogleGenerativeAI({
       apiKey: apiKey,
-      baseURL: 'https://generativelanguage.googleapis.com/v1',
     });
 
     // Perform a test
@@ -29,7 +28,7 @@ export async function POST(req: Request) {
     } catch (e) {}
 
     const { text } = await generateText({
-      model: google('gemini-1.5-flash'),
+      model: google('gemini-2.5-flash-preview-04-17'),
       prompt: customPrompt || 'Respond with exactly the word "CONNECTED" and nothing else.',
     });
 

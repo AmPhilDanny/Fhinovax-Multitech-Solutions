@@ -62,11 +62,10 @@ export async function POST(req: Request) {
   try {
     const google = createGoogleGenerativeAI({
       apiKey: settings.aiApiKey || process.env.GOOGLE_GENERATIVE_AI_API_KEY,
-      baseURL: 'https://generativelanguage.googleapis.com/v1',
     });
 
     const result = streamText({
-      model: google('gemini-1.5-flash'),
+      model: google('gemini-2.5-flash-preview-04-17'),
       messages: await convertToModelMessages(messages),
       system: systemInstructions,
       tools: {

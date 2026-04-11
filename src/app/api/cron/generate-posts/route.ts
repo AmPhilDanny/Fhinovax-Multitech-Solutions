@@ -30,11 +30,10 @@ export async function GET(request: Request) {
     for (const platform of platforms) {
       const google = createGoogleGenerativeAI({
         apiKey: settings.aiApiKey || process.env.GOOGLE_GENERATIVE_AI_API_KEY,
-        baseURL: 'https://generativelanguage.googleapis.com/v1',
       });
 
       const { text } = await generateText({
-        model: google('gemini-1.5-flash'),
+        model: google('gemini-2.5-flash-preview-04-17'),
         system: `You are a social media marketing expert for a technical mechanical company. 
                 Generate a catchy, professional post for ${platform}. Include relevant emojis and hashtags.
                 Focus on trust, precision, and availability. Use this context: ${context}`,
