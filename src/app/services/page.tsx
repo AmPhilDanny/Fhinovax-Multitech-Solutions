@@ -5,7 +5,20 @@ import * as LucideIcons from "lucide-react";
 import { getSiteSettings } from "@/app/actions";
 
 export default async function ServicesPage() {
-  const allServices = await db.select().from(services).where(eq(services.isActive, true));
+  let allServices = await db.select().from(services).where(eq(services.isActive, true));
+  
+  // Self-seeding logic if the database is fresh/empty
+  if (allServices.length === 0) {
+     const defaults = [
+        { title: "Generator Diagnostic Lab", description: "Advanced electronic troubleshooting and load testing for industrial power sets.", iconName: "Zap", isActive: true },
+        { title: "Precision Micro-Engineering", description: "High-tolerance component fabrication and engine block recovery.", iconName: "Cpu", isActive: true },
+        { title: "Industrial Electrical Sytems", description: "Design, installation, and maintenance of heavy-duty power distribution networks.", iconName: "Layers", isActive: true },
+        { title: "Hydraulic System Recovery", description: "Specialized repair and optimization for heavy machinery hydraulic circuits.", iconName: "Activity", isActive: true }
+     ];
+     await db.insert(services).values(defaults);
+     allServices = await db.select().from(services).where(eq(services.isActive, true));
+  }
+
   const settings = await getSiteSettings();
 
   return (
@@ -124,10 +137,10 @@ export default async function ServicesPage() {
         <div className="max-w-4xl mx-auto text-center space-y-8 bg-white p-12 rounded-[3rem] shadow-xl border border-gray-100">
            <h2 className="text-3xl font-black text-gray-900 uppercase italic">Ready to fix your asset?</h2>
            <p className="text-gray-500 font-medium">Contact our technical team or use our AI Diagnostic Lab for an instant assessment.</p>
-           <div className="flex flex-wrap justify-center gap-4 pt-4">
-             <a href="/contact" className="bg-brand-blue text-white px-8 py-4 rounded-2xl font-black uppercase tracking-tighter hover:bg-blue-800 transition-all shadow-lg active:scale-95">Book Inspection</a>
-             <a href="/diagnosis" className="bg-white border-2 border-brand-blue text-brand-blue px-8 py-4 rounded-2xl font-black uppercase tracking-tighter hover:bg-brand-blue hover:text-white transition-all active:scale-95">Open AI Diag Lab</a>
-           </div>
+            <div className="flex flex-wrap justify-center gap-4 pt-4">
+              <a href="/book" className="bg-brand-blue text-white px-8 py-4 rounded-2xl font-black uppercase tracking-tighter hover:bg-blue-800 transition-all shadow-lg active:scale-95">Book Inspection</a>
+              <a href="/" className="bg-white border-2 border-brand-blue text-brand-blue px-8 py-4 rounded-2xl font-black uppercase tracking-tighter hover:bg-brand-blue hover:text-white transition-all active:scale-95">Open AI Diag Lab</a>
+            </div>
         </div>
       </div>
     </div>

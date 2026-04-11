@@ -519,7 +519,6 @@ export default function AdminTabs({
                </div>
             </div>
           )}
-                )}
 
           {activeTab === "navigator" && (
             <div className="space-y-8">
