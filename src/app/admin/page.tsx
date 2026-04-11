@@ -17,12 +17,7 @@ export default async function AdminDashboard() {
   const bookingsList = await getBookings();
 
   return (
-    <div className="max-w-6xl mx-auto">
-      <div className="mb-10 text-center md:text-left">
-        <h1 className="text-4xl font-extrabold text-gray-900 tracking-tight">Fhinovax Control Center</h1>
-        <p className="text-gray-500 mt-2 font-medium">Fully dynamic management for your multitech solutions platform.</p>
-      </div>
-
+    <div className="max-w-6xl mx-auto pt-4 md:pt-0">
       <AdminTabs 
         settings={settings} 
         servicesList={servicesList} 

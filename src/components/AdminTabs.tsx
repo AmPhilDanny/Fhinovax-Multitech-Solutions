@@ -310,7 +310,12 @@ export default function AdminTabs({
       <main className="flex-grow bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden min-h-[500px]">
         <div className="p-4 md:p-8">
           {activeTab === "dashboard" && (
-            <div className="space-y-8">
+            <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4">
+               <div className="mb-6">
+                  <h1 className="text-3xl font-black text-gray-900 tracking-tight italic uppercase">Site Operation Metrics</h1>
+                  <p className="text-xs text-gray-500 font-bold uppercase tracking-widest mt-1">Real-time multitech solution monitoring</p>
+               </div>
+               
                <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
                      <div className="bg-brand-blue/10 p-2 rounded-lg text-brand-blue">
@@ -417,47 +422,69 @@ export default function AdminTabs({
                   
                   <form id="identity-form" onSubmit={handleFormSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-6">
                      <div className="space-y-1">
-                        <label className="text-xs font-bold uppercase text-gray-500">Site Name</label>
+                        <label className="text-xs font-bold uppercase text-gray-400">Site Branding Name</label>
                         <input name="siteName" defaultValue={settings.siteName} className="admin-input" required />
                      </div>
                      <div className="grid grid-cols-2 gap-4">
                         <div className="space-y-1">
-                           <label className="text-xs font-bold uppercase text-gray-500">Logo</label>
+                           <label className="text-xs font-bold uppercase text-gray-400">Logo</label>
                            <div className="flex gap-2">
                               <input type="hidden" name="logoUrl" value={previews.logoUrl} />
-                              <button type="button" onClick={() => setSelectedMediaTarget('logoUrl')} className="flex-1 p-2 bg-gray-50 border rounded-xl hover:border-brand-blue text-xs font-bold text-gray-400">
-                                 {previews.logoUrl ? "Change Logo" : "Upload Logo"}
+                              <button type="button" onClick={() => setSelectedMediaTarget('logoUrl')} className="flex-1 p-2 bg-gray-50 border rounded-xl hover:border-brand-blue text-[10px] font-black uppercase text-gray-400">
+                                 {previews.logoUrl ? "Change" : "Upload"}
                               </button>
                            </div>
                         </div>
                         <div className="space-y-1">
-                           <label className="text-xs font-bold uppercase text-gray-500">Favicon</label>
+                           <label className="text-xs font-bold uppercase text-gray-400">Favicon</label>
                            <div className="flex gap-2">
                               <input type="hidden" name="faviconUrl" value={previews.faviconUrl} />
-                              <button type="button" onClick={() => setSelectedMediaTarget('faviconUrl')} className="flex-1 p-2 bg-gray-50 border rounded-xl hover:border-brand-blue text-xs font-bold text-gray-400">
-                                 {previews.faviconUrl ? "Change Favicon" : "Upload Favicon"}
+                              <button type="button" onClick={() => setSelectedMediaTarget('faviconUrl')} className="flex-1 p-2 bg-gray-50 border rounded-xl hover:border-brand-blue text-[10px] font-black uppercase text-gray-400">
+                                 {previews.faviconUrl ? "Change" : "Upload"}
                               </button>
                            </div>
                         </div>
                      </div>
                      
                      <div className="space-y-1">
-                        <label className="text-xs font-bold uppercase text-gray-500">Global Contact (Phone)</label>
+                        <label className="text-xs font-bold uppercase text-gray-400">Global Contact (Phone)</label>
                         <input name="phoneNumber" defaultValue={settings.phoneNumber} className="admin-input" />
                      </div>
                      <div className="space-y-1">
-                        <label className="text-xs font-bold uppercase text-gray-500">WhatsApp (intl format)</label>
+                        <label className="text-xs font-bold uppercase text-gray-400">WhatsApp (intl format)</label>
                         <input name="whatsappNumber" defaultValue={settings.whatsappNumber} className="admin-input" />
                      </div>
-                     <div className="md:col-span-2 space-y-1">
-                        <label className="text-xs font-bold uppercase text-gray-500">Workshop Address</label>
+                     
+                     <div className="md:col-span-2 pt-6 border-t mt-4">
+                        <h3 className="text-sm font-black uppercase text-gray-900 mb-4 italic">Public Landing Customization</h3>
+                        <div className="space-y-4">
+                           <div className="space-y-1">
+                              <label className="text-xs font-bold uppercase text-gray-400">Hero Main Title</label>
+                              <input name="heroTitle" defaultValue={settings.heroTitle} className="admin-input font-bold" />
+                           </div>
+                           <div className="space-y-1">
+                              <label className="text-xs font-bold uppercase text-gray-400">Hero Subtitle</label>
+                              <textarea name="heroSubtitle" defaultValue={settings.heroSubtitle} className="admin-input h-20" />
+                           </div>
+                           <div className="grid grid-cols-2 gap-4">
+                              <div className="space-y-1">
+                                 <label className="text-xs font-bold uppercase text-gray-400">Hero Background</label>
+                                 <div className="flex gap-2">
+                                    <input type="hidden" name="heroBgValue" value={previews.heroBgValue} />
+                                    <button type="button" onClick={() => setSelectedMediaTarget('heroBgValue')} className="flex-1 p-2 bg-gray-50 border rounded-xl hover:border-brand-blue text-[10px] font-black uppercase text-gray-400">
+                                       {previews.heroBgValue ? "Change Background" : "Pick Image"}
+                                    </button>
+                                 </div>
+                              </div>
+                              <input type="hidden" name="heroBgType" value="image" />
+                           </div>
+                        </div>
+                     </div>
+
+                     <div className="md:col-span-2 space-y-1 pt-4">
+                        <label className="text-xs font-bold uppercase text-gray-400">Workshop Address</label>
                         <input name="address" defaultValue={settings.address} className="admin-input" />
                      </div>
-                     {/* Hidden required fields for schema */}
-                     <input type="hidden" name="heroTitle" defaultValue={settings.heroTitle} />
-                     <input type="hidden" name="heroSubtitle" defaultValue={settings.heroSubtitle} />
-                     <input type="hidden" name="heroBgType" defaultValue={bgType} />
-                     <input type="hidden" name="heroBgValue" defaultValue={previews.heroBgValue} />
                   </form>
                </div>
 
@@ -492,168 +519,9 @@ export default function AdminTabs({
                </div>
             </div>
           )}
-          
-          {activeTab === "general" && (
-            <div className="space-y-6">
-              <form onSubmit={handleFormSubmit} className="space-y-6">
-                <div className="flex items-center justify-between mb-2">
-                  <h2 className="text-xl font-bold text-gray-900">Site Identity & Global Settings</h2>
-                  {saveStatus === 'success' && <span className="text-xs font-bold text-green-600 animate-bounce">✓ Settings Saved!</span>}
-                  {saveStatus === 'error' && <span className="text-xs font-bold text-red-600">⚠ {saveError}</span>}
-                </div>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-1">
-                  <label className="text-xs font-bold uppercase text-gray-500">Site Name</label>
-                  <input name="siteName" defaultValue={settings.siteName} className="admin-input" required />
-                </div>
-                <div className="space-y-1">
-                  <label className="text-xs font-bold uppercase text-gray-500">Site Logo</label>
-                  <div className="flex gap-2">
-                     <input type="hidden" name="logoUrl" value={previews.logoUrl} readOnly />
-                      <input type="file" onChange={(e) => handleUpload(e, 'logoUrl')} className="admin-input text-xs" accept="image/*" />
-                      <button type="button" onClick={() => setSelectedMediaTarget('logoUrl')} className="p-2 bg-gray-100 hover:bg-gray-200 rounded-lg text-gray-500" title="Pick from Library">
-                         <ImageIcon size={16} />
-                      </button>
-                      {uploading === 'logoUrl' && <Loader2 className="animate-spin text-brand-blue" />}
-                  </div>
-                  {previews.logoUrl && (
-                    <div className="mt-2 p-2 bg-gray-50 rounded-lg border border-dashed border-gray-200 inline-block">
-                      <img src={previews.logoUrl} className="h-12 w-auto object-contain" alt="logo preview" />
-                      <p className="text-[8px] text-gray-400 mt-1 text-center font-bold">PREVIEW</p>
-                    </div>
-                  )}
-                </div>
-                <div className="space-y-1">
-                  <label className="text-xs font-bold uppercase text-gray-500">Favicon</label>
-                  <div className="flex gap-2">
-                     <input type="hidden" name="faviconUrl" value={previews.faviconUrl} readOnly />
-                      <input type="file" onChange={(e) => handleUpload(e, 'faviconUrl')} className="admin-input text-xs" accept="image/*" />
-                      <button type="button" onClick={() => setSelectedMediaTarget('faviconUrl')} className="p-2 bg-gray-100 hover:bg-gray-200 rounded-lg text-gray-500" title="Pick from Library">
-                         <ImageIcon size={16} />
-                      </button>
-                      {uploading === 'faviconUrl' && <Loader2 className="animate-spin text-brand-blue" />}
-                  </div>
-                  {previews.faviconUrl && (
-                    <div className="mt-2 p-2 bg-gray-50 rounded-lg border border-dashed border-gray-200 inline-block">
-                      <img src={previews.faviconUrl} className="h-6 w-6 object-contain" alt="favicon preview" />
-                      <p className="text-[8px] text-gray-400 mt-1 text-center font-bold">PREVIEW</p>
-                    </div>
-                  )}
-                </div>
+                )}
 
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4 border-t">
-                <div className="space-y-1">
-                   <label className="text-xs font-bold uppercase text-gray-500">Phone (Calls)</label>
-                   <input name="phoneNumber" defaultValue={settings.phoneNumber} className="admin-input" />
-                </div>
-                <div className="space-y-1">
-                   <label className="text-xs font-bold uppercase text-gray-500">WhatsApp (No +)</label>
-                   <input name="whatsappNumber" defaultValue={settings.whatsappNumber} className="admin-input" />
-                </div>
-              </div>
-
-              <div className="space-y-1">
-                <label className="text-xs font-bold uppercase text-gray-500">Footer Custom Text</label>
-                <textarea name="footerText" defaultValue={settings.footerText} className="admin-input h-20" />
-              </div>
-              <div className="space-y-1">
-                <label className="text-xs font-bold uppercase text-gray-500">Copyright Text</label>
-                <input name="copyrightText" defaultValue={settings.copyrightText} className="admin-input" />
-              </div>
-
-              <button type="submit" className="admin-btn-save">
-                <Save size={18} /> Save Identity Changes
-              </button>
-             </form>
-            </div>
-          )}
-
-          {activeTab === "hero" && (
-            <div className="space-y-6">
-              <form onSubmit={handleFormSubmit} className="space-y-6">
-                <div className="flex items-center justify-between mb-2">
-                   <h2 className="text-xl font-bold text-gray-900">Hero Section Customization</h2>
-                   {saveStatus === 'success' && <span className="text-xs font-bold text-green-600 animate-bounce">✓ Hero Updated!</span>}
-                   {saveStatus === 'error' && <span className="text-xs font-bold text-red-600">⚠ {saveError}</span>}
-                </div>
-              
-              <div className="space-y-1">
-                <label className="text-xs font-bold uppercase text-gray-500">Hero Main Title</label>
-                <input name="heroTitle" defaultValue={settings.heroTitle} className="admin-input font-bold" />
-              </div>
-
-              <div className="space-y-1">
-                <label className="text-xs font-bold uppercase text-gray-500">Hero Subtitle</label>
-                <textarea name="heroSubtitle" defaultValue={settings.heroSubtitle} className="admin-input h-24" />
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-4 bg-gray-50 rounded-xl border border-gray-100">
-                <div className="space-y-4">
-                   <label className="text-xs font-bold uppercase text-gray-500 block">Background Type</label>
-                   <div className="flex gap-4">
-                     <label className="flex items-center gap-2 cursor-pointer">
-                       <input 
-                         type="radio" 
-                         name="heroBgType" 
-                         value="color" 
-                         checked={bgType === 'color'} 
-                         onChange={() => setBgType('color')}
-                       />
-                       <span className="text-sm font-medium">Solid Color</span>
-                     </label>
-                     <label className="flex items-center gap-2 cursor-pointer">
-                       <input 
-                         type="radio" 
-                         name="heroBgType" 
-                         value="image" 
-                         checked={bgType === 'image'} 
-                         onChange={() => setBgType('image')}
-                       />
-                       <span className="text-sm font-medium">Image</span>
-                     </label>
-                   </div>
-                </div>
-
-                <div className="space-y-1">
-                   <label className="text-xs font-bold uppercase text-gray-500">Background Value (Hex or Image URL)</label>
-                   {bgType === 'color' ? (
-                     <input name="heroBgValue" defaultValue={settings.heroBgValue} className="admin-input" placeholder="#000" />
-                   ) : (
-                     <div className="flex flex-col gap-2">
-                        <input type="hidden" name="heroBgValue" value={previews.heroBgValue} readOnly />
-                        <div className="relative">
-                          <input type="file" onChange={(e) => handleUpload(e, 'heroBgValue')} className="admin-input text-xs pr-10" accept="image/*" />
-                           <button type="button" onClick={() => setSelectedMediaTarget('heroBgValue')} className="absolute right-10 top-2 p-1.5 bg-gray-100 hover:bg-gray-200 rounded text-gray-500">
-                              <ImageIcon size={14} />
-                           </button>
-                           <Upload size={14} className="absolute right-3 top-3 text-gray-400 pointer-events-none" />
-                        </div>
-                        {uploading === 'heroBgValue' && <div className="flex items-center gap-2 text-xs text-brand-blue"><Loader2 className="animate-spin" size={12} /> Uploading...</div>}
-                        {previews.heroBgValue && (
-                          <div className="mt-2 relative aspect-[21/9] w-full bg-gray-100 rounded-xl overflow-hidden border border-gray-200">
-                             <img src={previews.heroBgValue} className="w-full h-full object-cover" alt="hero preview" />
-                             <div className="absolute inset-0 flex items-center justify-center bg-black/20">
-                                <span className="bg-white/90 px-3 py-1 rounded-full text-[10px] font-black uppercase text-brand-blue border border-brand-blue/20">HERO PREVIEW</span>
-                             </div>
-                          </div>
-                        )}
-                     </div>
-                   )}
-                </div>
-
-              </div>
-
-              <button type="submit" className="admin-btn-save">
-                <Save size={18} /> Apply Hero Updates
-              </button>
-             </form>
-            </div>
-          )}
-
-          {activeTab === "menu" && (
+          {activeTab === "navigator" && (
             <div className="space-y-8">
               <div className="flex items-center justify-between border-b border-gray-100 pb-4">
                 <div>
@@ -1043,431 +911,111 @@ export default function AdminTabs({
             </div>
           )}
 
-          {activeTab === "ai" && (
-            <div className="space-y-6">
-              <form onSubmit={handleFormSubmit} className="space-y-8">
-                <div className="flex items-center justify-between">
-                   <div className="flex items-center gap-3">
-                      <div className="bg-brand-blue/10 p-2 rounded-lg text-brand-blue">
-                         <Bot size={24} />
-                      </div>
-                      <div>
-                         <h2 className="text-xl font-bold text-gray-900 leading-tight">AI & Business Context</h2>
-                         <p className="text-xs text-gray-500">Configure how Gemini interacts with your customers.</p>
-                      </div>
-                   </div>
-                   {saveStatus === 'success' && <span className="text-xs font-bold text-green-600 animate-bounce">✓ Logic Updated!</span>}
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                   <div className="space-y-1">
-                      <label className="text-xs font-bold uppercase text-gray-500">Google Maps Embed URL (Iframe Src)</label>
-                      <input name="googleMapsEmbed" defaultValue={settings.googleMapsEmbed} className="admin-input" placeholder="https://www.google.com/maps/embed?..." />
-                   </div>
-                   <div className="space-y-1">
-                      <label className="text-xs font-bold uppercase text-gray-500 text-brand-blue font-extrabold flex items-center gap-2">
-                         AI Agent Display Name
-                         <span className="bg-brand-blue/10 text-brand-blue px-2 py-0.5 rounded text-[8px]">New</span>
-                      </label>
-                      <input name="aiName" defaultValue={settings.aiName} className="admin-input border-brand-blue/30 focus:border-brand-blue" placeholder="e.g. Phinovax Rep" />
-                   </div>
-                </div>
-
-
-               <div className="space-y-1">
-                  <label className="text-xs font-bold uppercase text-gray-500">Google Business Details (SEO & AI Context)</label>
-                  <textarea name="googleBusinessDetails" 
-                    defaultValue={settings.googleBusinessDetails} 
-                    className="admin-input h-32" 
-                    placeholder="Provide full description of the business, registered name, services depth..." 
-                  />
-               </div>
-
-               <div className="space-y-1">
-                   <label className="text-xs font-bold uppercase text-gray-500">AI Personality & Hidden Instructions</label>
-                   <textarea name="aiInstructions" 
-                     defaultValue={settings.aiInstructions} 
-                     className="admin-input h-24" 
-                     placeholder="Be professional, always mention workshop at Ankpa road, ask for phone number..." 
-                   />
-                </div>
-
-                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 border-t pt-6">
-                    <div className="space-y-1">
-                       <label className="text-xs font-bold uppercase text-brand-blue flex items-center gap-2">
-                          <ImageIcon size={14} /> Diagnostic Lab Welcome Message
-                       </label>
-                       <textarea name="labWelcomeMessage" defaultValue={settings.labWelcomeMessage} className="admin-input h-24" placeholder="e.g. Welcome to the Lab! What seems to be the trouble?" />
-                    </div>
-                    <div className="space-y-1">
-                       <label className="text-xs font-bold uppercase text-brand-blue flex items-center gap-2">
-                          <Bot size={14} /> Lab Specialized System Prompt
-                       </label>
-                       <textarea name="labSystemPrompt" defaultValue={settings.labSystemPrompt} className="admin-input h-24" placeholder="Special instructions for the diagnostic engine..." />
-                    </div>
-                 </div>
-
-                 <div className="space-y-1 rounded-2xl border-2 border-brand-blue/20 p-4 bg-brand-blue/5">
-                    <div className="flex items-center justify-between mb-2">
-                       <label className="text-[10px] font-extrabold uppercase text-brand-blue flex items-center gap-2">
-                          <Zap size={14} /> Essential: Google Gemini API Key
-                       </label>
-                       <button 
-                         type="button"
-                         onClick={handleTestConnection}
-                         disabled={testing}
-                         className={`text-[9px] font-black px-3 py-1 rounded-full transition-all border ${
-                           testing ? 'bg-gray-100 text-gray-400 border-gray-200' :
-                           testResult?.success ? 'bg-green-500 text-white border-green-600 shadow-sm shadow-green-200' :
-                           testResult?.success === false ? 'bg-red-500 text-white border-red-600' :
-                           'bg-white text-brand-blue border-brand-blue/20 hover:border-brand-blue'
-                         }`}
-                       >
-                         {testing ? 'Testing...' : testResult?.success ? '✓ Connected!' : 'Test Connectivity'}
-                       </button>
-                    </div>
-                    <input 
-                      type="password"
-                      name="aiApiKey" 
-                      value={previews.aiApiKey} 
-                      onChange={(e) => setPreviews(prev => ({ ...prev, aiApiKey: e.target.value }))}
-                      className="admin-input bg-white border-brand-blue/20" 
-                      placeholder="Paste your AI API Key here..." 
-                    />
-                    {testResult && (
-                      <p className={`text-[9px] mt-2 font-bold ${testResult.success ? 'text-green-600' : 'text-red-500'}`}>
-                        {testResult.success ? '✓ Google AI Studio Link Verified' : `⚠ ${testResult.message}`}
-                      </p>
-                    )}
-                    <p className="text-[9px] text-brand-blue/60 mt-2 font-medium">This key is required for the AI Chatbot and Marketing Post Generator to function. Get one from Google AI Studio.</p>
-                 </div>
-
-                 <div className="space-y-1 border-t pt-4">
-                   <label className="text-xs font-bold uppercase text-gray-500 flex items-center gap-2">
-                      Deep Training Data / Business Context
-                      <span className="bg-brand-blue/10 text-brand-blue px-2 py-0.5 rounded text-[8px]">Requirement #3</span>
-                   </label>
-                   <textarea name="aiTrainingData" 
-                     defaultValue={settings.aiTrainingData} 
-                     className="admin-input h-48 font-mono text-xs" 
-                     placeholder="Paste technical data, history, or deep business context here..." 
-                   />
-                   <p className="text-[10px] text-gray-400 italic">This data is strictly for the AI logic (Gemini) to learn from and is not visible to public users.</p>
-                </div>
-
-
-                <div className="border-t pt-6">
-                   <button type="submit" className="admin-btn-save">
-                     <Save size={18} /> Update Business Logic
-                   </button>
-                </div>
-              </form>
-
-              {/* API Explorer / Live Chat Tester */}
-              <div className="bg-gray-900 text-gray-100 p-8 rounded-3xl space-y-6 shadow-2xl border-4 border-gray-800">
-                 <div className="flex items-center gap-3">
-                    <div className="bg-brand-blue/20 p-2 rounded-lg text-brand-blue">
-                       <Zap size={24} />
-                    </div>
-                    <div>
-                       <h3 className="text-xl font-bold text-white leading-tight">Live AI API Explorer</h3>
-                       <p className="text-xs text-gray-400">Request raw data from Google Gemini to verify logic response.</p>
-                    </div>
-                 </div>
-
-                 <div className="space-y-4">
-                    <div className="flex flex-col gap-2">
-                       <label className="text-[10px] font-bold uppercase text-gray-500">Your Test Payload</label>
-                       <div className="flex gap-2">
-                          <input 
-                            value={testPrompt}
-                            onChange={(e) => setTestPrompt(e.target.value)}
-                            placeholder="e.g. What services do you provide?"
-                            className="flex-1 bg-gray-800 border-none rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-brand-blue outline-none"
-                          />
-                          <button 
-                            onClick={handleExplorerTest}
-                            disabled={exploring}
-                            className={`px-6 py-2 rounded-xl font-bold text-xs flex items-center gap-2 transition-all ${
-                              exploring ? 'bg-gray-700 text-gray-500 cursor-not-allowed' : 'bg-brand-blue text-white hover:bg-blue-600'
-                            }`}
-                          >
-                             {exploring ? <Activity className="animate-pulse" size={14} /> : <Share2 size={14} />}
-                             {exploring ? 'Querying...' : 'Send Query'}
-                          </button>
-                       </div>
-                    </div>
-
-                    {explorerResult && (
-                       <div className={`p-5 rounded-2xl border-2 space-y-3 animate-in fade-in slide-in-from-bottom-2 ${
-                         explorerResult.success ? 'bg-gray-800 border-green-500/30' : 'bg-red-500/10 border-red-500/30'
-                       }`}>
-                          <div className="flex items-center justify-between">
-                             <span className={`text-[10px] font-black uppercase ${explorerResult.success ? 'text-green-500' : 'text-red-500'}`}>
-                                {explorerResult.message}
-                             </span>
-                             <Bot size={14} className={explorerResult.success ? 'text-green-500' : 'text-red-500'} />
+          {activeTab === "agent" && (
+             <div className="space-y-12">
+                {/* AI & Business Logic */}
+                <div className="space-y-8">
+                  <form onSubmit={handleFormSubmit} className="space-y-8">
+                    <div className="flex items-center justify-between">
+                       <div className="flex items-center gap-3">
+                          <div className="bg-brand-blue/10 p-2 rounded-lg text-brand-blue">
+                             <Bot size={24} />
                           </div>
-                          
-                          {explorerResult.response ? (
-                            <div className="text-xs leading-relaxed text-gray-300 font-medium bg-gray-950/50 p-4 rounded-xl border border-white/5">
-                               {explorerResult.response}
-                            </div>
-                          ) : (
-                            <p className="text-[10px] text-gray-400 italic">No text response returned. Check API usage or prompt constraints.</p>
-                          )}
+                          <div>
+                             <h2 className="text-xl font-bold text-gray-900 leading-tight">AI & Business Context</h2>
+                             <p className="text-xs text-gray-500">Configure how Gemini interacts with your customers.</p>
+                          </div>
                        </div>
-                    )}
-                 </div>
+                    </div>
 
-                 <div className="flex items-center gap-4 pt-2">
-                    <div className="flex items-center gap-2">
-                       <div className="w-2 h-2 rounded-full bg-brand-blue animate-ping" />
-                       <span className="text-[9px] text-gray-500 font-bold uppercase">Direct Stream to AI Studio</span>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                       <div className="space-y-1">
+                          <label className="text-xs font-bold uppercase text-gray-400">Google Maps Embed URL</label>
+                          <input name="googleMapsEmbed" defaultValue={settings.googleMapsEmbed} className="admin-input" placeholder="https://www.google.com/maps/embed?..." />
+                       </div>
+                       <div className="space-y-1">
+                          <label className="text-xs font-bold uppercase text-gray-400">AI Agent Display Name</label>
+                          <input name="aiName" defaultValue={settings.aiName} className="admin-input" placeholder="e.g. Phinovax Rep" />
+                       </div>
                     </div>
-                    <div className="flex items-center gap-2">
-                       <ShieldCheck size={12} className="text-gray-500" />
-                       <span className="text-[9px] text-gray-500 font-bold uppercase">Standard Token Encryption</span>
-                    </div>
-                 </div>
-              </div>
-            </div>
-           )}
-           {activeTab === "marketing" && (
-             <div className="space-y-8">
-                <div className="flex items-center justify-between">
-                   <div className="flex items-center gap-3">
-                      <div className="bg-brand-blue/10 p-2 rounded-lg text-brand-blue">
-                         <Share2 size={24} />
-                      </div>
-                      <div>
-                         <h2 className="text-xl font-bold text-gray-900 leading-tight">Daily AI Marketing</h2>
-                         <p className="text-xs text-gray-500">Auto-generated social media drafts for your review.</p>
-                      </div>
+
+                   <div className="space-y-1">
+                      <label className="text-xs font-bold uppercase text-gray-400">Google Business Details</label>
+                      <textarea name="googleBusinessDetails" 
+                        defaultValue={settings.googleBusinessDetails} 
+                        className="admin-input h-24" 
+                      />
                    </div>
-                   <button 
-                     onClick={async () => {
-                        const res = await fetch('/api/cron/generate-posts');
-                        if (res.ok) alert("New drafts generated! Refreshing page...");
-                        window.location.reload();
-                     }}
-                     className="bg-brand-blue text-white px-4 py-2 rounded-xl text-xs font-bold hover:bg-blue-800 transition-all flex items-center gap-2"
-                   >
-                      <Plus size={14} /> Generate Manual Drafts
-                   </button>
+
+                    <div className="space-y-1 rounded-2xl border-2 border-brand-blue/20 p-4 bg-brand-blue/5">
+                        <label className="text-[10px] font-extrabold uppercase text-brand-blue flex items-center gap-2 mb-2">
+                           Essential: Google Gemini API Key
+                        </label>
+                        <input 
+                          type="password"
+                          name="aiApiKey" 
+                          value={previews.aiApiKey} 
+                          onChange={(e) => setPreviews(prev => ({ ...prev, aiApiKey: e.target.value }))}
+                          className="admin-input bg-white border-brand-blue/20 text-xs" 
+                        />
+                     </div>
+
+                    <button type="submit" className="admin-btn-save-sm">
+                       <Save size={16} /> Save AI & Context
+                    </button>
+                  </form>
                 </div>
-                <div className="grid grid-cols-1 gap-6">
-                   <div className="bg-blue-50 border border-blue-100 p-4 rounded-xl text-xs text-blue-800 flex items-center gap-3">
-                      <Bot size={18} />
-                      <span>The AI generates 3 new drafts every day automatically. You can approve them here before posting.</span>
-                   </div>
-                   
-                   {aiPostsList.length === 0 ? (
-                      <p className="text-sm text-gray-400 italic text-center py-12">No marketing drafts found yet. Click "Generate Manual Drafts" to start.</p>
-                   ) : (
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                         {aiPostsList.map((post: any) => (
-                            <div key={post.id} className="bg-white border p-6 rounded-2xl shadow-sm hover:border-brand-blue transition-all group relative">
-                               <div className="flex items-center justify-between mb-4">
-                                  <span className="text-[10px] bg-brand-blue/10 text-brand-blue px-2 py-1 rounded font-bold uppercase">{post.platform}</span>
-                                  <span className="text-[10px] text-gray-400">{new Date(post.createdAt).toLocaleDateString()}</span>
-                               </div>
-                               <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-wrap">{post.content}</p>
-                               <div className="mt-6 pt-4 border-t flex justify-between items-center opacity-0 group-hover:opacity-100 transition-opacity">
-                                  <div className="flex gap-1">
-                                     <button 
-                                       onClick={() => {
-                                          navigator.clipboard.writeText(post.content);
-                                          alert("Content copied!");
-                                       }}
-                                       className="p-2 bg-gray-100 text-gray-600 rounded-lg hover:bg-brand-blue hover:text-white transition-all shadow-sm"
-                                       title="Copy to clipboard"
-                                     >
-                                        <Copy size={14} />
-                                     </button>
-                                  </div>
-                                  <div className="flex gap-2">
-                                     <button 
-                                       onClick={() => discardAiPost(post.id)}
-                                       className="text-[10px] font-bold text-gray-400 hover:text-red-500 px-2"
-                                     >
-                                       Discard
-                                     </button>
-                                     <button 
-                                       onClick={() => approveAiPost(post.id)}
-                                       className="bg-brand-blue text-white px-3 py-1.5 rounded-lg text-[10px] font-bold shadow-md hover:bg-blue-800 active:scale-95"
-                                     >
-                                        Approve Draft
-                                     </button>
-                                  </div>
-                               </div>
-                            </div>
-                         ))}
-                      </div>
-                   )}
-                </div>
-             </div>
-           )}
 
-           {activeTab === "leads" && (
-             <div className="space-y-8">
-               <div className="flex items-center gap-3">
-                  <div className="bg-green-500/10 p-2 rounded-lg text-green-600">
-                     <CheckCircle size={24} />
-                  </div>
-                  <div>
-                     <h2 className="text-xl font-bold text-gray-900 leading-tight">Inbound Customer Leads</h2>
-                     <p className="text-xs text-gray-500">Captured by the AI representative for follow-up.</p>
-                  </div>
-               </div>
-
-               <div className="grid grid-cols-1 gap-4">
-                  {leadsList.length === 0 ? (
-                    <div className="text-center py-20 bg-gray-50 rounded-2xl border-2 border-dashed border-gray-200">
-                       <Bot size={48} className="mx-auto text-gray-300 mb-4" />
-                       <p className="text-gray-500 font-medium">No leads captured yet. The AI is waiting for customers!</p>
-                    </div>
-                  ) : (
-                    <div className="bg-white border rounded-2xl overflow-hidden shadow-sm">
-                       <table className="w-full text-left border-collapse">
-                          <thead>
-                             <tr className="bg-gray-50 border-b">
-                                <th className="px-6 py-4 text-[10px] font-bold uppercase text-gray-500">Customer / Info</th>
-                                <th className="px-6 py-4 text-[10px] font-bold uppercase text-gray-500">Issue / Request</th>
-                                <th className="px-6 py-4 text-[10px] font-bold uppercase text-gray-500">Date</th>
-                                <th className="px-6 py-4 text-[10px] font-bold uppercase text-gray-500">Action</th>
-                             </tr>
-                           </thead>
-                           <tbody className="divide-y">
-                             {leadsList.map((lead: any) => (
-                                <tr key={lead.id} className="hover:bg-gray-50/50 transition-colors">
-                                   <td className="px-6 py-4">
-                                      <div className="font-bold text-gray-900">{lead.name}</div>
-                                      <div className="text-xs text-brand-blue font-medium">{lead.contactMethod}</div>
-                                      {lead.status === 'new' && (
-                                         <span className="inline-flex items-center gap-1 mt-1 px-2 py-0.5 bg-brand-blue/10 text-brand-blue text-[8px] font-black uppercase rounded">New Lead</span>
-                                      )}
-                                   </td>
-                                   <td className="px-6 py-4">
-                                      <div className="text-sm text-gray-700 font-medium">{lead.issueType}</div>
-                                      <div className="flex items-center gap-2 mt-1">
-                                         <span className={`text-[8px] px-1.5 py-0.5 rounded font-bold uppercase ${
-                                            lead.urgency === 'High' ? 'bg-red-100 text-red-600' : 
-                                            lead.urgency === 'Medium' ? 'bg-blue-100 text-blue-600' : 'bg-gray-100 text-gray-600'
-                                         }`}>{lead.urgency} Urgency</span>
-                                         <span className={`text-[8px] px-1.5 py-0.5 rounded font-bold uppercase ${
-                                            lead.status === 'resolved' ? 'bg-green-100 text-green-600' : 'bg-gray-100 text-gray-400'
-                                         }`}>{lead.status || 'new'}</span>
-                                      </div>
-                                   </td>
-                                   <td className="px-6 py-4 text-[10px] text-gray-400">
-                                      {new Date(lead.createdAt).toLocaleString()}
-                                   </td>
-                                   <td className="px-6 py-4">
-                                      <div className="flex items-center gap-2">
-                                         <a 
-                                           href={`https://wa.me/${lead.contactMethod?.replace(/\D/g, '') || ''}`} 
-                                           target="_blank" 
-                                           rel="noopener noreferrer"
-                                           className="text-[10px] bg-green-500 text-white px-3 py-1.5 rounded-lg font-bold hover:bg-green-600 flex items-center justify-center gap-2"
-                                         >
-                                            <Share2 size={12} /> Contact
-                                         </a>
-                                         
-                                         <button 
-                                           onClick={() => updateLeadStatus(lead.id, lead.status === 'resolved' ? 'new' : 'resolved')}
-                                           className={`p-2 rounded-lg transition-colors ${lead.status === 'resolved' ? 'text-green-600 bg-green-50' : 'text-gray-400 hover:bg-gray-100'}`}
-                                           title={lead.status === 'resolved' ? "Mark as New" : "Mark as Resolved"}
-                                         >
-                                            <CheckCircle size={14} />
-                                         </button>
-
-                                         <button 
-                                           onClick={() => {
-                                              if (confirm("Delete this lead?")) deleteLead(lead.id);
-                                           }}
-                                           className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors"
-                                           title="Delete Lead"
-                                         >
-                                            <Trash2 size={14} />
-                                         </button>
-                                      </div>
-                                   </td>
-                                </tr>
-                             ))}
-                           </tbody>
-                       </table>
-                    </div>
-                  )}
-               </div>
-             </div>
-           )}
-
-           {activeTab === "seo" && (
-            <div className="space-y-6">
-              <form onSubmit={handleFormSubmit} className="space-y-8">
-                <div className="flex items-center justify-between">
+                {/* SEO Sub-section */}
+                <div className="pt-10 border-t space-y-6">
                    <div className="flex items-center gap-3">
                       <div className="bg-brand-blue/10 p-2 rounded-lg text-brand-blue">
                          <Globe size={24} />
                       </div>
                       <div>
-                         <h2 className="text-xl font-bold text-gray-900 leading-tight">SEO & Global Ranking</h2>
-                         <p className="text-xs text-gray-500">Control how Google and Social Media see your site.</p>
+                         <h2 className="text-xl font-bold text-gray-900 leading-tight">SEO & Marketing Pulse</h2>
+                         <p className="text-xs text-gray-500">Search engine optimization and daily marketing drafts.</p>
                       </div>
                    </div>
-                   {saveStatus === 'success' && <span className="text-xs font-bold text-green-600 animate-bounce">✓ SEO Saved!</span>}
-                </div>
 
-               <div className="space-y-4">
-                  <div className="space-y-1">
-                     <label className="text-xs font-bold uppercase text-gray-500">Meta Description</label>
-                     <textarea name="metaDescription" defaultValue={settings.metaDescription} className="admin-input h-24" placeholder="Describe your business for search engines..." />
-                  </div>
-                  <div className="space-y-1">
-                     <label className="text-xs font-bold uppercase text-gray-500">Keywords (Comma separated)</label>
-                     <input name="metaKeywords" defaultValue={settings.metaKeywords} className="admin-input" placeholder="mechanic, generator, makurdi..." />
-                  </div>
-                  <div className="space-y-1">
-                     <label className="text-xs font-bold uppercase text-gray-500">OpenGraph Image (Shared on Social)</label>
-                     <div className="flex gap-2">
-                         <input type="hidden" name="ogImageUrl" value={previews.ogImageUrl} readOnly />
-                         <input type="file" onChange={(e) => handleUpload(e, 'ogImageUrl')} className="admin-input text-xs" accept="image/*" />
-                         <button type="button" onClick={() => setSelectedMediaTarget('ogImageUrl')} className="p-2 bg-gray-100 hover:bg-gray-200 rounded-lg text-gray-500" title="Pick from Library">
-                            <ImageIcon size={16} />
-                         </button>
-                         {uploading === 'ogImageUrl' && <Loader2 className="animate-spin text-brand-blue" />}
+                   <form onSubmit={handleFormSubmit} className="space-y-4 bg-gray-50 p-6 rounded-2xl border border-gray-100">
+                      <div className="space-y-1">
+                        <label className="text-xs font-bold uppercase text-gray-400">Meta Description</label>
+                        <textarea name="metaDescription" defaultValue={settings.metaDescription} className="admin-input bg-white h-20" />
                       </div>
-                  </div>
-               </div>
+                      <div className="grid grid-cols-2 gap-4">
+                         <div className="space-y-1">
+                             <label className="text-xs font-bold uppercase text-gray-400">Facebook</label>
+                             <input name="facebookUrl" defaultValue={settings.facebookUrl} className="admin-input bg-white" />
+                         </div>
+                         <div className="space-y-1">
+                             <label className="text-xs font-bold uppercase text-gray-400">Instagram</label>
+                             <input name="instagramUrl" defaultValue={settings.instagramUrl} className="admin-input bg-white" />
+                         </div>
+                      </div>
+                      <button type="submit" className="admin-btn-save-sm">
+                         <Save size={16} /> Save SEO Links
+                      </button>
+                   </form>
 
-               <div className="pt-6 border-t">
-                  <h3 className="text-sm font-bold uppercase text-gray-400 mb-4">Social Media Links</h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                     <div className="space-y-1">
-                        <label className="text-[10px] font-bold uppercase text-gray-500">Facebook URL</label>
-                        <input name="facebookUrl" defaultValue={settings.facebookUrl} className="admin-input" placeholder="https://facebook.com/..." />
-                     </div>
-                     <div className="space-y-1">
-                        <label className="text-[10px] font-bold uppercase text-gray-500">Instagram URL</label>
-                        <input name="instagramUrl" defaultValue={settings.instagramUrl} className="admin-input" placeholder="https://instagram.com/..." />
-                     </div>
-                     <div className="space-y-1">
-                        <label className="text-[10px] font-bold uppercase text-gray-500">Twitter (X) URL</label>
-                        <input name="twitterUrl" defaultValue={settings.twitterUrl} className="admin-input" placeholder="https://x.com/..." />
-                     </div>
-                     <div className="space-y-1">
-                        <label className="text-[10px] font-bold uppercase text-gray-500">LinkedIn URL</label>
-                        <input name="linkedinUrl" defaultValue={settings.linkedinUrl} className="admin-input" placeholder="https://linkedin.com/..." />
-                     </div>
-                  </div>
-               </div>
-
-               <button type="submit" className="admin-btn-save">
-                  <Save size={18} /> Save Global SEO Changes
-               </button>
-             </form>
-            </div>
+                   {/* AI Post Review */}
+                   <div className="space-y-4">
+                      <h3 className="text-sm font-black uppercase text-gray-900 italic">Daily AI Marketing Drafts</h3>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                         {aiPostsList.slice(0, 4).map((post: any) => (
+                            <div key={post.id} className="bg-white border p-4 rounded-xl shadow-sm relative group">
+                               <p className="text-[11px] text-gray-600 line-clamp-3 mb-4">{post.content}</p>
+                               <div className="flex justify-end gap-2">
+                                  <button onClick={() => approveAiPost(post.id)} className="text-[10px] font-black uppercase text-green-600 hover:underline">Approve</button>
+                                  <button onClick={() => discardAiPost(post.id)} className="text-[10px] font-black uppercase text-red-400">Discard</button>
+                               </div>
+                            </div>
+                         ))}
+                         {aiPostsList.length === 0 && <p className="text-xs text-gray-400 italic">No marketing data yet.</p>}
+                      </div>
+                   </div>
+                </div>
+             </div>
            )}
         </div>
       </main>
