@@ -27,6 +27,7 @@ import {
   Upload,
   Loader2,
   ChevronRight,
+  ChevronDown,
   GripVertical,
   MousePointer2
 } from "lucide-react";
