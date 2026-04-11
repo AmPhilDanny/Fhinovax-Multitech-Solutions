@@ -18,6 +18,7 @@ export async function POST(req: Request) {
 
     const google = createGoogleGenerativeAI({
       apiKey: apiKey,
+      baseURL: 'https://generativelanguage.googleapis.com/v1',
     });
 
     // Perform a test

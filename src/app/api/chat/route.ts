@@ -62,6 +62,7 @@ export async function POST(req: Request) {
   try {
     const google = createGoogleGenerativeAI({
       apiKey: settings.aiApiKey || process.env.GOOGLE_GENERATIVE_AI_API_KEY,
+      baseURL: 'https://generativelanguage.googleapis.com/v1',
     });
 
     const result = streamText({
