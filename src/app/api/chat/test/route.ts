@@ -20,11 +20,25 @@ export async function POST(req: Request) {
       apiKey: apiKey,
     });
 
-    // Perform a tiny lightweight test
+    // Perform a test
+    let customPrompt = "";
+    try {
+      const body = await req.json();
+      customPrompt = body.prompt;
+    } catch (e) {}
+
     const { text } = await generateText({
       model: google('gemini-1.5-flash-latest'),
-      prompt: 'Respond with exactly the word "CONNECTED" and nothing else.',
+      prompt: customPrompt || 'Respond with exactly the word "CONNECTED" and nothing else.',
     });
+
+    if (customPrompt) {
+       return new Response(JSON.stringify({ 
+        success: true, 
+        message: "API Response received!",
+        response: text
+      }));
+    }
 
     if (text.trim().includes("CONNECTED")) {
       return new Response(JSON.stringify({ 

@@ -1,5 +1,5 @@
 import { createGoogleGenerativeAI } from '@ai-sdk/google';
-import { streamText, tool } from 'ai';
+import { streamText, tool, convertToModelMessages } from 'ai';
 
 import { getSiteSettings, getActiveServices } from '@/app/actions';
 import { db } from '@/db';
@@ -66,7 +66,7 @@ export async function POST(req: Request) {
 
     const result = streamText({
       model: google('gemini-1.5-flash-latest'),
-      messages,
+      messages: convertToModelMessages(messages),
       system: systemInstructions,
       tools: {
         recordCustomerLead: tool({
@@ -101,7 +101,7 @@ export async function POST(req: Request) {
       },
     });
 
-    return result.toTextStreamResponse();
+    return result.toDataStreamResponse();
   } catch (err: any) {
     console.error("AI CHAT ERROR:", err);
     // Return a more descriptive error if possible

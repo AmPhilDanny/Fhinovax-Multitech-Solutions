@@ -75,6 +75,9 @@ export default function AdminTabs({
   });
   const [testResult, setTestResult] = useState<{ success: boolean, message: string } | null>(null);
   const [testing, setTesting] = useState(false);
+  const [testPrompt, setTestPrompt] = useState("");
+  const [explorerResult, setExplorerResult] = useState<{ success: boolean, message: string, response?: string } | null>(null);
+  const [exploring, setExploring] = useState(false);
 
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>, fieldName: string) => {
     const file = e.target.files?.[0];
@@ -132,13 +135,36 @@ export default function AdminTabs({
     setTesting(true);
     setTestResult(null);
     try {
-      const res = await fetch('/api/chat/test', { method: 'POST' });
+      const res = await fetch('/api/chat/test', { 
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({}) 
+      });
       const data = await res.json();
       setTestResult(data);
     } catch (err) {
       setTestResult({ success: false, message: "Network error calling diagnostic." });
     } finally {
       setTesting(false);
+    }
+  };
+
+  const handleExplorerTest = async () => {
+    if (!testPrompt.trim()) return;
+    setExploring(true);
+    setExplorerResult(null);
+    try {
+      const res = await fetch('/api/chat/test', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prompt: testPrompt })
+      });
+      const data = await res.json();
+      setExplorerResult(data);
+    } catch (err) {
+      setExplorerResult({ success: false, message: "Network error calling Explorer." });
+    } finally {
+      setExploring(false);
     }
   };
 
@@ -719,12 +745,81 @@ export default function AdminTabs({
                 </div>
 
 
-               <div className="border-t pt-6">
-                  <button type="submit" className="admin-btn-save">
-                    <Save size={18} /> Update Business Logic
-                  </button>
-               </div>
+                <div className="border-t pt-6">
+                   <button type="submit" className="admin-btn-save">
+                     <Save size={18} /> Update Business Logic
+                   </button>
+                </div>
               </form>
+
+              {/* API Explorer / Live Chat Tester */}
+              <div className="bg-gray-900 text-gray-100 p-8 rounded-3xl space-y-6 shadow-2xl border-4 border-gray-800">
+                 <div className="flex items-center gap-3">
+                    <div className="bg-brand-blue/20 p-2 rounded-lg text-brand-blue">
+                       <Zap size={24} />
+                    </div>
+                    <div>
+                       <h3 className="text-xl font-bold text-white leading-tight">Live AI API Explorer</h3>
+                       <p className="text-xs text-gray-400">Request raw data from Google Gemini to verify logic response.</p>
+                    </div>
+                 </div>
+
+                 <div className="space-y-4">
+                    <div className="flex flex-col gap-2">
+                       <label className="text-[10px] font-bold uppercase text-gray-500">Your Test Payload</label>
+                       <div className="flex gap-2">
+                          <input 
+                            value={testPrompt}
+                            onChange={(e) => setTestPrompt(e.target.value)}
+                            placeholder="e.g. What services do you provide?"
+                            className="flex-1 bg-gray-800 border-none rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-brand-blue outline-none"
+                          />
+                          <button 
+                            onClick={handleExplorerTest}
+                            disabled={exploring}
+                            className={`px-6 py-2 rounded-xl font-bold text-xs flex items-center gap-2 transition-all ${
+                              exploring ? 'bg-gray-700 text-gray-500 cursor-not-allowed' : 'bg-brand-blue text-white hover:bg-blue-600'
+                            }`}
+                          >
+                             {exploring ? <Activity className="animate-pulse" size={14} /> : <Share2 size={14} />}
+                             {exploring ? 'Querying...' : 'Send Query'}
+                          </button>
+                       </div>
+                    </div>
+
+                    {explorerResult && (
+                       <div className={`p-5 rounded-2xl border-2 space-y-3 animate-in fade-in slide-in-from-bottom-2 ${
+                         explorerResult.success ? 'bg-gray-800 border-green-500/30' : 'bg-red-500/10 border-red-500/30'
+                       }`}>
+                          <div className="flex items-center justify-between">
+                             <span className={`text-[10px] font-black uppercase ${explorerResult.success ? 'text-green-500' : 'text-red-500'}`}>
+                                {explorerResult.message}
+                             </span>
+                             <Bot size={14} className={explorerResult.success ? 'text-green-500' : 'text-red-500'} />
+                          </div>
+                          
+                          {explorerResult.response ? (
+                            <div className="text-xs leading-relaxed text-gray-300 font-medium bg-gray-950/50 p-4 rounded-xl border border-white/5">
+                               {explorerResult.response}
+                            </div>
+                          ) : (
+                            <p className="text-[10px] text-gray-400 italic">No text response returned. Check API usage or prompt constraints.</p>
+                          )}
+                       </div>
+                    )}
+                 </div>
+
+                 <div className="flex items-center gap-4 pt-2">
+                    <div className="flex items-center gap-2">
+                       <div className="w-2 h-2 rounded-full bg-brand-blue animate-ping" />
+                       <span className="text-[9px] text-gray-500 font-bold uppercase">Direct Stream to AI Studio</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                       <ShieldCheck size={12} className="text-gray-500" />
+                       <span className="text-[9px] text-gray-500 font-bold uppercase">Standard Token Encryption</span>
+                    </div>
+                 </div>
+              </div>
             </div>
            )}
            {activeTab === "marketing" && (

@@ -105,7 +105,7 @@ export default function ChatWidget({ agentName = "Phinovax AI" }: { agentName?: 
                           {m.role === 'user' ? <User size={10} /> : <Bot size={10} />}
                           <span className="text-[9px] font-black uppercase tracking-widest">{m.role === 'user' ? 'You' : agentName}</span>
                        </div>
-                       {m.content}
+                        {m.content || (m.parts && m.parts.filter((p: any) => p.type === 'text').map((p: any) => p.text).join(''))}
                     </div>
                   </div>
                 ))}
