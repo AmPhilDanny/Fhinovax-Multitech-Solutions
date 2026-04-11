@@ -10,6 +10,8 @@ export default async function Home() {
 
   const heroStyle = settings.heroBgType === 'image' 
     ? { backgroundImage: `url(${settings.heroBgValue})`, backgroundSize: 'cover', backgroundPosition: 'center' }
+    : settings.heroBgType === 'gradient'
+    ? { background: settings.heroBgValue }
     : { backgroundColor: settings.heroBgValue };
 
   return (

@@ -117,6 +117,14 @@ export async function updateNavItem(id: number, data: Partial<{ label: string, h
   revalidatePath("/admin");
 }
 
+export async function updateNavItemsBatch(items: { id: number, orderIndex: number }[]) {
+  for (const item of items) {
+    await db.update(navItems).set({ orderIndex: item.orderIndex }).where(eq(navItems.id, item.id));
+  }
+  revalidatePath("/");
+  revalidatePath("/admin");
+}
+
 export async function deleteNavItem(id: number) {
   await db.delete(navItems).where(eq(navItems.id, id));
   revalidatePath("/");

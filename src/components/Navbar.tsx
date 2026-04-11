@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { Menu, X, ChevronDown, Bot } from "lucide-react";
+import { usePathname } from "next/navigation";
 import { AnimatePresence } from "framer-motion";
 
 export interface NavItem {
@@ -27,6 +28,7 @@ export default function Navbar({
 }) {
   const [isOpen, setIsOpen] = useState(false);
   const [activeSubmenu, setActiveSubmenu] = useState<number | null>(null);
+  const pathname = usePathname();
 
   // Filter top-level items
   const topLevelItems = navItems
@@ -63,7 +65,11 @@ export default function Navbar({
               <div key={item.id} className="relative group">
                 <Link 
                   href={item.href} 
-                  className="flex items-center gap-1 text-sm font-bold text-gray-700 hover:text-brand-blue transition-colors py-2"
+                  className={`flex items-center gap-1 text-sm transition-colors py-2 ${
+                    pathname === item.href 
+                      ? "font-black text-brand-blue" 
+                      : "font-bold text-gray-700 hover:text-brand-blue"
+                  }`}
                 >
                   {item.label}
                   {hasSub && <ChevronDown size={14} className="group-hover:rotate-180 transition-transform" />}
@@ -119,7 +125,7 @@ export default function Navbar({
                      <Link 
                        href={item.href} 
                        onClick={() => setIsOpen(false)}
-                       className="text-xl font-bold text-gray-800"
+                       className={`text-xl font-bold ${pathname === item.href ? "text-brand-blue" : "text-gray-800"}`}
                      >
                        {item.label}
                      </Link>

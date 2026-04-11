@@ -49,6 +49,7 @@ import {
   deleteService, 
   saveNavItem,
   updateNavItem,
+  updateNavItemsBatch,
   deleteNavItem,
   approveAiPost,
   discardAiPost,
@@ -88,7 +89,8 @@ export default function AdminTabs({
   const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'success' | 'error'>('idle');
   const [saveError, setSaveError] = useState<string | null>(null);
   const [selectedMediaTarget, setSelectedMediaTarget] = useState<string | null>(null);
-  const [bgType, setBgType] = useState(settings.heroBgType || "color");
+  const [bgType, setBgType] = useState(settings.heroBgType || "image");
+  const [editingService, setEditingService] = useState<any>(null);
   const [previews, setPreviews] = useState({
     logoUrl: settings.logoUrl || "",
     faviconUrl: settings.faviconUrl || "",
@@ -99,55 +101,66 @@ export default function AdminTabs({
 
   const handleMoveNavItem = async (id: number, direction: 'up' | 'down') => {
     if (id >= 990) {
-      alert("This is a system default link. Use the 'Navigator' to add new links.");
+      alert("This is a system default link. Default links (Home, Services, etc.) should stay fixed for UX consistency. Use the Navigator to order custom pages.");
       return;
     }
 
-    const filtered = navItemsList.filter((i: any) => !i.parentId).sort((a: any, b: any) => a.orderIndex - b.orderIndex);
+    const filtered = navItemsList
+      .filter((i: any) => !i.parentId)
+      .sort((a: any, b: any) => (a.orderIndex ?? 0) - (b.orderIndex ?? 0));
+      
     const currentIndex = filtered.findIndex((i: any) => i.id === id);
     if (currentIndex === -1) return;
 
     const targetIndex = direction === 'up' ? currentIndex - 1 : currentIndex + 1;
     if (targetIndex < 0 || targetIndex >= filtered.length) return;
 
-    // Create a new array and swap
+    // Build the new sequence
     const newList = [...filtered];
-    const temp = newList[currentIndex];
-    newList[currentIndex] = newList[targetIndex];
-    newList[targetIndex] = temp;
+    const item = newList.splice(currentIndex, 1)[0];
+    newList.splice(targetIndex, 0, item);
 
     setUploading('menu');
     try {
-      // Seqentially update all to avoid collisions
-      for (let i = 0; i < newList.length; i++) {
-        if (newList[i].id < 990) {
-          await updateNavItem(newList[i].id, { orderIndex: i });
-        }
-      }
+      // Create batch update payload
+      const batch = newList.map((item, idx) => ({
+        id: item.id,
+        orderIndex: idx
+      }));
+      
+      await updateNavItemsBatch(batch);
       router.refresh();
-      alert("Navigation sequence updated!");
     } catch (e) {
       console.error(e);
+      alert("Failed to reorder. Check connection.");
     } finally {
       setUploading(null);
     }
   };
 
   const handleMoveSubItem = async (parentId: number, id: number, direction: 'up' | 'down') => {
-    const filtered = navItemsList.filter((i: any) => i.parentId === parentId).sort((a: any, b: any) => a.orderIndex - b.orderIndex);
+    const filtered = navItemsList
+      .filter((i: any) => i.parentId === parentId)
+      .sort((a: any, b: any) => (a.orderIndex ?? 0) - (b.orderIndex ?? 0));
+
     const currentIndex = filtered.findIndex((i: any) => i.id === id);
     if (currentIndex === -1) return;
 
     const targetIndex = direction === 'up' ? currentIndex - 1 : currentIndex + 1;
     if (targetIndex < 0 || targetIndex >= filtered.length) return;
 
-    const currentItem = filtered[currentIndex];
-    const targetItem = filtered[targetIndex];
+    const newList = [...filtered];
+    const item = newList.splice(currentIndex, 1)[0];
+    newList.splice(targetIndex, 0, item);
 
     setUploading('menu');
     try {
-      await updateNavItem(currentItem.id, { orderIndex: targetItem.orderIndex || 0 });
-      await updateNavItem(targetItem.id, { orderIndex: currentItem.orderIndex || 0 });
+      const batch = newList.map((item, idx) => ({
+        id: item.id,
+        orderIndex: idx
+      }));
+      
+      await updateNavItemsBatch(batch);
       router.refresh();
     } catch (e) {
       console.error(e);
@@ -466,17 +479,54 @@ export default function AdminTabs({
                               <label className="text-xs font-bold uppercase text-gray-400">Hero Subtitle</label>
                               <textarea name="heroSubtitle" defaultValue={settings.heroSubtitle} className="admin-input h-20" />
                            </div>
-                           <div className="grid grid-cols-2 gap-4">
+                           <div className="grid grid-cols-1 gap-4">
                               <div className="space-y-1">
-                                 <label className="text-xs font-bold uppercase text-gray-400">Hero Background</label>
-                                 <div className="flex gap-2">
-                                    <input type="hidden" name="heroBgValue" value={previews.heroBgValue} />
-                                    <button type="button" onClick={() => setSelectedMediaTarget('heroBgValue')} className="flex-1 p-2 bg-gray-50 border rounded-xl hover:border-brand-blue text-[10px] font-black uppercase text-gray-400">
-                                       {previews.heroBgValue ? "Change Background" : "Pick Image"}
-                                    </button>
+                                 <label className="text-xs font-bold uppercase text-gray-400 px-1">Background Type</label>
+                                 <div className="flex gap-2 p-1 bg-gray-50 rounded-xl border border-gray-100">
+                                    {["image", "color", "gradient"].map(t => (
+                                       <button 
+                                         key={t}
+                                         type="button" 
+                                         onClick={() => setBgType(t)}
+                                         className={`flex-1 py-2 text-[10px] font-black uppercase rounded-lg transition-all ${
+                                           bgType === t ? "bg-brand-blue text-white shadow-lg" : "text-gray-400 hover:text-brand-blue"
+                                         }`}
+                                       >
+                                          {t}
+                                       </button>
+                                    ))}
                                  </div>
                               </div>
-                              <input type="hidden" name="heroBgType" value="image" />
+                              
+                              <div className="space-y-1">
+                                 <label className="text-xs font-bold uppercase text-gray-400 px-1">
+                                    {bgType === 'image' ? 'Pick Image' : bgType === 'gradient' ? 'Gradient Code' : 'Solid Color Hex'}
+                                 </label>
+                                 <div className="flex gap-2">
+                                    <input 
+                                      name="heroBgValue" 
+                                      value={previews.heroBgValue} 
+                                      onChange={(e) => setPreviews(prev => ({ ...prev, heroBgValue: e.target.value }))}
+                                      className="admin-input flex-1 bg-white text-xs border-gray-200" 
+                                      placeholder={bgType === 'gradient' ? 'linear-gradient(...)' : '#000000'}
+                                    />
+                                    {bgType === 'image' && (
+                                       <button type="button" onClick={() => setSelectedMediaTarget('heroBgValue')} className="p-2 bg-brand-blue/10 text-brand-blue rounded-xl hover:bg-brand-blue hover:text-white transition-all">
+                                          <Upload size={18} />
+                                       </button>
+                                    )}
+                                    {bgType === 'gradient' && (
+                                       <button 
+                                         type="button" 
+                                         onClick={() => setPreviews(prev => ({ ...prev, heroBgValue: "linear-gradient(135deg, #1E40AF 0%, #D4AF37 100%)" }))} 
+                                         className="p-2 bg-brand-gold/10 text-brand-gold text-[8px] font-black uppercase rounded-xl border border-brand-gold/20 hover:bg-brand-gold hover:text-white transition-all"
+                                       >
+                                          Logo Gradient
+                                       </button>
+                                    )}
+                                 </div>
+                              </div>
+                              <input type="hidden" name="heroBgType" value={bgType} />
                            </div>
                         </div>
                      </div>
@@ -730,31 +780,44 @@ export default function AdminTabs({
                   </div>
                   
                   <form action={saveService} className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-gray-50 p-6 rounded-[2.5rem] border border-gray-100">
-                     <div className="md:col-span-2 space-y-1">
-                        <label className="text-[10px] font-black uppercase text-gray-400">New Service Title</label>
-                        <input name="title" className="admin-input bg-white" required />
+                     <input type="hidden" name="id" value={editingService?.id || ""} />
+                     <div className="md:col-span-1 space-y-1">
+                        <label className="text-[10px] font-black uppercase text-gray-400">Specialty Title</label>
+                        <input name="title" defaultValue={editingService?.title || ""} className="admin-input bg-white" required />
+                     </div>
+                     <div className="md:col-span-1 space-y-1">
+                        <label className="text-[10px] font-black uppercase text-gray-400">Icon Key (Lucide)</label>
+                        <input name="iconName" defaultValue={editingService?.iconName || "Wrench"} className="admin-input bg-white" />
                      </div>
                      <div className="md:col-span-2 space-y-1">
-                        <label className="text-[10px] font-black uppercase text-gray-400">Description (Quick Teaser)</label>
-                        <textarea name="description" className="admin-input bg-white h-20" required />
+                        <label className="text-[10px] font-black uppercase text-gray-400">Summary Teaser</label>
+                        <textarea name="description" defaultValue={editingService?.description || ""} className="admin-input bg-white h-20" required />
                      </div>
                      <div className="md:col-span-2 space-y-1">
-                        <label className="text-[10px] font-black uppercase text-gray-400 font-bold text-brand-blue">Detailed Content (Full Exposition)</label>
-                        <textarea name="detailedContent" className="admin-input bg-white h-40 font-mono text-xs" placeholder="HTML support for deep technical details..." />
+                        <label className="text-[10px] font-black uppercase text-gray-400 font-bold text-brand-blue">Detailed exposition (HTML)</label>
+                        <textarea name="detailedContent" defaultValue={editingService?.detailedContent || ""} className="admin-input bg-white h-40 font-mono text-xs" />
                      </div>
-                     <div className="space-y-1 flex flex-col justify-end">
+                     <div className="space-y-1 flex items-center gap-4">
                         <button type="submit" className="admin-btn-save-sm w-full py-3">
-                           <Plus size={18} /> Add New Specialty
+                           <Save size={18} /> {editingService ? "Update Specialty" : "Add New Specialty"}
                         </button>
+                        {editingService && (
+                           <button type="button" onClick={() => setEditingService(null)} className="w-full bg-white border border-gray-200 text-gray-400 px-4 py-3 rounded-2xl text-xs font-black uppercase tracking-widest hover:bg-gray-50">Cancel</button>
+                        )}
                      </div>
                   </form>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                      {servicesList.map(service => (
                         <div key={service.id} className="p-5 border rounded-3xl flex flex-col gap-3 relative group bg-white hover:border-brand-blue transition-all">
-                           <button onClick={() => deleteService(service.id)} className="absolute top-4 right-4 p-2 bg-red-50 text-red-500 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity">
-                              <Trash2 size={14} />
-                           </button>
+                           <div className="absolute top-4 right-4 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                              <button onClick={() => setEditingService(service)} className="p-2 bg-brand-blue/10 text-brand-blue rounded-xl hover:bg-brand-blue hover:text-white transition-all shadow-sm">
+                                 <MousePointer2 size={14} />
+                              </button>
+                              <button onClick={() => deleteService(service.id)} className="p-2 bg-red-50 text-red-500 rounded-xl hover:bg-red-500 hover:text-white transition-all shadow-sm">
+                                 <Trash2 size={14} />
+                              </button>
+                           </div>
                            <div className="text-brand-blue font-black text-sm uppercase tracking-tight">{service.title}</div>
                            <p className="text-xs text-gray-500 line-clamp-3">{service.description}</p>
                            {service.detailedContent && (
