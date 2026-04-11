@@ -97,10 +97,10 @@ export async function getAllNavItems() {
   
   // Virtual defaults if DB is empty or missing core items
   const virtualDefaults = [
-    { id: 991, label: "Services", href: "/services", parentId: null, orderIndex: 1, isActive: true },
-    { id: 992, label: "About Us", href: "/about", parentId: null, orderIndex: 2, isActive: true },
-    { id: 993, label: "Contact Us", href: "/contact", parentId: null, orderIndex: 3, isActive: true },
-    { id: 999, label: "Online Diagnosis", href: "/diagnosis", parentId: null, orderIndex: 9, isActive: true },
+    { id: 991, label: "Services", href: "/services", parentId: null, orderIndex: 1, isActive: true, createdAt: null },
+    { id: 992, label: "About Us", href: "/about", parentId: null, orderIndex: 2, isActive: true, createdAt: null },
+    { id: 993, label: "Contact Us", href: "/contact", parentId: null, orderIndex: 3, isActive: true, createdAt: null },
+    { id: 999, label: "Online Diagnosis", href: "/diagnosis", parentId: null, orderIndex: 9, isActive: true, createdAt: null },
   ];
 
   // Merge items: prefer items from DB if they have matching hrefs
