@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
+import { Reorder } from "framer-motion";
 import { 
   Settings, 
   Layout, 
@@ -99,7 +100,58 @@ export default function AdminTabs({
     aiApiKey: settings.aiApiKey || ""
   });
 
+  // Local state for dragging (optimistic UI)
+  const [localNavItems, setLocalNavItems] = useState(navItemsList);
+
+  useEffect(() => {
+    setLocalNavItems(navItemsList);
+  }, [navItemsList]);
+
+  const handleNavReorder = async (newOrder: any[]) => {
+    setLocalNavItems(newOrder); // Instant UI update
+    
+    // Create batch and save
+    const batch = newOrder.map((item, idx) => ({
+      id: item.id,
+      orderIndex: idx
+    }));
+
+    setUploading('menu');
+    try {
+      await updateNavItemsBatch(batch);
+      router.refresh(); // Sync potential server changes
+    } catch (e) {
+      console.error(e);
+      alert("Failed to sync new order.");
+    } finally {
+      setUploading(null);
+    }
+  };
+
+  const handleSubReorder = async (parentId: number, newSubOrder: any[]) => {
+    // Merge new sub order back into the master list
+    const otherItems = localNavItems.filter(i => i.parentId !== parentId);
+    const updatedMaster = [...otherItems, ...newSubOrder];
+    setLocalNavItems(updatedMaster);
+
+    const batch = newSubOrder.map((item, idx) => ({
+      id: item.id,
+      orderIndex: idx
+    }));
+
+    setUploading('menu');
+    try {
+      await updateNavItemsBatch(batch);
+      router.refresh();
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setUploading(null);
+    }
+  };
+
   const handleMoveNavItem = async (id: number, direction: 'up' | 'down') => {
+    // Old button logic (kept for fallback but will be replaced by DND UI)
     if (id >= 990) {
       alert("This is a system default link. Default links (Home, Services, etc.) should stay fixed for UX consistency. Use the Navigator to order custom pages.");
       return;
@@ -582,92 +634,80 @@ export default function AdminTabs({
                 </div>
               </div>
 
-              {/* Hierarchical Tree Render */}
+              {/* Drag-and-Drop Hierarchical Tree */}
               <div className="space-y-6">
-                 {navItemsList.filter((i: any) => !i.parentId).length === 0 && (
+                 {localNavItems.filter((i: any) => !i.parentId).length === 0 && (
                    <div className="py-20 text-center bg-gray-50 rounded-[2rem] border-2 border-dashed border-gray-100">
                       <Layout size={40} className="mx-auto text-gray-200 mb-2" />
                       <p className="text-sm text-gray-400 font-medium">No menu nodes detected. Build your first link below.</p>
                    </div>
                  )}
                  
-                 {navItemsList.filter((i: any) => !i.parentId).sort((a: any, b: any) => a.orderIndex - b.orderIndex).map((parent: any) => (
-                   <div key={parent.id} className="space-y-3">
-                      {/* Top Level Item */}
-                      <div className="flex flex-wrap items-center justify-between p-4 bg-white border border-gray-100 rounded-[2rem] group transition-all hover:border-brand-blue/30 hover:shadow-xl hover:shadow-brand-blue/5">
-                         <div className="flex items-center gap-4">
-                            <div className="w-10 h-10 rounded-2xl bg-gray-50 flex items-center justify-center text-gray-300 group-hover:bg-brand-blue/5 group-hover:text-brand-blue transition-colors">
-                               <GripVertical size={18} />
-                            </div>
-                            <div>
-                               <div className="font-black text-gray-900 flex items-center gap-3 text-base">
-                                  {parent.label}
-                                  {parent.isActive === false && <span className="text-[8px] bg-red-500 text-white px-2 py-0.5 rounded-full uppercase font-black tracking-widest">Hidden</span>}
-                               </div>
-                               <div className="text-[11px] text-gray-400 font-mono tracking-tight bg-gray-50 px-2 py-0.5 rounded-md mt-1 w-fit">{parent.href}</div>
-                            </div>
-                         </div>
-                         <div className="flex items-center gap-2 mt-4 sm:mt-0">
-                            <div className="flex items-center p-1 bg-gray-50 rounded-xl border border-gray-100">
-                               <button 
-                                 onClick={() => handleMoveNavItem(parent.id, 'up')} 
-                                 className="p-2 hover:bg-white rounded-lg text-gray-400 hover:text-brand-blue transition-all disabled:opacity-20" 
-                                 disabled={parent.id >= 990}
-                                 title="Move Up"
-                               >
-                                 <ChevronDown size={14} className="rotate-180" />
-                               </button>
-                               <div className="w-px h-4 bg-gray-200 mx-1" />
-                               <button 
-                                 onClick={() => handleMoveNavItem(parent.id, 'down')} 
-                                 className="p-2 hover:bg-white rounded-lg text-gray-400 hover:text-brand-blue transition-all disabled:opacity-20" 
-                                 disabled={parent.id >= 990}
-                                 title="Move Down"
-                               >
-                                 <ChevronDown size={14} />
-                               </button>
-                            </div>
-                            <button onClick={() => deleteNavItem(parent.id)} className="p-3 bg-red-50 text-red-500 rounded-2xl hover:bg-red-500 hover:text-white transition-all shadow-sm">
-                               <Trash2 size={16} />
-                            </button>
-                         </div>
-                      </div>
+                 <Reorder.Group 
+                   axis="y" 
+                   values={localNavItems.filter((i: any) => !i.parentId).sort((a: any, b: any) => (a.orderIndex ?? 0) - (b.orderIndex ?? 0))} 
+                   onReorder={handleNavReorder}
+                   className="space-y-6"
+                 >
+                   {localNavItems.filter((i: any) => !i.parentId).sort((a: any, b: any) => (a.orderIndex ?? 0) - (b.orderIndex ?? 0)).map((parent: any) => (
+                     <Reorder.Item 
+                       key={parent.id} 
+                       value={parent}
+                       className="space-y-3 cursor-grab active:cursor-grabbing"
+                     >
+                       {/* Top Level Item */}
+                       <div className="flex flex-wrap items-center justify-between p-4 bg-white border border-gray-100 rounded-[2rem] group transition-all hover:border-brand-blue/30 hover:shadow-xl hover:shadow-brand-blue/5">
+                          <div className="flex items-center gap-4">
+                             <div className="w-10 h-10 rounded-2xl bg-gray-50 flex items-center justify-center text-gray-300 group-hover:bg-brand-blue/5 group-hover:text-brand-blue transition-colors">
+                                <GripVertical size={18} />
+                             </div>
+                             <div>
+                                <div className="font-black text-gray-900 flex items-center gap-3 text-base">
+                                   {parent.label}
+                                   {parent.isActive === false && <span className="text-[8px] bg-red-500 text-white px-2 py-0.5 rounded-full uppercase font-black tracking-widest">Hidden</span>}
+                                </div>
+                                <div className="text-[11px] text-gray-400 font-mono tracking-tight bg-gray-50 px-2 py-0.5 rounded-md mt-1 w-fit">{parent.href}</div>
+                             </div>
+                          </div>
+                          <div className="flex items-center gap-2 mt-4 sm:mt-0">
+                             <span className="text-[8px] font-black uppercase text-gray-300 mr-2 tracking-widest">Grip to Reorder</span>
+                             <button onClick={() => deleteNavItem(parent.id)} className="p-3 bg-red-50 text-red-500 rounded-2xl hover:bg-red-500 hover:text-white transition-all shadow-sm">
+                                <Trash2 size={16} />
+                             </button>
+                          </div>
+                       </div>
 
-                      {/* Sub Items */}
-                      <div className="ml-8 sm:ml-16 space-y-3 relative before:absolute before:left-[-1.5rem] before:top-[-1rem] before:bottom-[1rem] before:w-0.5 before:bg-brand-blue/10">
-                         {navItemsList.filter((i: any) => i.parentId === parent.id).sort((a: any, b: any) => a.orderIndex - b.orderIndex).map((sub: any) => (
-                            <div key={sub.id} className="flex flex-wrap items-center justify-between p-4 bg-brand-blue/[0.02] border border-blue-100/50 rounded-[1.5rem] group/sub transition-all hover:bg-white hover:shadow-lg">
-                               <div className="flex items-center gap-3">
-                                  <div className="w-8 h-8 rounded-xl bg-blue-50/50 flex items-center justify-center text-brand-blue/30 group-hover/sub:text-brand-blue transition-colors">
-                                     <ChevronRight size={16} />
-                                  </div>
-                                  <div>
-                                     <div className="font-extrabold text-gray-800 text-sm">{sub.label}</div>
-                                     <div className="text-[10px] text-gray-400 font-mono italic">{sub.href}</div>
-                                  </div>
-                               </div>
-                               <div className="flex items-center gap-3 mt-4 sm:mt-0 opacity-40 group-hover/sub:opacity-100 transition-opacity">
-                                  <div className="flex items-center p-1 bg-white rounded-lg border border-gray-100">
-                                     <button onClick={() => handleMoveSubItem(parent.id, sub.id, 'up')} className="p-1.5 hover:bg-gray-50 rounded text-gray-400 hover:text-brand-blue"><ChevronDown size={14} className="rotate-180" /></button>
-                                     <button onClick={() => handleMoveSubItem(parent.id, sub.id, 'down')} className="p-1.5 hover:bg-gray-50 rounded text-gray-400 hover:text-brand-blue"><ChevronDown size={14} /></button>
-                                  </div>
-                                  <select 
-                                    onChange={(e) => updateNavItem(sub.id, { parentId: e.target.value ? parseInt(e.target.value) : null })}
-                                    className="text-[10px] font-black uppercase tracking-tighter bg-gray-50 border-gray-100 rounded-lg focus:ring-brand-blue text-gray-500 hover:text-brand-blue cursor-pointer transition-all"
-                                  >
-                                    <option value={parent.id}>Parent: {parent.label}</option>
-                                    <option value="">Move to Root</option>
-                                    {navItemsList.filter((i: any) => i.id !== parent.id && !i.parentId).map((i: any) => (
-                                      <option key={i.id} value={i.id}>Move to {i.label}</option>
-                                    ))}
-                                  </select>
-                                  <button onClick={() => deleteNavItem(sub.id)} className="p-2 text-gray-300 hover:text-red-500 transition-colors"><Trash2 size={14} /></button>
-                               </div>
-                            </div>
-                         ))}
-                      </div>
-                   </div>
-                 ))}
+                       {/* Sub Items (Also DND enabled) */}
+                       <div className="ml-8 sm:ml-16 space-y-3 relative before:absolute before:left-[-1.5rem] before:top-[-1rem] before:bottom-[1rem] before:w-0.5 before:bg-brand-blue/10">
+                          <Reorder.Group 
+                             axis="y" 
+                             values={localNavItems.filter((i: any) => i.parentId === parent.id).sort((a: any, b: any) => (a.orderIndex ?? 0) - (b.orderIndex ?? 0))} 
+                             onReorder={(newOrder) => handleSubReorder(parent.id, newOrder)}
+                             className="space-y-3"
+                          >
+                             {localNavItems.filter((i: any) => i.parentId === parent.id).sort((a: any, b: any) => (a.orderIndex ?? 0) - (b.orderIndex ?? 0)).map((sub: any) => (
+                                <Reorder.Item key={sub.id} value={sub} className="cursor-grab active:cursor-grabbing">
+                                   <div className="flex flex-wrap items-center justify-between p-4 bg-brand-blue/[0.02] border border-blue-100/50 rounded-[1.5rem] group/sub transition-all hover:bg-white hover:shadow-lg">
+                                      <div className="flex items-center gap-3">
+                                         <div className="w-8 h-8 rounded-xl bg-blue-50/50 flex items-center justify-center text-brand-blue/30 group-hover/sub:text-brand-blue transition-colors">
+                                            <GripHorizontal size={16} />
+                                         </div>
+                                         <div>
+                                            <div className="font-extrabold text-gray-800 text-sm">{sub.label}</div>
+                                            <div className="text-[10px] text-gray-400 font-mono italic">{sub.href}</div>
+                                         </div>
+                                      </div>
+                                      <div className="flex items-center gap-3 mt-4 sm:mt-0 opacity-40 group-hover/sub:opacity-100 transition-opacity">
+                                         <button onClick={() => deleteNavItem(sub.id)} className="p-2 text-gray-300 hover:text-red-500 transition-colors"><Trash2 size={14} /></button>
+                                      </div>
+                                   </div>
+                                </Reorder.Item>
+                             ))}
+                          </Reorder.Group>
+                       </div>
+                     </Reorder.Item>
+                   ))}
+                 </Reorder.Group>
               </div>
 
               {/* Add New Item Form */}
@@ -1026,6 +1066,72 @@ export default function AdminTabs({
                        <Save size={16} /> Save AI & Context
                     </button>
                   </form>
+                </div>
+
+                {/* AI Lab Diagnostic Restoration */}
+                <div className="pt-10 border-t space-y-6">
+                   <div className="flex items-center gap-3">
+                      <div className="bg-brand-gold/10 p-2 rounded-lg text-brand-gold">
+                         <Zap size={24} />
+                      </div>
+                      <div>
+                         <h2 className="text-xl font-bold text-gray-900 leading-tight">AI Diagnostic Lab</h2>
+                         <p className="text-xs text-gray-500">Test your AI brain connection and inspect raw responses in real-time.</p>
+                      </div>
+                   </div>
+                   
+                   <div className="bg-white border-2 border-dashed border-gray-100 p-8 rounded-[2.5rem] space-y-6">
+                      <div className="flex flex-col md:flex-row items-center gap-4">
+                        <button 
+                          onClick={handleTestConnection} 
+                          disabled={testing}
+                          className="bg-brand-blue text-white px-8 py-3 rounded-2xl text-xs font-black uppercase tracking-widest hover:bg-blue-800 transition-all flex items-center gap-2"
+                        >
+                          {testing ? <Loader2 size={16} className="animate-spin" /> : <Zap size={16} />}
+                          Quick System Pulse
+                        </button>
+                        {testResult && (
+                           <div className={`text-[10px] font-black uppercase px-4 py-2 rounded-xl border flex items-center gap-2 ${testResult.success ? 'bg-green-50 text-green-600 border-green-100' : 'bg-red-50 text-red-600 border-red-100'}`}>
+                              {testResult.success ? <CheckCircle size={14} /> : <Trash2 size={14} />}
+                              {testResult.message}
+                           </div>
+                        )}
+                      </div>
+
+                      <div className="space-y-1">
+                         <label className="text-[10px] font-black uppercase text-gray-400 px-1">Test Inquiry (Custom Prompt Explorer)</label>
+                         <div className="flex gap-2">
+                           <textarea 
+                              value={testPrompt}
+                              onChange={(e) => setTestPrompt(e.target.value)}
+                              className="admin-input flex-1 h-24 text-xs font-medium" 
+                              placeholder="e.g. Can you confirm you are connected and summarized Phinovax specialties?"
+                           />
+                           <button 
+                             onClick={handleExplorerTest}
+                             disabled={exploring || !testPrompt.trim()}
+                             className="bg-gray-900 text-white px-6 rounded-2xl font-black uppercase text-[10px] hover:bg-black disabled:opacity-20 transition-all active:scale-95"
+                           >
+                              {exploring ? <Loader2 size={16} className="animate-spin mx-auto" /> : "Run Explorer"}
+                           </button>
+                         </div>
+                      </div>
+
+                      {explorerResult?.response && (
+                         <div className="space-y-2 animate-in fade-in slide-in-from-top-2">
+                            <label className="text-[10px] font-black uppercase text-brand-blue px-1">Raw Brain Response</label>
+                            <div className="p-6 bg-brand-blue/[0.02] border border-brand-blue/10 rounded-2xl text-xs text-gray-700 leading-relaxed italic shadow-inner">
+                               "{explorerResult.response}"
+                            </div>
+                         </div>
+                      )}
+                      
+                      {explorerResult && !explorerResult.success && (
+                         <div className="p-4 bg-red-50 border border-red-100 rounded-xl text-red-600 text-xs font-medium">
+                            {explorerResult.message}
+                         </div>
+                      )}
+                   </div>
                 </div>
 
                 {/* SEO Sub-section */}
