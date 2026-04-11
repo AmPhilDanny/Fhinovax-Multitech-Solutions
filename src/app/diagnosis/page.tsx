@@ -8,6 +8,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 export default function DiagnosisPage() {
   const [userId, setUserId] = useState<string>('');
+  const [input, setInput] = useState('');
   
   useEffect(() => {
     let id = localStorage.getItem('phino_diag_id');
@@ -18,10 +19,19 @@ export default function DiagnosisPage() {
     setUserId(id);
   }, []);
 
-  const { messages, input, handleInputChange, handleSubmit, isLoading } = useChat({
+  const { messages, sendMessage, status } = useChat({
     api: '/api/diagnosis',
     body: { userId },
   });
+
+  const isLoading = status === 'streaming' || status === 'submitted';
+
+  const onFormSubmit = async (e?: React.FormEvent) => {
+    e?.preventDefault();
+    if (!input.trim() || isLoading) return;
+    sendMessage(input);
+    setInput('');
+  };
 
   const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -116,10 +126,10 @@ export default function DiagnosisPage() {
                   </p>
                 </div>
                 <div className="grid grid-cols-2 gap-3 w-full">
-                  <button onClick={() => handleSubmit(undefined, { data: { message: "Generator won't start" } })} className="p-3 bg-white/5 border border-white/10 rounded-xl text-[10px] font-bold hover:bg-white/10 transition-colors uppercase">
+                  <button onClick={() => { setInput("Generator won't start"); sendMessage("Generator won't start"); }} className="p-3 bg-white/5 border border-white/10 rounded-xl text-[10px] font-bold hover:bg-white/10 transition-colors uppercase">
                     Generator won't start
                   </button>
-                  <button onClick={() => handleSubmit(undefined, { data: { message: "Car engine knocking sound" } })} className="p-3 bg-white/5 border border-white/10 rounded-xl text-[10px] font-bold hover:bg-white/10 transition-colors uppercase">
+                  <button onClick={() => { setInput("Car engine knocking sound"); sendMessage("Car engine knocking sound"); }} className="p-3 bg-white/5 border border-white/10 rounded-xl text-[10px] font-bold hover:bg-white/10 transition-colors uppercase">
                     Engine Knocking Sound
                   </button>
                 </div>
@@ -176,18 +186,18 @@ export default function DiagnosisPage() {
           {/* INPUT AREA */}
           <div className="p-4 md:p-8 pt-0 relative z-20">
              <form 
-               onSubmit={handleSubmit}
+               onSubmit={onFormSubmit}
                className="max-w-4xl mx-auto flex items-end gap-3 bg-white/5 border border-white/10 p-2 rounded-2xl focus-within:border-brand-blue/50 transition-all shadow-2xl backdrop-blur-lg"
              >
                 <textarea 
                   value={input}
-                  onChange={handleInputChange}
+                  onChange={(e) => setInput(e.target.value)}
                   placeholder="Describe the mechanical symptom or fault code..."
                   className="flex-1 bg-transparent border-none focus:ring-0 text-white placeholder:text-gray-600 resize-none py-3 px-4 text-sm max-h-32 min-h-[50px] font-medium"
                   onKeyDown={(e) => {
                     if (e.key === 'Enter' && !e.shiftKey) {
                       e.preventDefault();
-                      handleSubmit(e as any);
+                      onFormSubmit();
                     }
                   }}
                 />
