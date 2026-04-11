@@ -25,11 +25,15 @@ export async function saveSiteSettings(formData: FormData) {
   // Only include fields that were actually present in the formData
   // This allows partial updates from different admin tabs
   for (const field of fields) {
-    const value = formData.get(field);
-    if (value !== null) {
-      updateData[field] = value as string;
+    if (formData.has(field)) {
+      const value = formData.get(field);
+      if (value !== null) {
+        updateData[field] = value as string;
+      }
     }
   }
+
+  console.log("DB: Updating site settings. Payload keys:", Object.keys(updateData));
 
   console.log("DB: Updating site settings for fields:", Object.keys(updateData));
   if (updateData.aiApiKey) {

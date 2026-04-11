@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
+import { useRouter } from "next/navigation";
 import { 
   Settings, 
   Layout, 
@@ -63,6 +64,7 @@ export default function AdminTabs({
   metrics?: any,
   mediaAssetsList?: any[]
 }) {
+  const router = useRouter();
   const [activeTab, setActiveTab] = useState("dashboard");
   const [uploading, setUploading] = useState<string | null>(null);
   const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'success' | 'error'>('idle');
@@ -76,6 +78,18 @@ export default function AdminTabs({
     ogImageUrl: settings.ogImageUrl || "",
     aiApiKey: settings.aiApiKey || ""
   });
+
+  // Keep internal state in sync with server-side props after a refresh
+  useEffect(() => {
+    setPreviews({
+      logoUrl: settings.logoUrl || "",
+      faviconUrl: settings.faviconUrl || "",
+      heroBgValue: settings.heroBgValue || "",
+      ogImageUrl: settings.ogImageUrl || "",
+      aiApiKey: settings.aiApiKey || ""
+    });
+    setBgType(settings.heroBgType || "color");
+  }, [settings]);
   const [testResult, setTestResult] = useState<{ success: boolean, message: string } | null>(null);
   const [testing, setTesting] = useState(false);
   const [testPrompt, setTestPrompt] = useState("");
@@ -123,6 +137,7 @@ export default function AdminTabs({
       const result = await saveSiteSettings(formData);
       if (result.success) {
         setSaveStatus('success');
+        router.refresh(); // Force re-fetching of server components
         setTimeout(() => setSaveStatus('idle'), 3000);
       } else {
         setSaveStatus('error');
