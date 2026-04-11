@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Menu, X, ChevronDown } from "lucide-react";
+import { Menu, X, ChevronDown, Bot } from "lucide-react";
+import { AnimatePresence } from "framer-motion";
 
 export interface NavItem {
   id: number;
