@@ -32,7 +32,7 @@ export default function DiagnosisPage() {
   const onFormSubmit = async (e?: React.FormEvent) => {
     e?.preventDefault();
     if (!input.trim() || isLoading) return;
-    sendMessage(input);
+    sendMessage({ role: 'user', content: input });
     setInput('');
   };
 
@@ -129,10 +129,10 @@ export default function DiagnosisPage() {
                   </p>
                 </div>
                 <div className="grid grid-cols-2 gap-3 w-full">
-                  <button onClick={() => { setInput("Generator won't start"); sendMessage("Generator won't start"); }} className="p-3 bg-white/5 border border-white/10 rounded-xl text-[10px] font-bold hover:bg-white/10 transition-colors uppercase">
+                  <button onClick={() => { setInput("Generator won't start"); sendMessage({ role: 'user', content: "Generator won't start" }); }} className="p-3 bg-white/5 border border-white/10 rounded-xl text-[10px] font-bold hover:bg-white/10 transition-colors uppercase">
                     Generator won't start
                   </button>
-                  <button onClick={() => { setInput("Car engine knocking sound"); sendMessage("Car engine knocking sound"); }} className="p-3 bg-white/5 border border-white/10 rounded-xl text-[10px] font-bold hover:bg-white/10 transition-colors uppercase">
+                  <button onClick={() => { setInput("Car engine knocking sound"); sendMessage({ role: 'user', content: "Car engine knocking sound" }); }} className="p-3 bg-white/5 border border-white/10 rounded-xl text-[10px] font-bold hover:bg-white/10 transition-colors uppercase">
                     Engine Knocking Sound
                   </button>
                 </div>
