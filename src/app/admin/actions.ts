@@ -111,6 +111,12 @@ export async function saveNavItem(formData: FormData) {
   revalidatePath("/admin");
 }
 
+export async function updateNavItem(id: number, data: Partial<{ label: string, href: string, parentId: number | null, orderIndex: number, isActive: boolean }>) {
+  await db.update(navItems).set(data).where(eq(navItems.id, id));
+  revalidatePath("/");
+  revalidatePath("/admin");
+}
+
 export async function deleteNavItem(id: number) {
   await db.delete(navItems).where(eq(navItems.id, id));
   revalidatePath("/");
