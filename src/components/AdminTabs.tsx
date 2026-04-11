@@ -318,9 +318,9 @@ export default function AdminTabs({
                         <div className={`font-bold text-sm ${metrics.aiStatus === "Active" ? "text-green-600" : "text-red-500"}`}>{metrics.aiStatus}</div>
                      </div>
                      <div className="space-y-1">
-                        <span className="text-[10px] font-bold uppercase text-gray-400">Media Service (Blob)</span>
+                        <span className="text-[10px] font-bold uppercase text-gray-400">Media Storage</span>
                         {/* @ts-ignore */}
-                        <div className={`font-bold text-sm ${metrics.blobStatus === "Active" ? "text-green-600" : "text-red-500"}`}>{metrics.blobStatus}</div>
+                        <div className={`font-bold text-sm ${metrics.mediaStatus.includes("Active") ? "text-green-600" : "text-red-500"}`}>{metrics.mediaStatus}</div>
                      </div>
                   </div>
                </div>

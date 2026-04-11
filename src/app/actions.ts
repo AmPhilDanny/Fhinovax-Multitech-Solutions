@@ -181,7 +181,7 @@ export async function getSystemMetrics() {
     totalLeads: totalLeads[0]?.count || 0,
     seoScore,
     aiStatus: settings.aiApiKey ? "Active" : "Key Missing",
-    blobStatus: process.env.BLOB_READ_WRITE_TOKEN ? "Active" : "Token Missing",
+    mediaStatus: "Database Storage (Active)",
     marketingHealth: settings.lastMarketingRun ? "Healthy" : "Neutral"
   };
 }
