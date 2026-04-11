@@ -37,7 +37,7 @@ import {
   deletePage, 
   saveService, 
   deleteService, 
-  saveNavItem, 
+  updateNavItem,
   deleteNavItem,
   approveAiPost,
   discardAiPost,
@@ -212,28 +212,30 @@ export default function AdminTabs({
     <div className="flex flex-col md:flex-row gap-8">
       {/* Sidebar Tabs */}
       <aside className="w-full md:w-64 flex-shrink-0">
-        <nav className="flex md:flex-col overflow-x-auto md:overflow-visible gap-2 p-1.5 bg-gray-100/50 backdrop-blur-sm rounded-2xl md:bg-transparent no-scrollbar">
-          {tabs.map((tab) => (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-xs md:text-sm font-bold whitespace-nowrap border-2 ${
-                activeTab === tab.id 
-                  ? "bg-brand-blue text-white border-brand-blue shadow-lg shadow-brand-blue/20 active:scale-95" 
-                  : "text-gray-500 border-transparent hover:bg-white hover:text-brand-blue h-full"
-              }`}
-            >
-              <tab.icon size={16} />
-              {tab.label}
-              {activeTab === tab.id && <span className="md:hidden w-1.5 h-1.5 bg-white rounded-full ml-1" />}
-            </button>
-          ))}
-        </nav>
+        <div className="md:sticky md:top-24">
+          <nav className="flex md:flex-col overflow-x-auto md:overflow-visible gap-1.5 p-1 bg-gray-100/50 backdrop-blur-sm rounded-2xl md:bg-transparent no-scrollbar">
+            {tabs.map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`flex items-center gap-2 md:gap-3 px-3 md:px-4 py-2.5 md:py-3 rounded-xl transition-all text-[11px] md:text-sm font-bold whitespace-nowrap border-2 ${
+                  activeTab === tab.id 
+                    ? "bg-brand-blue text-white border-brand-blue shadow-lg shadow-brand-blue/20" 
+                    : "text-gray-500 border-transparent hover:bg-white hover:text-brand-blue"
+                }`}
+              >
+                <tab.icon size={16} />
+                <span className="hidden sm:inline">{tab.label}</span>
+                <span className="sm:hidden">{tab.label.split(' ')[0]}</span>
+              </button>
+            ))}
+          </nav>
+        </div>
       </aside>
 
       {/* Content Area */}
-      <main className="flex-grow bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden min-h-[600px]">
-        <div className="p-6 md:p-8">
+      <main className="flex-grow bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden min-h-[500px]">
+        <div className="p-4 md:p-8">
           {activeTab === "dashboard" && (
             <div className="space-y-8">
                <div className="flex items-center justify-between">
@@ -254,14 +256,14 @@ export default function AdminTabs({
                   </div>
                </div>
 
-               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                  <div className="p-5 bg-white border border-gray-100 rounded-2xl shadow-sm space-y-2">
+               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
+                  <div className="p-4 md:p-5 bg-white border border-gray-100 rounded-2xl shadow-sm space-y-2">
                      <div className="flex items-center justify-between">
-                        <span className="text-[10px] font-bold uppercase text-gray-400">Traffic (24h)</span>
+                        <span className="text-[10px] font-bold uppercase text-gray-400 tracking-widest">Traffic (24h)</span>
                         <TrendingUp size={14} className="text-brand-blue" />
                      </div>
-                     <div className="text-2xl font-black text-gray-900">{metrics.dailyHits}</div>
-                     <p className="text-[10px] text-gray-400">Unique visitors today</p>
+                     <div className="text-2xl font-black text-gray-900 tracking-tight">{metrics.dailyHits}</div>
+                     <p className="text-[9px] text-gray-400 font-bold uppercase italic">Unique visitors today</p>
                   </div>
                   <div className="p-5 bg-white border border-gray-100 rounded-2xl shadow-sm space-y-2">
                      <div className="flex items-center justify-between">
@@ -304,18 +306,19 @@ export default function AdminTabs({
                      <Zap size={18} className="text-brand-gold" />
                      Marketing Pulse
                   </h3>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
                      <div className="space-y-1">
-                        <span className="text-[10px] font-bold uppercase text-gray-400">Last Post Run</span>
+                        <span className="text-[10px] font-bold uppercase text-gray-400">Marketing Runs</span>
                         <div className="font-bold text-sm text-gray-700">{settings.lastMarketingRun ? new Date(settings.lastMarketingRun).toLocaleDateString() : 'Never'}</div>
                      </div>
                      <div className="space-y-1">
-                        <span className="text-[10px] font-bold uppercase text-gray-400">Inbound Leads</span>
-                        <div className="font-bold text-sm text-gray-700">{metrics.totalLeads} potential customers</div>
+                        <span className="text-[10px] font-bold uppercase text-gray-400">AI Core Agent</span>
+                        <div className={`font-bold text-sm ${metrics.aiStatus === "Active" ? "text-green-600" : "text-red-500"}`}>{metrics.aiStatus}</div>
                      </div>
                      <div className="space-y-1">
-                        <span className="text-[10px] font-bold uppercase text-gray-400">Status</span>
-                        <div className="font-bold text-sm text-green-600">{metrics.marketingHealth}</div>
+                        <span className="text-[10px] font-bold uppercase text-gray-400">Media Service (Blob)</span>
+                        {/* @ts-ignore */}
+                        <div className={`font-bold text-sm ${metrics.blobStatus === "Active" ? "text-green-600" : "text-red-500"}`}>{metrics.blobStatus}</div>
                      </div>
                   </div>
                </div>
@@ -530,59 +533,143 @@ export default function AdminTabs({
 
           {activeTab === "menu" && (
             <div className="space-y-8">
-              <div className="flex items-center justify-between">
-                <h2 className="text-xl font-bold text-gray-900">Menu & Submenu Builder</h2>
+              <div className="flex items-center justify-between border-b border-gray-100 pb-4">
+                <div>
+                  <h2 className="text-xl font-black text-gray-900 uppercase italic tracking-tight">Navigation Architect</h2>
+                  <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest mt-1">Manage site hierarchy and link ordering</p>
+                </div>
                 <div className="flex gap-2">
-                   <span className="text-xs bg-brand-blue/10 text-brand-blue px-2 py-1 rounded font-bold uppercase">Dynamic Menu</span>
+                   <span className="text-[10px] bg-brand-blue/10 text-brand-blue px-3 py-1 rounded-full font-black uppercase tracking-tighter shadow-sm border border-brand-blue/10">Dynamic Engine</span>
                 </div>
               </div>
 
-              {/* Current Menu Items */}
-              <div className="space-y-3">
-                 {navItemsList.length === 0 && <p className="text-gray-400 italic text-sm">No menu items yet. Add your first link below.</p>}
-                 {navItemsList.map((item) => (
-                   <div key={item.id} className={`flex items-center justify-between p-4 bg-gray-50 rounded-xl border border-gray-100 ${item.parentId ? 'ml-8 bg-blue-50/30' : ''}`}>
-                      <div className="flex items-center gap-3">
-                         {item.parentId ? <ChevronRight size={14} className="text-brand-blue" /> : <GripVertical size={16} className="text-gray-300" />}
-                         <div>
-                            <span className="font-bold text-gray-700">{item.label}</span>
-                            <span className="text-xs text-gray-400 ml-2">{item.href}</span>
+              {/* Hierarchical Tree Render */}
+              <div className="space-y-6">
+                 {navItemsList.filter((i: any) => !i.parentId).length === 0 && (
+                   <div className="py-20 text-center bg-gray-50 rounded-[2rem] border-2 border-dashed border-gray-100">
+                      <Layout size={40} className="mx-auto text-gray-200 mb-2" />
+                      <p className="text-sm text-gray-400 font-medium">No menu nodes detected. Build your first link below.</p>
+                   </div>
+                 )}
+                 
+                 {navItemsList.filter((i: any) => !i.parentId).sort((a: any, b: any) => a.orderIndex - b.orderIndex).map((parent: any) => (
+                   <div key={parent.id} className="space-y-3">
+                      {/* Top Level Item */}
+                      <div className="flex flex-wrap items-center justify-between p-4 bg-white border border-gray-100 rounded-[2rem] group transition-all hover:border-brand-blue/30 hover:shadow-xl hover:shadow-brand-blue/5">
+                         <div className="flex items-center gap-4">
+                            <div className="w-10 h-10 rounded-2xl bg-gray-50 flex items-center justify-center text-gray-300 group-hover:bg-brand-blue/5 group-hover:text-brand-blue transition-colors">
+                               <GripVertical size={18} />
+                            </div>
+                            <div>
+                               <div className="font-black text-gray-900 flex items-center gap-3 text-base">
+                                  {parent.label}
+                                  {parent.isActive === false && <span className="text-[8px] bg-red-500 text-white px-2 py-0.5 rounded-full uppercase font-black tracking-widest">Hidden</span>}
+                               </div>
+                               <div className="text-[11px] text-gray-400 font-mono tracking-tight bg-gray-50 px-2 py-0.5 rounded-md mt-1 w-fit">{parent.href}</div>
+                            </div>
+                         </div>
+                         <div className="flex items-center gap-2 mt-4 sm:mt-0">
+                            <div className="flex items-center p-1 bg-gray-50 rounded-xl border border-gray-100">
+                               <button 
+                                 onClick={() => updateNavItem(parent.id, { orderIndex: (parent.orderIndex || 0) - 1 })} 
+                                 className="p-2 hover:bg-white rounded-lg text-gray-400 hover:text-brand-blue transition-all" 
+                                 title="Move Up"
+                               >
+                                 <ChevronDown size={14} className="rotate-180" />
+                               </button>
+                               <div className="w-px h-4 bg-gray-200 mx-1" />
+                               <button 
+                                 onClick={() => updateNavItem(parent.id, { orderIndex: (parent.orderIndex || 0) + 1 })} 
+                                 className="p-2 hover:bg-white rounded-lg text-gray-400 hover:text-brand-blue transition-all" 
+                                 title="Move Down"
+                               >
+                                 <ChevronDown size={14} />
+                               </button>
+                            </div>
+                            <button onClick={() => deleteNavItem(parent.id)} className="p-3 bg-red-50 text-red-500 rounded-2xl hover:bg-red-500 hover:text-white transition-all shadow-sm">
+                               <Trash2 size={16} />
+                            </button>
                          </div>
                       </div>
-                      <div className="flex gap-2">
-                         <button onClick={() => deleteNavItem(item.id)} className="text-red-500 hover:bg-red-50 p-2 rounded-lg transition-colors">
-                            <Trash2 size={16} />
-                         </button>
+
+                      {/* Sub Items */}
+                      <div className="ml-8 sm:ml-16 space-y-3 relative before:absolute before:left-[-1.5rem] before:top-[-1rem] before:bottom-[1rem] before:w-0.5 before:bg-brand-blue/10">
+                         {navItemsList.filter((i: any) => i.parentId === parent.id).sort((a: any, b: any) => a.orderIndex - b.orderIndex).map((sub: any) => (
+                            <div key={sub.id} className="flex flex-wrap items-center justify-between p-4 bg-brand-blue/[0.02] border border-blue-100/50 rounded-[1.5rem] group/sub transition-all hover:bg-white hover:shadow-lg">
+                               <div className="flex items-center gap-3">
+                                  <div className="w-8 h-8 rounded-xl bg-blue-50/50 flex items-center justify-center text-brand-blue/30 group-hover/sub:text-brand-blue transition-colors">
+                                     <ChevronRight size={16} />
+                                  </div>
+                                  <div>
+                                     <div className="font-extrabold text-gray-800 text-sm">{sub.label}</div>
+                                     <div className="text-[10px] text-gray-400 font-mono italic">{sub.href}</div>
+                                  </div>
+                               </div>
+                               <div className="flex items-center gap-3 mt-4 sm:mt-0 opacity-40 group-hover/sub:opacity-100 transition-opacity">
+                                  <div className="flex items-center p-1 bg-white rounded-lg border border-gray-100">
+                                     <button onClick={() => updateNavItem(sub.id, { orderIndex: (sub.orderIndex || 0) - 1 })} className="p-1.5 hover:bg-gray-50 rounded text-gray-400 hover:text-brand-blue"><ChevronDown size={14} className="rotate-180" /></button>
+                                     <button onClick={() => updateNavItem(sub.id, { orderIndex: (sub.orderIndex || 0) + 1 })} className="p-1.5 hover:bg-gray-50 rounded text-gray-400 hover:text-brand-blue"><ChevronDown size={14} /></button>
+                                  </div>
+                                  <select 
+                                    onChange={(e) => updateNavItem(sub.id, { parentId: e.target.value ? parseInt(e.target.value) : null })}
+                                    className="text-[10px] font-black uppercase tracking-tighter bg-gray-50 border-gray-100 rounded-lg focus:ring-brand-blue text-gray-500 hover:text-brand-blue cursor-pointer transition-all"
+                                  >
+                                    <option value={parent.id}>Parent: {parent.label}</option>
+                                    <option value="">Move to Root</option>
+                                    {navItemsList.filter((i: any) => i.id !== parent.id && !i.parentId).map((i: any) => (
+                                      <option key={i.id} value={i.id}>Move to {i.label}</option>
+                                    ))}
+                                  </select>
+                                  <button onClick={() => deleteNavItem(sub.id)} className="p-2 text-gray-300 hover:text-red-500 transition-colors"><Trash2 size={14} /></button>
+                               </div>
+                            </div>
+                         ))}
                       </div>
                    </div>
                  ))}
               </div>
 
               {/* Add New Item Form */}
-              <div className="pt-6 border-t mt-8">
-                 <h3 className="text-sm font-bold uppercase text-gray-400 mb-4">Add New Menu Link</h3>
-                 <form action={saveNavItem} className="grid grid-cols-1 md:grid-cols-5 gap-3 items-end">
-                    <div className="md:col-span-1">
-                       <label className="text-[10px] font-bold uppercase text-gray-500 mb-1 block">Label</label>
-                       <input name="label" placeholder="e.g. Home" className="admin-input text-xs" required />
+              <div className="pt-10 border-t border-gray-100">
+                 <div className="mb-6">
+                    <h3 className="text-sm font-black uppercase text-gray-900 tracking-widest flex items-center gap-3">
+                       <span className="w-8 h-8 rounded-full bg-brand-blue text-white flex items-center justify-center text-[10px]">
+                          <Plus size={14} />
+                       </span>
+                       Register New System Node
+                    </h3>
+                 </div>
+                 <form 
+                    onSubmit={async (e) => {
+                      e.preventDefault();
+                      const fd = new FormData(e.currentTarget);
+                      await saveNavItem(fd);
+                      e.currentTarget.reset();
+                    }}
+                    className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 items-end bg-gray-50/50 p-6 rounded-[2.5rem] border border-gray-100 shadow-inner"
+                 >
+                    <div className="space-y-1.5">
+                       <label className="text-[10px] font-black uppercase text-gray-400 px-1 tracking-widest">Node Name</label>
+                       <input name="label" placeholder="e.g. History" className="admin-input bg-white text-xs py-3" required />
                     </div>
-                    <div className="md:col-span-1">
-                       <label className="text-[10px] font-bold uppercase text-gray-500 mb-1 block">Link (href)</label>
-                       <input name="href" placeholder="/" className="admin-input text-xs" required />
+                    <div className="space-y-1.5">
+                       <label className="text-[10px] font-black uppercase text-gray-400 px-1 tracking-widest">Internal Path</label>
+                       <input name="href" placeholder="/history" className="admin-input bg-white text-xs py-3" required />
                     </div>
-                    <div className="md:col-span-1">
-                       <label className="text-[10px) font-bold uppercase text-gray-500 mb-1 block">Parent Link</label>
-                       <select name="parentId" className="admin-input text-xs appearance-none">
-                          <option value="">None (Top Level)</option>
-                          {navItemsList.filter(i => !i.parentId).map(i => <option key={i.id} value={i.id}>{i.label}</option>)}
+                    <div className="space-y-1.5">
+                       <label className="text-[10px] font-black uppercase text-gray-400 px-1 tracking-widest">Hierarchy Parent</label>
+                       <select name="parentId" className="admin-input bg-white text-xs appearance-none py-3 h-[42px]">
+                          <option value="">Root Level</option>
+                          {navItemsList.filter((i: any) => !i.parentId).map((i: any) => <option key={i.id} value={i.id}>{i.label}</option>)}
                        </select>
                     </div>
-                    <div className="md:col-span-1">
-                       <label className="text-[10px] font-bold uppercase text-gray-500 mb-1 block">Order</label>
-                       <input name="orderIndex" type="number" defaultValue="0" className="admin-input text-xs" />
+                    <div className="space-y-1.5">
+                       <label className="text-[10px] font-black uppercase text-gray-400 px-1 tracking-widest">Order Logic</label>
+                       <input name="orderIndex" type="number" defaultValue="0" className="admin-input bg-white text-xs py-3" />
                     </div>
-                    <button type="submit" className="bg-brand-blue text-white rounded-lg h-[42px] flex items-center justify-center gap-2 font-bold text-xs hover:bg-blue-800 transition-colors px-4">
-                       <Plus size={16} /> Add Link
+                    <button type="submit" className="bg-brand-blue text-white rounded-2xl h-[46px] flex items-center justify-center gap-3 font-black text-xs uppercase tracking-tighter hover:bg-blue-800 transition-all shadow-xl shadow-brand-blue/20 active:scale-95 group">
+                       <Plus size={18} className="group-hover:rotate-90 transition-transform" /> 
+                       Inject Node
                     </button>
                  </form>
               </div>

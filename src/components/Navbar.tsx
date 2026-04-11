@@ -134,15 +134,15 @@ export default function Navbar({
                   </div>
                   
                   {hasSub && isSubOpen && (
-                    <div className="pl-6 mt-2 space-y-4 py-2 animate-in slide-in-from-left-4 duration-300">
+                    <div className="pl-6 mt-1 space-y-1 mb-2 animate-in slide-in-from-left-4 duration-300">
                        {subItems.map(sub => (
                          <Link 
                            key={sub.id} 
                            href={sub.href}
                            onClick={() => setIsOpen(false)}
-                           className="block text-gray-500 font-semibold py-2 border-l-4 border-brand-blue/10 pl-4 hover:border-brand-blue transition-colors"
+                           className="block text-gray-400 font-bold py-3 border-l-2 border-brand-blue/5 pl-4 hover:border-brand-blue hover:text-brand-blue transition-all"
                          >
-                           {sub.label}
+                           — {sub.label}
                          </Link>
                        ))}
                     </div>

@@ -117,6 +117,12 @@ export async function getAllNavItems() {
   return finalItems.sort((a, b) => a.orderIndex - b.orderIndex);
 }
 
+export async function updateNavItem(id: number, data: Partial<{ label: string, href: string, parentId: number | null, orderIndex: number, isActive: boolean }>) {
+  await db.update(navItems).set(data).where(eq(navItems.id, id));
+  revalidatePath("/");
+  revalidatePath("/admin");
+}
+
 export async function getAiPosts() {
   return await db.select().from(aiPosts).orderBy(aiPosts.createdAt);
 }
@@ -180,6 +186,7 @@ export async function getSystemMetrics() {
     totalLeads: totalLeads[0]?.count || 0,
     seoScore,
     aiStatus: settings.aiApiKey ? "Active" : "Key Missing",
+    blobStatus: process.env.BLOB_READ_WRITE_TOKEN ? "Active" : "Token Missing",
     marketingHealth: settings.lastMarketingRun ? "Healthy" : "Neutral"
   };
 }
