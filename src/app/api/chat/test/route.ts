@@ -28,7 +28,7 @@ export async function POST(req: Request) {
     } catch (e) {}
 
     const { text } = await generateText({
-      model: google('gemini-1.5-flash-latest'),
+      model: google('gemini-2.0-flash'),
       prompt: customPrompt || 'Respond with exactly the word "CONNECTED" and nothing else.',
     });
 
