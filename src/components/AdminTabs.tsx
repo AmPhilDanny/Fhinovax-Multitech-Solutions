@@ -831,7 +831,8 @@ export default function AdminTabs({
                                 <th className="px-6 py-4 text-[10px] font-bold uppercase text-gray-500">Date</th>
                                 <th className="px-6 py-4 text-[10px] font-bold uppercase text-gray-500">Action</th>
                              </tr>
-                                            <tbody className="divide-y">
+                           </thead>
+                           <tbody className="divide-y">
                              {leadsList.map((lead: any) => (
                                 <tr key={lead.id} className="hover:bg-gray-50/50 transition-colors">
                                    <td className="px-6 py-4">
@@ -888,8 +889,7 @@ export default function AdminTabs({
                                    </td>
                                 </tr>
                              ))}
-                          </tbody>
-          </tbody>
+                           </tbody>
                        </table>
                     </div>
                   )}
