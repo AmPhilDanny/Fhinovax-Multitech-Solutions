@@ -100,6 +100,13 @@ export default function AdminTabs({
     router.replace(`/admin?tab=${tabId}`, { scroll: false });
   };
 
+  // Ensure internal state updates when the URL changes (prop change)
+  useEffect(() => {
+    if (initialTab && initialTab !== activeTab) {
+      setActiveTab(initialTab);
+    }
+  }, [initialTab]);
+
   const [uploading, setUploading] = useState<string | null>(null);
   const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'success' | 'error'>('idle');
   const [saveError, setSaveError] = useState<string | null>(null);
@@ -318,7 +325,7 @@ export default function AdminTabs({
     setTestResult(null);
     try {
       const res = await fetch('/api/chat/test', { 
-        method: 'POST',
+        method: 'POST', 
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({}) 
       });
@@ -367,36 +374,10 @@ export default function AdminTabs({
     handleTestConnection();
   }, []);
 
-
-
-
   return (
-    <div className="flex flex-col md:flex-row gap-8">
-      {/* Sidebar Tabs */}
-      <aside className="w-full md:w-64 flex-shrink-0">
-        <div className="md:sticky md:top-24">
-          <nav className="flex md:flex-col overflow-x-auto md:overflow-visible gap-1.5 p-1 bg-gray-100/50 backdrop-blur-sm rounded-2xl md:bg-transparent no-scrollbar">
-            {tabs.map((tab) => (
-              <button
-                key={tab.id}
-                onClick={() => handleTabChange(tab.id)}
-                className={`flex items-center gap-2 md:gap-3 px-3 md:px-4 py-2.5 md:py-3 rounded-xl transition-all text-[11px] md:text-sm font-bold whitespace-nowrap border-2 ${
-                  activeTab === tab.id 
-                    ? "bg-brand-blue text-white border-brand-blue shadow-lg shadow-brand-blue/20" 
-                    : "text-gray-500 border-transparent hover:bg-white hover:text-brand-blue"
-                }`}
-              >
-                <tab.icon size={16} />
-                <span className="hidden sm:inline">{tab.label}</span>
-                <span className="sm:hidden">{tab.label.split(' ')[0]}</span>
-              </button>
-            ))}
-          </nav>
-        </div>
-      </aside>
-
+    <div className="w-full">
       {/* Content Area */}
-      <main className="flex-grow bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden min-h-[500px]">
+      <main className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden min-h-[500px] w-full">
         <div className="p-4 md:p-8">
           {activeTab === "dashboard" && (
             <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4">

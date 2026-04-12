@@ -1,5 +1,6 @@
 import { cookies } from 'next/headers';
 import Link from 'next/link';
+import AdminSidebarLink from '@/components/AdminSidebarLink';
 
 const NAV_SECTIONS = [
   {
@@ -114,14 +115,12 @@ export default async function AdminLayout({ children }: { children: React.ReactN
               </p>
               <div className="space-y-0.5">
                 {section.items.map((item) => (
-                  <Link
+                  <AdminSidebarLink
                     key={item.href}
                     href={item.href}
-                    className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-gray-600 hover:bg-brand-blue hover:text-white transition-all"
-                  >
-                    <span className="text-base leading-none w-5 text-center">{item.icon}</span>
-                    <span className="leading-tight">{item.label}</span>
-                  </Link>
+                    label={item.label}
+                    icon={item.icon}
+                  />
                 ))}
               </div>
             </div>
