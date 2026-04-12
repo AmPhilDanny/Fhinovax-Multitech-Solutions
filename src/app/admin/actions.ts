@@ -15,7 +15,9 @@ export async function saveSiteSettings(formData: FormData) {
     "aiName", "aiInstructions", "aiTrainingData", "aiApiKey",
     "metaDescription", "metaKeywords", "ogImageUrl",
     "facebookUrl", "instagramUrl", "twitterUrl", "linkedinUrl",
-    "footerText", "copyrightText", "labSystemPrompt", "labWelcomeMessage"
+    "footerText", "copyrightText", "labSystemPrompt", "labWelcomeMessage",
+    "bookPageTitle", "bookPageSubtitle", "onboardPageTitle", "onboardPageSubtitle",
+    "diagnosisPageTitle", "diagnosisPageSubtitle"
   ];
 
   const updateData: Record<string, any> = {

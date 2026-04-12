@@ -926,6 +926,31 @@ export default function AdminTabs({
                   </div>
                </div>
 
+               {/* Onboarding Page Content */}
+               <div className="bg-gray-50 border border-gray-100 p-8 rounded-[2.5rem] space-y-6">
+                  <div className="flex items-center gap-3">
+                     <div className="bg-brand-blue/10 p-2 rounded-lg text-brand-blue">
+                        <Users size={20} />
+                     </div>
+                     <h3 className="text-sm font-black uppercase text-gray-900 tracking-tight italic">Onboarding Page Content</h3>
+                  </div>
+                  <form onSubmit={handleFormSubmit} className="space-y-4">
+                     <div className="grid grid-cols-1 gap-4">
+                        <div className="space-y-1">
+                           <label className="text-[10px] font-black uppercase text-gray-400 px-1">Hero Title</label>
+                           <input name="onboardPageTitle" defaultValue={localSettings.onboardPageTitle || ''} className="admin-input bg-white" placeholder="Elevate Your Engineering Career" />
+                        </div>
+                        <div className="space-y-1">
+                           <label className="text-[10px] font-black uppercase text-gray-400 px-1">Hero Subtitle</label>
+                           <textarea name="onboardPageSubtitle" defaultValue={localSettings.onboardPageSubtitle || ''} className="admin-input bg-white h-24" placeholder="Why should artisans join your network?" />
+                        </div>
+                     </div>
+                     <button type="submit" className="admin-btn-save-sm w-fit mt-2">
+                        <Save size={14} /> Update Onboarding Page
+                     </button>
+                  </form>
+               </div>
+
                <div className="bg-white border rounded-[2.5rem] overflow-hidden shadow-sm">
                   <table className="w-full text-left border-collapse">
                      <thead>
@@ -995,6 +1020,31 @@ export default function AdminTabs({
                      <h2 className="text-xl font-bold text-gray-900 leading-tight">Inspection & Service Feed</h2>
                      <p className="text-xs text-gray-500">Real-time requests for technical inspections and repairs.</p>
                   </div>
+               </div>
+
+               {/* Page Content Settings */}
+               <div className="bg-gray-50 border border-gray-100 p-8 rounded-[2.5rem] space-y-6">
+                  <div className="flex items-center gap-3">
+                     <div className="bg-brand-blue/10 p-2 rounded-lg text-brand-blue">
+                        <FileText size={20} />
+                     </div>
+                     <h3 className="text-sm font-black uppercase text-gray-900 tracking-tight italic">Booking Page Content</h3>
+                  </div>
+                  <form onSubmit={handleFormSubmit} className="space-y-4">
+                     <div className="grid grid-cols-1 gap-4">
+                        <div className="space-y-1">
+                           <label className="text-[10px] font-black uppercase text-gray-400 px-1">Main Heading</label>
+                           <input name="bookPageTitle" defaultValue={localSettings.bookPageTitle || ''} className="admin-input bg-white" placeholder="Request a Technical Inspection Today" />
+                        </div>
+                        <div className="space-y-1">
+                           <label className="text-[10px] font-black uppercase text-gray-400 px-1">Subtitle / Description</label>
+                           <textarea name="bookPageSubtitle" defaultValue={localSettings.bookPageSubtitle || ''} className="admin-input bg-white h-24" placeholder="Describe your inspection services..." />
+                        </div>
+                     </div>
+                     <button type="submit" className="admin-btn-save-sm w-fit mt-2">
+                        <Save size={14} /> Update Booking Page
+                     </button>
+                  </form>
                </div>
 
                <div className="bg-white border rounded-[2.5rem] overflow-hidden shadow-sm">
@@ -1233,6 +1283,31 @@ export default function AdminTabs({
                        <Save size={16} /> Save AI & Context
                     </button>
                   </form>
+
+                  {/* Diagnosis Page Content */}
+                  <div className="bg-gray-50 border border-gray-100 p-8 rounded-[2.5rem] space-y-6 mt-10 border-t pt-10">
+                     <div className="flex items-center gap-3">
+                        <div className="bg-brand-blue/10 p-2 rounded-lg text-brand-blue">
+                           <Cpu size={20} />
+                        </div>
+                        <h3 className="text-sm font-black uppercase text-gray-900 tracking-tight italic">Diagnosis Page Header Content</h3>
+                     </div>
+                     <form onSubmit={handleFormSubmit} className="space-y-4">
+                        <div className="grid grid-cols-1 gap-4">
+                           <div className="space-y-1">
+                              <label className="text-[10px] font-black uppercase text-gray-400 px-1">Main Page Heading</label>
+                              <input name="diagnosisPageTitle" defaultValue={localSettings.diagnosisPageTitle || ''} className="admin-input bg-white" placeholder="Intelligent Online Fault Diagnosis" />
+                           </div>
+                           <div className="space-y-1">
+                              <label className="text-[10px] font-black uppercase text-gray-400 px-1">Main Page Subtitle</label>
+                              <textarea name="diagnosisPageSubtitle" defaultValue={localSettings.diagnosisPageSubtitle || ''} className="admin-input bg-white h-24" placeholder="How does the AI help in diagnosis?" />
+                           </div>
+                        </div>
+                        <button type="submit" className="admin-btn-save-sm w-fit mt-2">
+                           <Save size={14} /> Update Diagnosis Page
+                        </button>
+                     </form>
+                  </div>
                 </div>
 
                 {/* AI Lab Diagnostic Restoration */}

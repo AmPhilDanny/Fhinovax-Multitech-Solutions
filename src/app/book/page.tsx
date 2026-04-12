@@ -1,10 +1,11 @@
-import { getActiveServices } from "@/app/actions";
+import { getActiveServices, getSiteSettings } from "@/app/actions";
 import BookingForm from "./BookingForm";
 import Link from "next/link";
 import { Hammer } from "lucide-react";
 
 export default async function BookPage() {
   const services = await getActiveServices();
+  const settings = await getSiteSettings();
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
@@ -14,7 +15,7 @@ export default async function BookPage() {
               <div className="bg-brand-blue p-2 rounded-lg text-white group-hover:bg-blue-800 transition-all">
                 <Hammer size={18} />
               </div>
-              <span className="font-black uppercase tracking-widest text-gray-900">Phinovax <span className="text-brand-blue">Booking</span></span>
+              <span className="font-black uppercase tracking-widest text-gray-900">{settings.siteName.split(' ')[0]} <span className="text-brand-blue">Booking</span></span>
            </Link>
            <Link href="/services" className="text-xs font-black uppercase text-gray-500 hover:text-brand-blue transition-all">
               View All Specialties
@@ -29,11 +30,11 @@ export default async function BookPage() {
               <div className="inline-flex items-center gap-2 px-3 py-1 bg-brand-blue/10 text-brand-blue rounded-full text-[10px] font-black uppercase tracking-widest">
                  Professional Technical Services
               </div>
-              <h1 className="text-5xl font-black text-gray-900 leading-tight">
-                Request a <span className="text-brand-blue underline decoration-4 underline-offset-8">Technical Inspection</span> Today.
+              <h1 className="text-5xl font-black text-gray-900 leading-tight underline decoration-brand-blue decoration-4 underline-offset-8">
+                {settings.bookPageTitle || "Request a Precision Technical Inspection Today."}
               </h1>
               <p className="text-lg text-gray-500 font-medium leading-relaxed">
-                Whether it's a generator fault or a complex vehicle diagnostic, our verified technicians are ready to deploy to your location.
+                {settings.bookPageSubtitle || "Whether it's a generator fault or a complex vehicle diagnostic, our verified technicians are ready to deploy to your location."}
               </p>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4">

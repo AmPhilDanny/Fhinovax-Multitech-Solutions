@@ -9,10 +9,14 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 export default function DiagnosisClient({ 
   welcomeMessage, 
-  systemName 
+  systemName,
+  pageTitle,
+  pageSubtitle
 }: { 
   welcomeMessage?: string | null, 
-  systemName: string 
+  systemName: string,
+  pageTitle: string,
+  pageSubtitle: string
 }) {
   const [userId, setUserId] = useState<string>('');
   const [input, setInput] = useState('');
@@ -128,10 +132,15 @@ export default function DiagnosisClient({
                   <Cpu className="text-brand-blue relative z-10" size={64} />
                 </div>
                 <div className="space-y-2">
-                  <h2 className="text-2xl font-black uppercase tracking-tight">Initiate Diagnosis</h2>
+                  <h2 className="text-2xl font-black uppercase tracking-tight">{pageTitle}</h2>
                   <p className="text-gray-400 text-sm leading-relaxed">
-                    {welcomeMessage || `Welcome to the Phinovax Assistant. I specialize in identifying technical faults in **Generators** and **Motor Vehicles**. What issue are you experiencing today?`}
+                    {pageSubtitle}
                   </p>
+                  <div className="pt-4 border-t border-white/5 mt-4">
+                     <p className="text-[10px] text-gray-400 italic font-medium">
+                        {welcomeMessage || `Welcome to the Phinovax Assistant. I specialize in identifying technical faults in Generators and Motor Vehicles. What issue are you experiencing today?`}
+                     </p>
+                  </div>
                 </div>
                 <div className="grid grid-cols-2 gap-3 w-full">
                   <button onClick={() => { setInput("Generator won't start"); sendMessage({ text: "Generator won't start" }); }} className="p-3 bg-white/5 border border-white/10 rounded-xl text-[10px] font-bold hover:bg-white/10 transition-colors uppercase">

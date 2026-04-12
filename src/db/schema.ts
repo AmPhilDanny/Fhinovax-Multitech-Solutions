@@ -32,6 +32,15 @@ export const siteSettings = pgTable("site_settings", {
   aiApiKey: text("ai_api_key"),
   labSystemPrompt: text("lab_system_prompt"), // Specialized prompt for diagnosis
   labWelcomeMessage: text("lab_welcome_message"), // Initial AI message in diagnosis page
+  
+  // Core Page Customization
+  bookPageTitle: text("book_page_title").default("Request a Precision Technical Inspection Today"),
+  bookPageSubtitle: text("book_page_subtitle").default("Whether it's a generator fault or a complex vehicle diagnostic, our verified technicians are ready to deploy to your location."),
+  onboardPageTitle: text("onboard_page_title").default("Elevate Your Engineering Career"),
+  onboardPageSubtitle: text("onboard_page_subtitle").default("Join the most advanced technical service network in Nigeria. We link top-tier mechanics and technicians with premium clients."),
+  diagnosisPageTitle: text("diagnosis_page_title").default("Intelligent Online Fault Diagnosis"),
+  diagnosisPageSubtitle: text("diagnosis_page_subtitle").default("Interact with our specialized AI system to profer immediate solutions to your technical issues."),
+
   lastMarketingRun: timestamp("last_marketing_run"),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
