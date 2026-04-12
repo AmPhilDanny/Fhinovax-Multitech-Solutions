@@ -38,7 +38,7 @@ import {
   Construction,
   Cpu,
   ArrowRight,
-  Map,
+  Map as MapIcon,
   GripHorizontal,
   PanelBottom,
   Phone,
@@ -1004,12 +1004,12 @@ export default function AdminTabs({
                         </tr>
                      </thead>
                      <tbody className="divide-y">
-                        {artisansList.length === 0 ? (
+                        {artisansList?.length === 0 ? (
                            <tr>
                               <td colSpan={4} className="px-6 py-12 text-center text-gray-400 italic">No technicians have registered yet.</td>
                            </tr>
                         ) : (
-                           artisansList.map((artisan: any) => (
+                           artisansList?.map((artisan: any) => (
                               <tr key={artisan.id} className="hover:bg-gray-50 transition-colors">
                                  <td className="px-6 py-4">
                                     <div className="flex items-center gap-3">
@@ -1125,21 +1125,21 @@ export default function AdminTabs({
                         </tr>
                      </thead>
                      <tbody className="divide-y">
-                        {bookingsList.length === 0 ? (
+                        {bookingsList?.length === 0 ? (
                             <tr>
                                <td colSpan={4} className="px-6 py-12 text-center text-gray-400 italic">No technical bookings recorded yet.</td>
                             </tr>
                          ) : (
-                            bookingsList.map((booking: any) => (
+                            bookingsList?.map((booking: any) => (
                                <tr key={booking.id} className="hover:bg-gray-50 transition-colors">
-                                  <td className="px-6 py-4">
-                                     <div className="font-black text-gray-900 text-sm">{booking.clientName}</div>
-                                     <div className="text-xs text-brand-blue font-bold">{booking.clientPhone}</div>
-                                  </td>
-                                  <td className="px-6 py-4">
-                                     <div className="text-xs text-gray-700 font-bold line-clamp-1">{booking.issueDescription}</div>
-                                     <div className="text-[10px] text-gray-400 flex items-center gap-1"><Map size={10} /> {booking.location}</div>
-                                  </td>
+                                 <td className="px-6 py-4">
+                                    <div className="font-black text-gray-900 text-sm">{booking.clientName || 'Unnamed Client'}</div>
+                                    <div className="text-xs text-brand-blue font-bold">{booking.clientPhone || 'No Phone'}</div>
+                                 </td>
+                                 <td className="px-6 py-4">
+                                    <div className="text-xs text-gray-700 font-bold line-clamp-1">{booking.issueDescription || 'No description'}</div>
+                                    <div className="text-[10px] text-gray-400 flex items-center gap-1"><MapIcon size={10} /> {booking.location || 'Unknown'}</div>
+                                 </td>
                                   <td className="px-6 py-4">
                                      <select 
                                        value={booking.assignedArtisanId || ""} 
@@ -1147,7 +1147,7 @@ export default function AdminTabs({
                                        className="text-[10px] font-black uppercase text-brand-blue bg-blue-50 border-none rounded-lg px-2 py-1 focus:ring-brand-blue cursor-pointer"
                                      >
                                         <option value="">No Mechanic Linked</option>
-                                        {artisansList.filter(a => a.status === 'active').map(a => (
+                                        {artisansList?.filter((a: any) => a.status === 'active').map((a: any) => (
                                            <option key={a.id} value={a.id}>{a.name} ({a.specialty})</option>
                                         ))}
                                      </select>
