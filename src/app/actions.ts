@@ -41,6 +41,15 @@ export async function getSiteSettings() {
       aiApiKey: "",
       labSystemPrompt: "",
       labWelcomeMessage: "",
+
+      // New Page Content Fields
+      bookPageTitle: "",
+      bookPageSubtitle: "",
+      onboardPageTitle: "",
+      onboardPageSubtitle: "",
+      diagnosisPageTitle: "",
+      diagnosisPageSubtitle: "",
+
       lastMarketingRun: null as Date | null,
       updatedAt: new Date(),
     };
