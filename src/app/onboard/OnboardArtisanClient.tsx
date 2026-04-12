@@ -8,12 +8,20 @@ import Link from "next/link";
 export default function OnboardArtisanClient({ 
   siteName,
   pageTitle, 
-  pageSubtitle 
+  pageSubtitle,
+  specialtiesStr,
+  successTitle,
+  successMessage
 }: { 
   siteName: string,
   pageTitle: string, 
-  pageSubtitle: string 
+  pageSubtitle: string,
+  specialtiesStr: string,
+  successTitle: string,
+  successMessage: string
 }) {
+  const specialties = specialtiesStr.split(',').map(s => s.trim()).filter(s => s.length > 0);
+
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [error, setError] = useState("");
 
@@ -43,9 +51,9 @@ export default function OnboardArtisanClient({
           <div className="w-20 h-20 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-8 shadow-lg shadow-green-200">
             <CheckCircle size={40} className="text-white" />
           </div>
-          <h1 className="text-3xl font-black text-gray-900 mb-4 tracking-tight">Application Received!</h1>
+          <h1 className="text-3xl font-black text-gray-900 mb-4 tracking-tight">{successTitle || "Application Received!"}</h1>
           <p className="text-gray-500 mb-8 font-medium leading-relaxed">
-            Thank you for joining the {siteName} Network. Our technical team will review your qualifications and contact you shortly.
+            {successMessage || `Thank you for joining the ${siteName} Network. Our technical team will review your qualifications and contact you shortly.`}
           </p>
           <Link href="/" className="inline-flex items-center gap-2 bg-brand-blue text-white px-8 py-4 rounded-2xl font-black text-sm uppercase tracking-widest hover:bg-blue-800 transition-all shadow-xl shadow-brand-blue/20">
             Return Home <ArrowRight size={18} />
@@ -121,18 +129,16 @@ export default function OnboardArtisanClient({
                 </div>
                 <div className="space-y-2">
                    <label className="text-[10px] font-black uppercase text-gray-400 tracking-widest px-1">Specialty</label>
-                   <select 
-                     name="specialty" 
-                     required
-                     className="w-full bg-white border border-gray-100 rounded-2xl px-5 py-4 text-sm font-bold focus:ring-4 focus:ring-brand-blue/5 focus:border-brand-blue outline-none transition-all shadow-sm appearance-none"
-                   >
-                      <option value="">Select Specialty</option>
-                      <option value="Mechanical Engineer">Mechanical Engineer</option>
-                      <option value="Auto Electrician">Auto Electrician</option>
-                      <option value="Generator Specialist">Generator Specialist</option>
-                      <option value="HVAC Systems">HVAC Systems</option>
-                      <option value="Digital Diagnostics">Digital Diagnostics</option>
-                   </select>
+                    <select 
+                      name="specialty" 
+                      required
+                      className="w-full bg-white border border-gray-100 rounded-2xl px-5 py-4 text-sm font-bold focus:ring-4 focus:ring-brand-blue/5 focus:border-brand-blue outline-none transition-all shadow-sm appearance-none"
+                    >
+                       <option value="">Select Specialty</option>
+                       {specialties.map((s, idx) => (
+                          <option key={idx} value={s}>{s}</option>
+                       ))}
+                    </select>
                 </div>
              </div>
 

@@ -50,6 +50,13 @@ export async function getSiteSettings() {
       diagnosisPageTitle: "",
       diagnosisPageSubtitle: "",
 
+      // New Form Customization Fields
+      onboardSpecialties: "Mechanical Engineer, Auto Electrician, Generator Specialist, HVAC Systems, Digital Diagnostics",
+      bookSuccessTitle: "Request Seeded",
+      bookSuccessMessage: "We have received your technical inspection request. A Phinovax representative will call you shortly to confirm the appointment.",
+      onboardSuccessTitle: "Application Received!",
+      onboardSuccessMessage: "Thank you for joining the Phinovax Network. Our technical team will review your qualifications and contact you shortly.",
+
       lastMarketingRun: null as Date | null,
       updatedAt: new Date(),
     };

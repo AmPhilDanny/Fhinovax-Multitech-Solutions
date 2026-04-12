@@ -219,8 +219,8 @@ export default async function Home() {
                </div>
             </div>
 
-            <div className="w-full md:w-1/2 h-[400px] bg-gray-100 rounded-[2.5rem] overflow-hidden shadow-2xl border-8 border-white">
-               {settings.googleMapsEmbed ? (
+            <div className="w-full md:w-1/2 h-[400px] bg-gray-100 rounded-[2.5rem] overflow-hidden shadow-2xl border-8 border-white group relative">
+               {settings.googleMapsEmbed && settings.googleMapsEmbed.includes('google.com/maps/embed') ? (
                  <iframe 
                    src={settings.googleMapsEmbed} 
                    className="w-full h-full border-none" 
@@ -229,9 +229,21 @@ export default async function Home() {
                    referrerPolicy="no-referrer-when-downgrade" 
                  />
                ) : (
-                 <div className="w-full h-full flex flex-col items-center justify-center text-gray-400 gap-3">
-                    <LucideIcons.Map size={48} />
-                    <p className="text-sm font-medium">Map location not set in admin panel.</p>
+                 <div className="w-full h-full flex flex-col items-center justify-center text-center p-8 gap-4 bg-gray-50">
+                    <div className="bg-white p-6 rounded-full shadow-lg text-gray-400 group-hover:scale-110 transition-transform">
+                       <LucideIcons.Map size={48} />
+                    </div>
+                    <div className="space-y-2">
+                       <p className="text-sm font-black uppercase text-gray-900 tracking-tight italic">Workshop Coordinates</p>
+                       <p className="text-xs text-gray-500 font-medium max-w-[200px] mx-auto">Open Google Maps to view our physical location and get directions.</p>
+                    </div>
+                    <Link 
+                      href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(settings.address)}`}
+                      target="_blank"
+                      className="inline-flex items-center gap-2 bg-brand-blue text-white px-6 py-3 rounded-xl font-black text-[10px] uppercase tracking-widest shadow-xl shadow-brand-blue/20 hover:bg-blue-800 transition-all"
+                    >
+                       Open In Maps <LucideIcons.ExternalLink size={14} />
+                    </Link>
                  </div>
                )}
             </div>

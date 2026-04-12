@@ -5,7 +5,15 @@ import { saveBooking } from "@/app/actions";
 import { CheckCircle, Loader2, ArrowRight, Magnet } from "lucide-react";
 import Link from "next/link";
 
-export default function BookingForm({ services }: { services: any[] }) {
+export default function BookingForm({ 
+  services,
+  successTitle,
+  successMessage 
+}: { 
+  services: any[],
+  successTitle: string,
+  successMessage: string
+}) {
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [error, setError] = useState("");
 
@@ -34,9 +42,9 @@ export default function BookingForm({ services }: { services: any[] }) {
         <div className="w-20 h-20 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg shadow-green-100">
            <CheckCircle size={40} className="text-white" />
         </div>
-        <h3 className="text-2xl font-black text-gray-900 mb-2 uppercase">Request Seeded</h3>
+        <h3 className="text-2xl font-black text-gray-900 mb-2 uppercase">{successTitle || "Request Seeded"}</h3>
         <p className="text-gray-500 font-medium mb-8">
-           We have received your technical inspection request. A Phinovax representative will call you shortly to confirm the appointment.
+           {successMessage || "We have received your technical inspection request. A Phinovax representative will call you shortly to confirm the appointment."}
         </p>
         <Link href="/" className="inline-flex items-center gap-2 text-brand-blue font-black text-xs uppercase tracking-widest hover:underline">
           Return to home <ArrowRight size={14} />

@@ -1,5 +1,6 @@
 import { getSiteSettings } from "@/app/actions";
-import { MapPin, Phone, Mail, Clock, MessageSquare, ExternalLink } from "lucide-react";
+import { MapPin, Phone, Mail, Clock, MessageSquare, ExternalLink, Map as MapIcon } from "lucide-react";
+import Link from "next/link";
 
 export default async function ContactPage() {
   const settings = await getSiteSettings();
@@ -102,22 +103,34 @@ export default async function ContactPage() {
                    </a>
                 </div>
 
-                <div className="w-full h-[450px] bg-gray-100 rounded-[2rem] overflow-hidden border-4 border-gray-50 shadow-inner translate-z-0">
-                   {settings.googleMapsEmbed ? (
-                     <iframe 
-                       src={settings.googleMapsEmbed} 
-                       className="w-full h-full border-none" 
-                       allowFullScreen={true} 
-                       loading="lazy" 
-                       referrerPolicy="no-referrer-when-downgrade" 
-                     />
-                   ) : (
-                     <div className="w-full h-full flex flex-col items-center justify-center text-center p-12 space-y-4">
-                        <MapPin size={48} className="text-gray-300" />
-                        <p className="text-gray-400 italic">Google Maps data is loading or not configured in admin panel.</p>
-                     </div>
-                   )}
-                </div>
+                <div className="w-full md:w-1/2 h-[400px] bg-gray-100 rounded-[2.5rem] overflow-hidden shadow-2xl border-8 border-white group relative">
+               {settings.googleMapsEmbed && settings.googleMapsEmbed.includes('google.com/maps/embed') ? (
+                 <iframe 
+                   src={settings.googleMapsEmbed} 
+                   className="w-full h-full border-none" 
+                   allowFullScreen={true} 
+                   loading="lazy" 
+                   referrerPolicy="no-referrer-when-downgrade" 
+                 />
+               ) : (
+                 <div className="w-full h-full flex flex-col items-center justify-center text-center p-8 gap-4 bg-gray-50">
+                    <div className="bg-white p-6 rounded-full shadow-lg text-gray-400 group-hover:scale-110 transition-transform">
+                       <MapIcon size={48} />
+                    </div>
+                    <div className="space-y-2">
+                       <p className="text-sm font-black uppercase text-gray-900 tracking-tight italic">Workshop Coordinates</p>
+                       <p className="text-xs text-gray-500 font-medium max-w-[200px] mx-auto">Open Google Maps to view our physical location and get directions.</p>
+                    </div>
+                    <Link 
+                      href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(settings.address)}`}
+                      target="_blank"
+                      className="inline-flex items-center gap-2 bg-brand-blue text-white px-6 py-3 rounded-xl font-black text-[10px] uppercase tracking-widest shadow-xl shadow-brand-blue/20 hover:bg-blue-800 transition-all"
+                    >
+                       Open In Maps <ExternalLink size={14} />
+                    </Link>
+                 </div>
+               )}
+            </div>
              </div>
 
              <div className="bg-brand-gold p-8 rounded-[3rem] flex items-center justify-between text-brand-dark gap-6">

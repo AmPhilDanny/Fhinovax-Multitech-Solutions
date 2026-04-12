@@ -951,6 +951,48 @@ export default function AdminTabs({
                   </form>
                </div>
 
+               {/* Onboarding specialties & Success Messaging */}
+               <div className="bg-white border border-gray-100 p-8 rounded-[2.5rem] space-y-8">
+                  <form onSubmit={handleFormSubmit} className="space-y-6">
+                     <div className="space-y-4">
+                        <div className="flex items-center gap-3">
+                           <div className="bg-brand-blue/10 p-2 rounded-lg text-brand-blue">
+                              <ListChecks size={20} />
+                           </div>
+                           <h3 className="text-sm font-black uppercase text-gray-900 tracking-tight italic">Dropdown Options: Specialties</h3>
+                        </div>
+                        <div className="space-y-1">
+                           <label className="text-[10px] font-black uppercase text-gray-400 px-1">Comma-Separated Specialties</label>
+                           <textarea name="onboardSpecialties" defaultValue={localSettings.onboardSpecialties || ''} className="admin-input bg-gray-50 border-none h-20 font-mono text-xs" placeholder="e.g. Mechanical Engineer, Auto Electrician..." />
+                           <p className="text-[9px] text-gray-400 italic">Separate each category with a comma. These will appear in the registration dropdown.</p>
+                        </div>
+                     </div>
+
+                     <div className="space-y-4 pt-6 border-t">
+                        <div className="flex items-center gap-3">
+                           <div className="bg-green-500/10 p-2 rounded-lg text-green-600">
+                              <CheckCircle size={20} />
+                           </div>
+                           <h3 className="text-sm font-black uppercase text-gray-900 tracking-tight italic">Onboarding Success Screen</h3>
+                        </div>
+                        <div className="grid grid-cols-1 gap-4">
+                           <div className="space-y-1">
+                              <label className="text-[10px] font-black uppercase text-gray-400 px-1">Screen Heading</label>
+                              <input name="onboardSuccessTitle" defaultValue={localSettings.onboardSuccessTitle || ''} className="admin-input bg-gray-50 border-none" placeholder="Application Received!" />
+                           </div>
+                           <div className="space-y-1">
+                              <label className="text-[10px] font-black uppercase text-gray-400 px-1">Success Details</label>
+                              <textarea name="onboardSuccessMessage" defaultValue={localSettings.onboardSuccessMessage || ''} className="admin-input bg-gray-50 border-none h-24" placeholder="Thank you for joining..." />
+                           </div>
+                        </div>
+                     </div>
+                     
+                     <button type="submit" className="admin-btn-save-sm w-fit">
+                        <Save size={14} /> Update Form Configuration
+                     </button>
+                  </form>
+               </div>
+
                <div className="bg-white border rounded-[2.5rem] overflow-hidden shadow-sm">
                   <table className="w-full text-left border-collapse">
                      <thead>
@@ -1030,22 +1072,47 @@ export default function AdminTabs({
                      </div>
                      <h3 className="text-sm font-black uppercase text-gray-900 tracking-tight italic">Booking Page Content</h3>
                   </div>
-                  <form onSubmit={handleFormSubmit} className="space-y-4">
-                     <div className="grid grid-cols-1 gap-4">
-                        <div className="space-y-1">
-                           <label className="text-[10px] font-black uppercase text-gray-400 px-1">Main Heading</label>
-                           <input name="bookPageTitle" defaultValue={localSettings.bookPageTitle || ''} className="admin-input bg-white" placeholder="Request a Technical Inspection Today" />
-                        </div>
-                        <div className="space-y-1">
-                           <label className="text-[10px] font-black uppercase text-gray-400 px-1">Subtitle / Description</label>
-                           <textarea name="bookPageSubtitle" defaultValue={localSettings.bookPageSubtitle || ''} className="admin-input bg-white h-24" placeholder="Describe your inspection services..." />
-                        </div>
-                     </div>
-                     <button type="submit" className="admin-btn-save-sm w-fit mt-2">
-                        <Save size={14} /> Update Booking Page
-                     </button>
-                  </form>
-               </div>
+                      <form onSubmit={handleFormSubmit} className="space-y-4">
+                         <div className="grid grid-cols-1 gap-4">
+                            <div className="space-y-1">
+                               <label className="text-[10px] font-black uppercase text-gray-400 px-1">Main Heading</label>
+                               <input name="bookPageTitle" defaultValue={localSettings.bookPageTitle || ''} className="admin-input bg-white" placeholder="Request a Technical Inspection Today" />
+                            </div>
+                            <div className="space-y-1">
+                               <label className="text-[10px] font-black uppercase text-gray-400 px-1">Subtitle / Description</label>
+                               <textarea name="bookPageSubtitle" defaultValue={localSettings.bookPageSubtitle || ''} className="admin-input bg-white h-24" placeholder="Describe your inspection services..." />
+                            </div>
+                         </div>
+                         <button type="submit" className="admin-btn-save-sm w-fit mt-2">
+                            <Save size={14} /> Update Booking Page
+                         </button>
+                      </form>
+                   </div>
+
+                   {/* Booking Form Completion Messaging */}
+                   <div className="bg-white border border-gray-100 p-8 rounded-[2.5rem] space-y-6">
+                      <div className="flex items-center gap-3">
+                         <div className="bg-green-500/10 p-2 rounded-lg text-green-600">
+                            <CheckCircle size={20} />
+                         </div>
+                         <h3 className="text-sm font-black uppercase text-gray-900 tracking-tight italic">Booking Success Message</h3>
+                      </div>
+                      <form onSubmit={handleFormSubmit} className="space-y-4">
+                         <div className="grid grid-cols-1 gap-4">
+                            <div className="space-y-1">
+                               <label className="text-[10px] font-black uppercase text-gray-400 px-1">Success Heading</label>
+                               <input name="bookSuccessTitle" defaultValue={localSettings.bookSuccessTitle || ''} className="admin-input bg-gray-50 border-none" placeholder="Request Seeded" />
+                            </div>
+                            <div className="space-y-1">
+                               <label className="text-[10px] font-black uppercase text-gray-400 px-1">Success Details</label>
+                               <textarea name="bookSuccessMessage" defaultValue={localSettings.bookSuccessMessage || ''} className="admin-input bg-gray-50 border-none h-24" placeholder="Describe next steps for the client..." />
+                            </div>
+                         </div>
+                         <button type="submit" className="admin-btn-save-sm w-fit mt-2">
+                            <Save size={14} /> Update Success Message
+                         </button>
+                      </form>
+                   </div>
 
                <div className="bg-white border rounded-[2.5rem] overflow-hidden shadow-sm">
                   <table className="w-full text-left border-collapse">
@@ -1247,15 +1314,19 @@ export default function AdminTabs({
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                       <div className="space-y-1">
-                          <label className="text-xs font-bold uppercase text-gray-400">Google Maps Embed URL</label>
-                          <input name="googleMapsEmbed" value={localSettings.googleMapsEmbed || ''} onChange={e => updateField('googleMapsEmbed', e.target.value)} className="admin-input" placeholder="https://www.google.com/maps/embed?..." />
-                       </div>
-                       <div className="space-y-1">
-                          <label className="text-xs font-bold uppercase text-gray-400">AI Agent Display Name</label>
-                          <input name="aiName" value={localSettings.aiName || ''} onChange={e => updateField('aiName', e.target.value)} className="admin-input" placeholder="e.g. Phinovax Rep" />
-                       </div>
-                    </div>
+                        <div className="space-y-1">
+                           <div className="flex items-center justify-between px-1">
+                              <label className="text-xs font-bold uppercase text-gray-400">Google Maps Embed URL</label>
+                              <a href="https://www.google.com/maps" target="_blank" className="text-[9px] text-brand-blue font-bold uppercase hover:underline">Get Link from Maps</a>
+                           </div>
+                           <input name="googleMapsEmbed" value={localSettings.googleMapsEmbed || ''} onChange={e => updateField('googleMapsEmbed', e.target.value)} className="admin-input" placeholder="https://www.google.com/maps/embed?..." />
+                           <p className="text-[9px] text-gray-400 px-1 italic">Use the 'Embed a map' option in Google Maps 'Share' menu to get the correct URL starting with 'https://www.google.com/maps/embed...'.</p>
+                        </div>
+                        <div className="space-y-1">
+                           <label className="text-xs font-bold uppercase text-gray-400">AI Agent Display Name</label>
+                           <input name="aiName" value={localSettings.aiName || ''} onChange={e => updateField('aiName', e.target.value)} className="admin-input" placeholder="e.g. Phinovax Rep" />
+                        </div>
+                     </div>
 
                    <div className="space-y-1">
                       <label className="text-xs font-bold uppercase text-gray-400">Google Business Details</label>
@@ -1304,7 +1375,32 @@ export default function AdminTabs({
                            </div>
                         </div>
                         <button type="submit" className="admin-btn-save-sm w-fit mt-2">
-                           <Save size={14} /> Update Diagnosis Page
+                           <Save size={14} /> Update Booking Page
+                        </button>
+                     </form>
+                  </div>
+
+                  {/* Booking Form Completion Messaging */}
+                  <div className="bg-white border border-gray-100 p-8 rounded-[2.5rem] space-y-6">
+                     <div className="flex items-center gap-3">
+                        <div className="bg-green-500/10 p-2 rounded-lg text-green-600">
+                           <CheckCircle size={20} />
+                        </div>
+                        <h3 className="text-sm font-black uppercase text-gray-900 tracking-tight italic">Booking Success Message</h3>
+                     </div>
+                     <form onSubmit={handleFormSubmit} className="space-y-4">
+                        <div className="grid grid-cols-1 gap-4">
+                           <div className="space-y-1">
+                              <label className="text-[10px] font-black uppercase text-gray-400 px-1">Success Heading</label>
+                              <input name="bookSuccessTitle" defaultValue={localSettings.bookSuccessTitle || ''} className="admin-input bg-gray-50 border-none" placeholder="Request Seeded" />
+                           </div>
+                           <div className="space-y-1">
+                              <label className="text-[10px] font-black uppercase text-gray-400 px-1">Success Details</label>
+                              <textarea name="bookSuccessMessage" defaultValue={localSettings.bookSuccessMessage || ''} className="admin-input bg-gray-50 border-none h-24" placeholder="Describe next steps for the client..." />
+                           </div>
+                        </div>
+                        <button type="submit" className="admin-btn-save-sm w-fit mt-2">
+                           <Save size={14} /> Update Success Message
                         </button>
                      </form>
                   </div>

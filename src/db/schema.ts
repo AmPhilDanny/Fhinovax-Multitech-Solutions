@@ -41,6 +41,13 @@ export const siteSettings = pgTable("site_settings", {
   diagnosisPageTitle: text("diagnosis_page_title").default("Intelligent Online Fault Diagnosis"),
   diagnosisPageSubtitle: text("diagnosis_page_subtitle").default("Interact with our specialized AI system to profer immediate solutions to your technical issues."),
 
+  // Form Customization
+  onboardSpecialties: text("onboard_specialties").default("Mechanical Engineer, Auto Electrician, Generator Specialist, HVAC Systems, Digital Diagnostics"),
+  bookSuccessTitle: text("book_success_title").default("Request Seeded"),
+  bookSuccessMessage: text("book_success_message").default("We have received your technical inspection request. A Phinovax representative will call you shortly to confirm the appointment."),
+  onboardSuccessTitle: text("onboard_success_title").default("Application Received!"),
+  onboardSuccessMessage: text("onboard_success_message").default("Thank you for joining the Phinovax Network. Our technical team will review your qualifications and contact you shortly."),
+
   lastMarketingRun: timestamp("last_marketing_run"),
   updatedAt: timestamp("updated_at").defaultNow(),
 });

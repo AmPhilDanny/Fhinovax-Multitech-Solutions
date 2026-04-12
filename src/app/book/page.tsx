@@ -49,9 +49,13 @@ export default async function BookPage() {
               </div>
            </div>
 
-           <div className="bg-white rounded-[3rem] p-8 md:p-12 shadow-2xl shadow-brand-blue/10 border border-gray-100">
-              <BookingForm services={services} />
-           </div>
+            <div className="bg-white p-8 md:p-12 rounded-[2.5rem] shadow-2xl border border-gray-100 animate-in fade-in slide-in-from-bottom-5">
+              <BookingForm 
+                services={services} 
+                successTitle={settings.bookSuccessTitle || "Request Seeded"}
+                successMessage={settings.bookSuccessMessage || "We have received your technical inspection request. A Phinovax representative will call you shortly to confirm the appointment."}
+              />
+            </div>
 
         </div>
       </main>
