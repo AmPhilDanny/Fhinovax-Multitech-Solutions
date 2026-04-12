@@ -95,29 +95,31 @@ export async function getAllPages() {
 }
 
 export async function getAllNavItems() {
-  const items = await db.select().from(navItems).orderBy(navItems.orderIndex);
-  
-  // Virtual defaults if DB is empty or missing core items
-  const virtualDefaults = [
-    { id: 990, label: "Home", href: "/", parentId: null, orderIndex: 0, isActive: true, createdAt: null },
-    { id: 991, label: "Book Inspection", href: "/book", parentId: null, orderIndex: 1, isActive: true, createdAt: null },
-    { id: 992, label: "Services", href: "/services", parentId: null, orderIndex: 2, isActive: true, createdAt: null },
-    { id: 993, label: "About Us", href: "/about", parentId: null, orderIndex: 3, isActive: true, createdAt: null },
-    { id: 994, label: "Contact Us", href: "/contact", parentId: null, orderIndex: 4, isActive: true, createdAt: null },
-    { id: 995, label: "Join Network", href: "/onboard", parentId: null, orderIndex: 5, isActive: true, createdAt: null },
-    { id: 999, label: "Online Diagnosis", href: "/diagnosis", parentId: null, orderIndex: 9, isActive: true, createdAt: null },
+  const existingItems = await db.select().from(navItems);
+
+  // Default nav items to seed if not yet present
+  const defaults = [
+    { label: "Home", href: "/", parentId: null, orderIndex: 0, isActive: true },
+    { label: "Book Inspection", href: "/book", parentId: null, orderIndex: 1, isActive: true },
+    { label: "Services", href: "/services", parentId: null, orderIndex: 2, isActive: true },
+    { label: "About Us", href: "/about", parentId: null, orderIndex: 3, isActive: true },
+    { label: "Contact Us", href: "/contact", parentId: null, orderIndex: 4, isActive: true },
+    { label: "Join Network", href: "/onboard", parentId: null, orderIndex: 5, isActive: true },
+    { label: "Online Diagnosis", href: "/diagnosis", parentId: null, orderIndex: 9, isActive: true },
   ];
 
-  // Merge items: prefer items from DB if they have matching hrefs
-  const finalItems = [...items];
-  
-  for (const def of virtualDefaults) {
-    if (!finalItems.some(i => i.href === def.href)) {
-      finalItems.push(def);
-    }
+  // Find which defaults are missing from the DB (match by href)
+  const missingDefaults = defaults.filter(
+    d => !existingItems.some(i => i.href === d.href)
+  );
+
+  // Seed missing defaults into the real DB so they get real IDs
+  if (missingDefaults.length > 0) {
+    await db.insert(navItems).values(missingDefaults);
   }
-  
-  return finalItems.sort((a, b) => a.orderIndex - b.orderIndex);
+
+  // Now fetch the complete, fully-persisted list from DB
+  return await db.select().from(navItems).orderBy(navItems.orderIndex);
 }
 
 

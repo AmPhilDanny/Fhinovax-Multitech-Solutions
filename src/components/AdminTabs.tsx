@@ -634,8 +634,8 @@ export default function AdminTabs({
                 </div>
               </div>
 
-              {/* Drag-and-Drop Hierarchical Tree */}
-              <div className="space-y-6">
+              {/* Up/Down Arrow Reorder Tree */}
+              <div className="space-y-4">
                  {localNavItems.filter((i: any) => !i.parentId).length === 0 && (
                    <div className="py-20 text-center bg-gray-50 rounded-[2rem] border-2 border-dashed border-gray-100">
                       <Layout size={40} className="mx-auto text-gray-200 mb-2" />
@@ -643,24 +643,17 @@ export default function AdminTabs({
                    </div>
                  )}
                  
-                 <Reorder.Group 
-                   axis="y" 
-                   values={localNavItems.filter((i: any) => !i.parentId).sort((a: any, b: any) => (a.orderIndex ?? 0) - (b.orderIndex ?? 0))} 
-                   onReorder={handleNavReorder}
-                   className="space-y-6"
-                 >
-                   {localNavItems.filter((i: any) => !i.parentId).sort((a: any, b: any) => (a.orderIndex ?? 0) - (b.orderIndex ?? 0)).map((parent: any) => (
-                     <Reorder.Item 
-                       key={parent.id} 
-                       value={parent}
-                       className="space-y-3 cursor-grab active:cursor-grabbing"
-                     >
+                 {(() => {
+                   const rootItems = [...localNavItems]
+                     .filter((i: any) => !i.parentId)
+                     .sort((a: any, b: any) => (a.orderIndex ?? 0) - (b.orderIndex ?? 0));
+                   
+                   return rootItems.map((parent: any, idx: number) => (
+                     <div key={parent.id} className="space-y-2">
                        {/* Top Level Item */}
                        <div className="flex flex-wrap items-center justify-between p-4 bg-white border border-gray-100 rounded-[2rem] group transition-all hover:border-brand-blue/30 hover:shadow-xl hover:shadow-brand-blue/5">
                           <div className="flex items-center gap-4">
-                             <div className="w-10 h-10 rounded-2xl bg-gray-50 flex items-center justify-center text-gray-300 group-hover:bg-brand-blue/5 group-hover:text-brand-blue transition-colors">
-                                <GripVertical size={18} />
-                             </div>
+                             <div className="w-6 text-center text-[10px] font-black text-gray-300">{idx + 1}</div>
                              <div>
                                 <div className="font-black text-gray-900 flex items-center gap-3 text-base">
                                    {parent.label}
@@ -670,44 +663,69 @@ export default function AdminTabs({
                              </div>
                           </div>
                           <div className="flex items-center gap-2 mt-4 sm:mt-0">
-                             <span className="text-[8px] font-black uppercase text-gray-300 mr-2 tracking-widest">Grip to Reorder</span>
+                             {uploading === 'menu' ? (
+                               <div className="flex items-center gap-2 text-[10px] text-brand-blue font-black uppercase px-3 py-2 bg-brand-blue/5 rounded-xl"><Loader2 size={14} className="animate-spin" /> Saving…</div>
+                             ) : (
+                               <div className="flex items-center p-1 bg-gray-50 rounded-xl border border-gray-100">
+                                  <button 
+                                    onClick={() => handleMoveNavItem(parent.id, 'up')}
+                                    disabled={idx === 0}
+                                    className="p-2 hover:bg-white rounded-lg text-gray-400 hover:text-brand-blue transition-all disabled:opacity-20"
+                                    title="Move Up"
+                                  >
+                                    <ChevronDown size={16} className="rotate-180" />
+                                  </button>
+                                  <div className="w-px h-4 bg-gray-200 mx-1" />
+                                  <button 
+                                    onClick={() => handleMoveNavItem(parent.id, 'down')}
+                                    disabled={idx === rootItems.length - 1}
+                                    className="p-2 hover:bg-white rounded-lg text-gray-400 hover:text-brand-blue transition-all disabled:opacity-20"
+                                    title="Move Down"
+                                  >
+                                    <ChevronDown size={16} />
+                                  </button>
+                               </div>
+                             )}
                              <button onClick={() => deleteNavItem(parent.id)} className="p-3 bg-red-50 text-red-500 rounded-2xl hover:bg-red-500 hover:text-white transition-all shadow-sm">
                                 <Trash2 size={16} />
                              </button>
                           </div>
                        </div>
 
-                       {/* Sub Items (Also DND enabled) */}
-                       <div className="ml-8 sm:ml-16 space-y-3 relative before:absolute before:left-[-1.5rem] before:top-[-1rem] before:bottom-[1rem] before:w-0.5 before:bg-brand-blue/10">
-                          <Reorder.Group 
-                             axis="y" 
-                             values={localNavItems.filter((i: any) => i.parentId === parent.id).sort((a: any, b: any) => (a.orderIndex ?? 0) - (b.orderIndex ?? 0))} 
-                             onReorder={(newOrder) => handleSubReorder(parent.id, newOrder)}
-                             className="space-y-3"
-                          >
-                             {localNavItems.filter((i: any) => i.parentId === parent.id).sort((a: any, b: any) => (a.orderIndex ?? 0) - (b.orderIndex ?? 0)).map((sub: any) => (
-                                <Reorder.Item key={sub.id} value={sub} className="cursor-grab active:cursor-grabbing">
-                                   <div className="flex flex-wrap items-center justify-between p-4 bg-brand-blue/[0.02] border border-blue-100/50 rounded-[1.5rem] group/sub transition-all hover:bg-white hover:shadow-lg">
-                                      <div className="flex items-center gap-3">
-                                         <div className="w-8 h-8 rounded-xl bg-blue-50/50 flex items-center justify-center text-brand-blue/30 group-hover/sub:text-brand-blue transition-colors">
-                                            <GripHorizontal size={16} />
-                                         </div>
-                                         <div>
-                                            <div className="font-extrabold text-gray-800 text-sm">{sub.label}</div>
-                                            <div className="text-[10px] text-gray-400 font-mono italic">{sub.href}</div>
-                                         </div>
-                                      </div>
-                                      <div className="flex items-center gap-3 mt-4 sm:mt-0 opacity-40 group-hover/sub:opacity-100 transition-opacity">
-                                         <button onClick={() => deleteNavItem(sub.id)} className="p-2 text-gray-300 hover:text-red-500 transition-colors"><Trash2 size={14} /></button>
-                                      </div>
-                                   </div>
-                                </Reorder.Item>
-                             ))}
-                          </Reorder.Group>
-                       </div>
-                     </Reorder.Item>
-                   ))}
-                 </Reorder.Group>
+                       {/* Sub Items */}
+                       {localNavItems.filter((i: any) => i.parentId === parent.id).length > 0 && (
+                         <div className="ml-8 sm:ml-16 space-y-2 relative before:absolute before:left-[-1.5rem] before:top-[-0.5rem] before:bottom-[0.5rem] before:w-0.5 before:bg-brand-blue/10">
+                           {(() => {
+                             const subItems = [...localNavItems]
+                               .filter((i: any) => i.parentId === parent.id)
+                               .sort((a: any, b: any) => (a.orderIndex ?? 0) - (b.orderIndex ?? 0));
+                             
+                             return subItems.map((sub: any, subIdx: number) => (
+                               <div key={sub.id} className="flex flex-wrap items-center justify-between p-4 bg-brand-blue/[0.02] border border-blue-100/50 rounded-[1.5rem] group/sub transition-all hover:bg-white hover:shadow-lg">
+                                  <div className="flex items-center gap-3">
+                                     <div className="w-8 h-8 rounded-xl bg-blue-50/50 flex items-center justify-center text-brand-blue/30 group-hover/sub:text-brand-blue transition-colors">
+                                        <ChevronRight size={16} />
+                                     </div>
+                                     <div>
+                                        <div className="font-extrabold text-gray-800 text-sm">{sub.label}</div>
+                                        <div className="text-[10px] text-gray-400 font-mono italic">{sub.href}</div>
+                                     </div>
+                                  </div>
+                                  <div className="flex items-center gap-2 mt-4 sm:mt-0 opacity-40 group-hover/sub:opacity-100 transition-opacity">
+                                     <div className="flex items-center p-1 bg-white rounded-lg border border-gray-100">
+                                        <button onClick={() => handleMoveSubItem(parent.id, sub.id, 'up')} disabled={subIdx === 0} className="p-1.5 hover:bg-gray-50 rounded text-gray-400 hover:text-brand-blue disabled:opacity-20"><ChevronDown size={14} className="rotate-180" /></button>
+                                        <button onClick={() => handleMoveSubItem(parent.id, sub.id, 'down')} disabled={subIdx === subItems.length - 1} className="p-1.5 hover:bg-gray-50 rounded text-gray-400 hover:text-brand-blue disabled:opacity-20"><ChevronDown size={14} /></button>
+                                     </div>
+                                     <button onClick={() => deleteNavItem(sub.id)} className="p-2 text-gray-300 hover:text-red-500 transition-colors"><Trash2 size={14} /></button>
+                                  </div>
+                               </div>
+                             ));
+                           })()}
+                         </div>
+                       )}
+                     </div>
+                   ));
+                 })()}
               </div>
 
               {/* Add New Item Form */}
