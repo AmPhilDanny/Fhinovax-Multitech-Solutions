@@ -39,7 +39,15 @@ import {
   Cpu,
   ArrowRight,
   Map,
-  GripHorizontal
+  GripHorizontal,
+  PanelBottom,
+  Phone,
+  Mail,
+  Clock,
+  Facebook,
+  Instagram,
+  Twitter,
+  Linkedin
 } from "lucide-react";
 import MediaPicker from "./MediaPicker";
 import { 
@@ -62,6 +70,7 @@ import {
 } from "@/app/admin/actions";
 
 export default function AdminTabs({ 
+  initialTab = "dashboard",
   settings, 
   servicesList, 
   pagesList, 
@@ -73,6 +82,7 @@ export default function AdminTabs({
   artisansList = [],
   bookingsList = []
 }: { 
+  initialTab?: string,
   settings: any, 
   servicesList: any[], 
   pagesList: any[], 
@@ -85,7 +95,14 @@ export default function AdminTabs({
   bookingsList?: any[]
 }) {
   const router = useRouter();
-  const [activeTab, setActiveTab] = useState("dashboard");
+  const [activeTab, setActiveTab] = useState(initialTab || "dashboard");
+
+  // Sync tab to URL so layout sidebar stays in context
+  const handleTabChange = (tabId: string) => {
+    setActiveTab(tabId);
+    router.replace(`/admin?tab=${tabId}`, { scroll: false });
+  };
+
   const [uploading, setUploading] = useState<string | null>(null);
   const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'success' | 'error'>('idle');
   const [saveError, setSaveError] = useState<string | null>(null);
@@ -340,9 +357,11 @@ export default function AdminTabs({
     { id: "dashboard", label: "Dashboard Home", icon: Activity },
     { id: "technical_services", label: "Technical Services", icon: Hammer },
     { id: "pages", label: "Pages Architect", icon: FileText },
+    { id: "bookings", label: "Inspection & Service Feed", icon: ClipboardList },
     { id: "artisans", label: "Artisan Network", icon: Users },
     { id: "navigator", label: "Menu Architect", icon: Layout },
     { id: "identity", label: "Branding & Media", icon: Settings },
+    { id: "footer", label: "Footer Settings", icon: PanelBottom },
     { id: "agent", label: "AI & System", icon: Bot }
   ];
 
@@ -363,7 +382,7 @@ export default function AdminTabs({
             {tabs.map((tab) => (
               <button
                 key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
+                onClick={() => handleTabChange(tab.id)}
                 className={`flex items-center gap-2 md:gap-3 px-3 md:px-4 py-2.5 md:py-3 rounded-xl transition-all text-[11px] md:text-sm font-bold whitespace-nowrap border-2 ${
                   activeTab === tab.id 
                     ? "bg-brand-blue text-white border-brand-blue shadow-lg shadow-brand-blue/20" 
@@ -893,76 +912,6 @@ export default function AdminTabs({
                      ))}
                   </div>
                </div>
-
-               {/* Technical Booking Feed (Client Requests) */}
-               <div className="pt-10 border-t space-y-6">
-                  <div className="flex items-center gap-3">
-                     <div className="bg-brand-gold/10 p-2 rounded-lg text-brand-gold">
-                        <ClipboardList size={24} />
-                     </div>
-                     <div>
-                        <h2 className="text-xl font-bold text-gray-900 leading-tight">Inspection & Service Feed</h2>
-                        <p className="text-xs text-gray-500">Real-time requests for technical inspections and repairs.</p>
-                     </div>
-                  </div>
-
-                  <div className="bg-white border rounded-[2.5rem] overflow-hidden shadow-sm">
-                     <table className="w-full text-left border-collapse">
-                        <thead>
-                           <tr className="bg-gray-50 border-b">
-                              <th className="px-6 py-4 text-[10px] font-black uppercase text-gray-400">Client Info</th>
-                              <th className="px-6 py-4 text-[10px] font-black uppercase text-gray-400">Issue / Location</th>
-                              <th className="px-6 py-4 text-[10px] font-black uppercase text-gray-400">Assigned</th>
-                              <th className="px-6 py-4 text-[10px] font-black uppercase text-gray-400">Status</th>
-                           </tr>
-                        </thead>
-                        <tbody className="divide-y">
-                           {bookingsList.length === 0 ? (
-                              <tr>
-                                 <td colSpan={4} className="px-6 py-12 text-center text-gray-400 italic">No technical bookings recorded yet.</td>
-                              </tr>
-                           ) : (
-                              bookingsList.map((booking: any) => (
-                                 <tr key={booking.id} className="hover:bg-gray-50 transition-colors">
-                                    <td className="px-6 py-4">
-                                       <div className="font-black text-gray-900 text-sm">{booking.clientName}</div>
-                                       <div className="text-xs text-brand-blue font-bold">{booking.clientPhone}</div>
-                                    </td>
-                                    <td className="px-6 py-4">
-                                       <div className="text-xs text-gray-700 font-bold line-clamp-1">{booking.issueDescription}</div>
-                                       <div className="text-[10px] text-gray-400 flex items-center gap-1"><Map size={10} /> {booking.location}</div>
-                                    </td>
-                                    <td className="px-6 py-4">
-                                       <select 
-                                         value={booking.assignedArtisanId || ""} 
-                                         onChange={(e) => assignArtisanToBooking(booking.id, parseInt(e.target.value))}
-                                         className="text-[10px] font-black uppercase text-brand-blue bg-blue-50 border-none rounded-lg px-2 py-1 focus:ring-brand-blue cursor-pointer"
-                                       >
-                                          <option value="">No Mechanic Linked</option>
-                                          {artisansList.filter(a => a.status === 'active').map(a => (
-                                             <option key={a.id} value={a.id}>{a.name} ({a.specialty})</option>
-                                          ))}
-                                       </select>
-                                    </td>
-                                    <td className="px-6 py-4">
-                                       <select 
-                                         value={booking.status}
-                                         onChange={(e) => updateBookingStatus(booking.id, e.target.value as any)}
-                                         className="text-[10px] font-black uppercase border-none bg-gray-100 rounded-lg px-2 py-1 focus:ring-brand-blue"
-                                       >
-                                          <option value="new">New Request</option>
-                                          <option value="assigned">Assigned</option>
-                                          <option value="completed">Completed</option>
-                                          <option value="cancelled">Cancelled</option>
-                                       </select>
-                                    </td>
-                                 </tr>
-                              ))
-                           )}
-                        </tbody>
-                     </table>
-                  </div>
-               </div>
             </div>
           )}
 
@@ -1036,6 +985,200 @@ export default function AdminTabs({
                      </tbody>
                   </table>
                </div>
+            </div>
+          )}
+
+          {activeTab === "bookings" && (
+            <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4">
+               <div className="flex items-center gap-3">
+                  <div className="bg-brand-gold/10 p-2 rounded-lg text-brand-gold">
+                     <ClipboardList size={24} />
+                  </div>
+                  <div>
+                     <h2 className="text-xl font-bold text-gray-900 leading-tight">Inspection & Service Feed</h2>
+                     <p className="text-xs text-gray-500">Real-time requests for technical inspections and repairs.</p>
+                  </div>
+               </div>
+
+               <div className="bg-white border rounded-[2.5rem] overflow-hidden shadow-sm">
+                  <table className="w-full text-left border-collapse">
+                     <thead>
+                        <tr className="bg-gray-50 border-b">
+                           <th className="px-6 py-4 text-[10px] font-black uppercase text-gray-400">Client Info</th>
+                           <th className="px-6 py-4 text-[10px] font-black uppercase text-gray-400">Issue / Location</th>
+                           <th className="px-6 py-4 text-[10px] font-black uppercase text-gray-400">Assigned</th>
+                           <th className="px-6 py-4 text-[10px] font-black uppercase text-gray-400">Status</th>
+                        </tr>
+                     </thead>
+                     <tbody className="divide-y">
+                        {bookingsList.length === 0 ? (
+                            <tr>
+                               <td colSpan={4} className="px-6 py-12 text-center text-gray-400 italic">No technical bookings recorded yet.</td>
+                            </tr>
+                         ) : (
+                            bookingsList.map((booking: any) => (
+                               <tr key={booking.id} className="hover:bg-gray-50 transition-colors">
+                                  <td className="px-6 py-4">
+                                     <div className="font-black text-gray-900 text-sm">{booking.clientName}</div>
+                                     <div className="text-xs text-brand-blue font-bold">{booking.clientPhone}</div>
+                                  </td>
+                                  <td className="px-6 py-4">
+                                     <div className="text-xs text-gray-700 font-bold line-clamp-1">{booking.issueDescription}</div>
+                                     <div className="text-[10px] text-gray-400 flex items-center gap-1"><Map size={10} /> {booking.location}</div>
+                                  </td>
+                                  <td className="px-6 py-4">
+                                     <select 
+                                       value={booking.assignedArtisanId || ""} 
+                                       onChange={(e) => assignArtisanToBooking(booking.id, parseInt(e.target.value))}
+                                       className="text-[10px] font-black uppercase text-brand-blue bg-blue-50 border-none rounded-lg px-2 py-1 focus:ring-brand-blue cursor-pointer"
+                                     >
+                                        <option value="">No Mechanic Linked</option>
+                                        {artisansList.filter(a => a.status === 'active').map(a => (
+                                           <option key={a.id} value={a.id}>{a.name} ({a.specialty})</option>
+                                        ))}
+                                     </select>
+                                  </td>
+                                  <td className="px-6 py-4">
+                                     <select 
+                                       value={booking.status}
+                                       onChange={(e) => updateBookingStatus(booking.id, e.target.value as any)}
+                                       className="text-[10px] font-black uppercase border-none bg-gray-100 rounded-lg px-2 py-1 focus:ring-brand-blue"
+                                     >
+                                        <option value="new">New Request</option>
+                                        <option value="assigned">Assigned</option>
+                                        <option value="completed">Completed</option>
+                                        <option value="cancelled">Cancelled</option>
+                                     </select>
+                                  </td>
+                               </tr>
+                            ))
+                         )}
+                     </tbody>
+                  </table>
+               </div>
+            </div>
+          )}
+
+          {activeTab === "footer" && (
+            <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4">
+               <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                     <div className="bg-brand-blue/10 p-2 rounded-lg text-brand-blue">
+                        <PanelBottom size={24} />
+                     </div>
+                     <div>
+                        <h2 className="text-xl font-bold text-gray-900 leading-tight">Footer & Contact Details</h2>
+                        <p className="text-xs text-gray-500">Manage site-wide footer content and social media presence.</p>
+                     </div>
+                  </div>
+                  <div className="flex gap-2">
+                     {saveStatus === 'success' && <span className="text-xs font-bold text-green-600 animate-bounce">✓ Saved!</span>}
+                     <button onClick={() => {
+                       const form = document.getElementById('footer-form') as HTMLFormElement;
+                       form.requestSubmit();
+                     }} className="admin-btn-save-sm">
+                        <Save size={16} /> Save Footer
+                     </button>
+                  </div>
+               </div>
+
+               <form id="footer-form" onSubmit={handleFormSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-gray-50/50 p-6 rounded-[2.5rem] border border-gray-100">
+                  <div className="md:col-span-2 space-y-1">
+                     <label className="text-xs font-bold uppercase text-gray-400 px-1">Footer Main Text (Bio)</label>
+                     <textarea 
+                        name="footerText" 
+                        value={localSettings.footerText || ''} 
+                        onChange={e => updateField('footerText', e.target.value)} 
+                        className="admin-input bg-white h-24" 
+                        placeholder="e.g. Leading the way in multitech solutions..."
+                     />
+                  </div>
+                  
+                  <div className="space-y-1">
+                     <label className="text-xs font-bold uppercase text-gray-400 px-1">Copyright Statement</label>
+                     <input 
+                        name="copyrightText" 
+                        value={localSettings.copyrightText || ''} 
+                        onChange={e => updateField('copyrightText', e.target.value)} 
+                        className="admin-input bg-white" 
+                        placeholder="Fhinovax Multitech Solutions Ltd"
+                     />
+                  </div>
+
+                  <div className="space-y-1">
+                     <label className="text-xs font-bold uppercase text-gray-400 px-1">Public Email Address</label>
+                     <input 
+                        name="emailAddress" 
+                        value={localSettings.emailAddress || ''} 
+                        onChange={e => updateField('emailAddress', e.target.value)} 
+                        className="admin-input bg-white" 
+                        placeholder="info@fhinovax.com"
+                     />
+                  </div>
+
+                  <div className="space-y-1">
+                     <label className="text-xs font-bold uppercase text-gray-400 px-1">Operating Hours</label>
+                     <input 
+                        name="operatingHours" 
+                        value={localSettings.operatingHours || ''} 
+                        onChange={e => updateField('operatingHours', e.target.value)} 
+                        className="admin-input bg-white" 
+                        placeholder="Mon-Sat: 8am - 6pm"
+                     />
+                  </div>
+
+                  <div className="md:col-span-2 pt-6 border-t mt-4">
+                     <h3 className="text-sm font-black uppercase text-gray-900 mb-4 italic flex items-center gap-2">
+                        <Share2 size={16} /> Social Media Connectivity
+                     </h3>
+                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="space-y-1">
+                           <label className="text-xs font-bold uppercase text-gray-400 flex items-center gap-1.5 px-1">
+                              <Facebook size={12} /> Facebook URL
+                           </label>
+                           <input 
+                              name="facebookUrl" 
+                              value={localSettings.facebookUrl || ''} 
+                              onChange={e => updateField('facebookUrl', e.target.value)} 
+                              className="admin-input bg-white" 
+                           />
+                        </div>
+                        <div className="space-y-1">
+                           <label className="text-xs font-bold uppercase text-gray-400 flex items-center gap-1.5 px-1">
+                              <Instagram size={12} /> Instagram URL
+                           </label>
+                           <input 
+                              name="instagramUrl" 
+                              value={localSettings.instagramUrl || ''} 
+                              onChange={e => updateField('instagramUrl', e.target.value)} 
+                              className="admin-input bg-white" 
+                           />
+                        </div>
+                        <div className="space-y-1">
+                           <label className="text-xs font-bold uppercase text-gray-400 flex items-center gap-1.5 px-1">
+                              <Twitter size={12} /> Twitter (X) URL
+                           </label>
+                           <input 
+                              name="twitterUrl" 
+                              value={localSettings.twitterUrl || ''} 
+                              onChange={e => updateField('twitterUrl', e.target.value)} 
+                              className="admin-input bg-white" 
+                           />
+                        </div>
+                        <div className="space-y-1">
+                           <label className="text-xs font-bold uppercase text-gray-400 flex items-center gap-1.5 px-1">
+                              <Linkedin size={12} /> LinkedIn URL
+                           </label>
+                           <input 
+                              name="linkedinUrl" 
+                              value={localSettings.linkedinUrl || ''} 
+                              onChange={e => updateField('linkedinUrl', e.target.value)} 
+                              className="admin-input bg-white" 
+                           />
+                        </div>
+                     </div>
+                  </div>
+               </form>
             </div>
           )}
 

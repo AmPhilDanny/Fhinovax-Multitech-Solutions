@@ -4,7 +4,14 @@ import AdminTabs from "@/components/AdminTabs";
 
 export const dynamic = 'force-dynamic';
 
-export default async function AdminDashboard() {
+export default async function AdminDashboard({
+  searchParams,
+}: {
+  searchParams: Promise<{ tab?: string }>;
+}) {
+  const resolvedParams = await searchParams;
+  const initialTab = resolvedParams?.tab || "dashboard";
+
   const settings = await getSiteSettings();
   const servicesList = await getActiveServices();
   const pagesList = await getAllPages();
@@ -13,16 +20,17 @@ export default async function AdminDashboard() {
   const leadsList = await getLeads();
   const metrics = await getSystemMetrics();
   const mediaAssets = await getMediaAssets();
-  const artisansList = await getArtisans(false); // Fetch all for management
+  const artisansList = await getArtisans(false);
   const bookingsList = await getBookings();
 
   return (
     <div className="max-w-6xl mx-auto pt-4 md:pt-0">
-      <AdminTabs 
-        settings={settings} 
-        servicesList={servicesList} 
-        pagesList={pagesList} 
-        navItemsList={navItemsList} 
+      <AdminTabs
+        initialTab={initialTab}
+        settings={settings}
+        servicesList={servicesList}
+        pagesList={pagesList}
+        navItemsList={navItemsList}
         aiPostsList={aiPostsList}
         leadsList={leadsList}
         metrics={metrics}
