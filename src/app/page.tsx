@@ -118,6 +118,79 @@ export default async function Home() {
         </div>
       </section>
 
+      {/* ENGAGEMENT HUB (CTA BOTS) */}
+      <section className="px-4 py-20 bg-white overflow-hidden relative">
+         {/* Decorative background gradients */}
+         <div className="absolute top-0 left-0 w-full h-full pointer-events-none">
+            <div className="absolute -top-1/4 -left-1/4 w-1/2 h-full bg-brand-blue/5 rounded-full blur-[120px]" />
+            <div className="absolute -bottom-1/4 -right-1/4 w-1/2 h-full bg-brand-gold/5 rounded-full blur-[120px]" />
+         </div>
+
+         <div className="max-w-6xl mx-auto relative z-10">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-12">
+               
+               {/* BOT 1: BOOKING INSPECTION */}
+               <Link href="/book" className="group relative block p-1 rounded-[3rem] bg-gradient-to-br from-brand-blue to-blue-900 shadow-2xl hover:scale-[1.02] transition-all duration-500 overflow-hidden">
+                  <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-10" />
+                  <div className="relative bg-brand-dark/40 backdrop-blur-sm p-8 md:p-12 rounded-[2.9rem] flex flex-col h-full border border-white/10">
+                     <div className="flex justify-between items-start mb-12">
+                        <div className="bg-white/10 p-5 rounded-[2rem] border border-white/20 text-white shadow-xl">
+                           <LucideIcons.Calendar size={40} className="group-hover:rotate-12 transition-transform" />
+                        </div>
+                        <div className="flex items-center gap-2 px-4 py-2 bg-green-500/20 rounded-full border border-green-500/30 text-green-400 text-[10px] font-black uppercase tracking-widest">
+                           <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+                           Slot Booking Open
+                        </div>
+                     </div>
+                     
+                     <div className="mt-auto space-y-4">
+                        <h3 className="text-3xl md:text-4xl font-black text-white leading-none uppercase tracking-tighter">Precision <br />Inspection Bot</h3>
+                        <p className="text-gray-300 text-sm font-medium max-w-sm">
+                           Schedule a professional diagnostic session for your automobile, generator, or industrial machinery. Secure your technical asset health today.
+                        </p>
+                        <div className="pt-6 flex items-center gap-4 text-white font-black uppercase tracking-widest text-xs">
+                           <span className="flex-1 h-px bg-white/20" />
+                           <span className="flex items-center gap-2 group-hover:gap-4 transition-all bg-white text-brand-dark px-6 py-4 rounded-2xl shadow-xl">
+                              Book Now <LucideIcons.ArrowRight size={18} />
+                           </span>
+                        </div>
+                     </div>
+                  </div>
+               </Link>
+
+               {/* BOT 2: JOIN NETWORK */}
+               <Link href="/onboard" className="group relative block p-1 rounded-[3rem] bg-gradient-to-br from-brand-gold/80 to-yellow-700 shadow-2xl hover:scale-[1.02] transition-all duration-500 overflow-hidden">
+                  <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/asfalt-dark.png')] opacity-10" />
+                  <div className="relative bg-brand-dark/40 backdrop-blur-sm p-8 md:p-12 rounded-[2.9rem] flex flex-col h-full border border-white/10">
+                     <div className="flex justify-between items-start mb-12">
+                        <div className="bg-white/10 p-5 rounded-[2rem] border border-white/20 text-brand-gold shadow-xl">
+                           <LucideIcons.Users size={40} className="group-hover:scale-110 transition-transform" />
+                        </div>
+                        <div className="flex items-center gap-2 px-4 py-2 bg-brand-gold/20 rounded-full border border-brand-gold/30 text-brand-gold text-[10px] font-black uppercase tracking-widest">
+                           <span className="w-2 h-2 rounded-full bg-brand-gold animate-pulse" />
+                           Network Expanding
+                        </div>
+                     </div>
+                     
+                     <div className="mt-auto space-y-4">
+                        <h3 className="text-3xl md:text-4xl font-black text-white leading-none uppercase tracking-tighter text-shadow-xl">Collaborative <br />Artisan Hive</h3>
+                        <p className="text-gray-300 text-sm font-medium max-w-sm">
+                           Are you a skilled technician? Join our elite local network of professionals and scale your service reach through the Phinovax ecosystem.
+                        </p>
+                        <div className="pt-6 flex items-center gap-4 text-white font-black uppercase tracking-widest text-xs">
+                           <span className="flex-1 h-px bg-white/20" />
+                           <span className="flex items-center gap-2 group-hover:gap-4 transition-all bg-brand-gold text-brand-dark px-6 py-4 rounded-2xl shadow-xl">
+                              Join Network <LucideIcons.ArrowRight size={18} />
+                           </span>
+                        </div>
+                     </div>
+                  </div>
+               </Link>
+
+            </div>
+         </div>
+      </section>
+
       {/* MAPS & CONTACT SECTION */}
       <section id="contact" className="px-4 py-20 bg-white border-t border-gray-50">
          <div className="max-w-6xl mx-auto flex flex-col md:flex-row gap-12 items-center">
