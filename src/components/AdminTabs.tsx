@@ -43,12 +43,9 @@ import {
   PanelBottom,
   Phone,
   Mail,
-  Clock,
-  Facebook,
-  Instagram,
-  Twitter,
-  Linkedin
+  Clock
 } from "lucide-react";
+import { Facebook, Instagram, Twitter, Linkedin } from "./Icons";
 import MediaPicker from "./MediaPicker";
 import { 
   saveSiteSettings, 
