@@ -90,8 +90,15 @@ export default function AdminTabs({
   const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'success' | 'error'>('idle');
   const [saveError, setSaveError] = useState<string | null>(null);
   const [selectedMediaTarget, setSelectedMediaTarget] = useState<string | null>(null);
-  const [bgType, setBgType] = useState(settings.heroBgType || "image");
+  const [bgType, setBgType] = useState(settings.heroBgType || "color");
   const [editingService, setEditingService] = useState<any>(null);
+
+  // Controlled state for all settings forms — synced from server props after each save
+  const [localSettings, setLocalSettings] = useState({ ...settings });
+
+  const updateField = (field: string, value: string) =>
+    setLocalSettings((prev: any) => ({ ...prev, [field]: value }));
+
   const [previews, setPreviews] = useState({
     logoUrl: settings.logoUrl || "",
     faviconUrl: settings.faviconUrl || "",
@@ -223,6 +230,7 @@ export default function AdminTabs({
 
   // Keep internal state in sync with server-side props after a refresh
   useEffect(() => {
+    setLocalSettings({ ...settings });
     setPreviews({
       logoUrl: settings.logoUrl || "",
       faviconUrl: settings.faviconUrl || "",
@@ -488,7 +496,7 @@ export default function AdminTabs({
                   <form id="identity-form" onSubmit={handleFormSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-6">
                      <div className="space-y-1">
                         <label className="text-xs font-bold uppercase text-gray-400">Site Branding Name</label>
-                        <input name="siteName" defaultValue={settings.siteName} className="admin-input" required />
+                        <input name="siteName" value={localSettings.siteName || ''} onChange={e => updateField('siteName', e.target.value)} className="admin-input" required />
                      </div>
                      <div className="grid grid-cols-2 gap-4">
                         <div className="space-y-1">
@@ -513,11 +521,11 @@ export default function AdminTabs({
                      
                      <div className="space-y-1">
                         <label className="text-xs font-bold uppercase text-gray-400">Global Contact (Phone)</label>
-                        <input name="phoneNumber" defaultValue={settings.phoneNumber} className="admin-input" />
+                        <input name="phoneNumber" value={localSettings.phoneNumber || ''} onChange={e => updateField('phoneNumber', e.target.value)} className="admin-input" />
                      </div>
                      <div className="space-y-1">
                         <label className="text-xs font-bold uppercase text-gray-400">WhatsApp (intl format)</label>
-                        <input name="whatsappNumber" defaultValue={settings.whatsappNumber} className="admin-input" />
+                        <input name="whatsappNumber" value={localSettings.whatsappNumber || ''} onChange={e => updateField('whatsappNumber', e.target.value)} className="admin-input" />
                      </div>
                      
                      <div className="md:col-span-2 pt-6 border-t mt-4">
@@ -525,11 +533,11 @@ export default function AdminTabs({
                         <div className="space-y-4">
                            <div className="space-y-1">
                               <label className="text-xs font-bold uppercase text-gray-400">Hero Main Title</label>
-                              <input name="heroTitle" defaultValue={settings.heroTitle} className="admin-input font-bold" />
+                              <input name="heroTitle" value={localSettings.heroTitle || ''} onChange={e => updateField('heroTitle', e.target.value)} className="admin-input font-bold" />
                            </div>
                            <div className="space-y-1">
                               <label className="text-xs font-bold uppercase text-gray-400">Hero Subtitle</label>
-                              <textarea name="heroSubtitle" defaultValue={settings.heroSubtitle} className="admin-input h-20" />
+                              <textarea name="heroSubtitle" value={localSettings.heroSubtitle || ''} onChange={e => updateField('heroSubtitle', e.target.value)} className="admin-input h-20" />
                            </div>
                            <div className="grid grid-cols-1 gap-4">
                               <div className="space-y-1">
@@ -585,7 +593,7 @@ export default function AdminTabs({
 
                      <div className="md:col-span-2 space-y-1 pt-4">
                         <label className="text-xs font-bold uppercase text-gray-400">Workshop Address</label>
-                        <input name="address" defaultValue={settings.address} className="admin-input" />
+                        <input name="address" value={localSettings.address || ''} onChange={e => updateField('address', e.target.value)} className="admin-input" />
                      </div>
                   </form>
                </div>
@@ -1051,18 +1059,19 @@ export default function AdminTabs({
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                        <div className="space-y-1">
                           <label className="text-xs font-bold uppercase text-gray-400">Google Maps Embed URL</label>
-                          <input name="googleMapsEmbed" defaultValue={settings.googleMapsEmbed} className="admin-input" placeholder="https://www.google.com/maps/embed?..." />
+                          <input name="googleMapsEmbed" value={localSettings.googleMapsEmbed || ''} onChange={e => updateField('googleMapsEmbed', e.target.value)} className="admin-input" placeholder="https://www.google.com/maps/embed?..." />
                        </div>
                        <div className="space-y-1">
                           <label className="text-xs font-bold uppercase text-gray-400">AI Agent Display Name</label>
-                          <input name="aiName" defaultValue={settings.aiName} className="admin-input" placeholder="e.g. Phinovax Rep" />
+                          <input name="aiName" value={localSettings.aiName || ''} onChange={e => updateField('aiName', e.target.value)} className="admin-input" placeholder="e.g. Phinovax Rep" />
                        </div>
                     </div>
 
                    <div className="space-y-1">
                       <label className="text-xs font-bold uppercase text-gray-400">Google Business Details</label>
                       <textarea name="googleBusinessDetails" 
-                        defaultValue={settings.googleBusinessDetails} 
+                        value={localSettings.googleBusinessDetails || ''}
+                        onChange={e => updateField('googleBusinessDetails', e.target.value)}
                         className="admin-input h-24" 
                       />
                    </div>
@@ -1167,16 +1176,16 @@ export default function AdminTabs({
                    <form onSubmit={handleFormSubmit} className="space-y-4 bg-gray-50 p-6 rounded-2xl border border-gray-100">
                       <div className="space-y-1">
                         <label className="text-xs font-bold uppercase text-gray-400">Meta Description</label>
-                        <textarea name="metaDescription" defaultValue={settings.metaDescription} className="admin-input bg-white h-20" />
+                        <textarea name="metaDescription" value={localSettings.metaDescription || ''} onChange={e => updateField('metaDescription', e.target.value)} className="admin-input bg-white h-20" />
                       </div>
                       <div className="grid grid-cols-2 gap-4">
                          <div className="space-y-1">
                              <label className="text-xs font-bold uppercase text-gray-400">Facebook</label>
-                             <input name="facebookUrl" defaultValue={settings.facebookUrl} className="admin-input bg-white" />
+                             <input name="facebookUrl" value={localSettings.facebookUrl || ''} onChange={e => updateField('facebookUrl', e.target.value)} className="admin-input bg-white" />
                          </div>
                          <div className="space-y-1">
                              <label className="text-xs font-bold uppercase text-gray-400">Instagram</label>
-                             <input name="instagramUrl" defaultValue={settings.instagramUrl} className="admin-input bg-white" />
+                             <input name="instagramUrl" value={localSettings.instagramUrl || ''} onChange={e => updateField('instagramUrl', e.target.value)} className="admin-input bg-white" />
                          </div>
                       </div>
                       <button type="submit" className="admin-btn-save-sm">
