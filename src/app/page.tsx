@@ -220,7 +220,7 @@ export default async function Home() {
             </div>
 
             <div className="w-full md:w-1/2 h-[400px] bg-gray-100 rounded-[2.5rem] overflow-hidden shadow-2xl border-8 border-white group relative">
-               {settings.googleMapsEmbed && settings.googleMapsEmbed.includes('google.com/maps/embed') ? (
+               {settings.googleMapsEmbed ? (
                  <iframe 
                    src={settings.googleMapsEmbed} 
                    className="w-full h-full border-none" 

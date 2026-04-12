@@ -1354,56 +1354,6 @@ export default function AdminTabs({
                        <Save size={16} /> Save AI & Context
                     </button>
                   </form>
-
-                  {/* Diagnosis Page Content */}
-                  <div className="bg-gray-50 border border-gray-100 p-8 rounded-[2.5rem] space-y-6 mt-10 border-t pt-10">
-                     <div className="flex items-center gap-3">
-                        <div className="bg-brand-blue/10 p-2 rounded-lg text-brand-blue">
-                           <Cpu size={20} />
-                        </div>
-                        <h3 className="text-sm font-black uppercase text-gray-900 tracking-tight italic">Diagnosis Page Header Content</h3>
-                     </div>
-                     <form onSubmit={handleFormSubmit} className="space-y-4">
-                        <div className="grid grid-cols-1 gap-4">
-                           <div className="space-y-1">
-                              <label className="text-[10px] font-black uppercase text-gray-400 px-1">Main Page Heading</label>
-                              <input name="diagnosisPageTitle" defaultValue={localSettings.diagnosisPageTitle || ''} className="admin-input bg-white" placeholder="Intelligent Online Fault Diagnosis" />
-                           </div>
-                           <div className="space-y-1">
-                              <label className="text-[10px] font-black uppercase text-gray-400 px-1">Main Page Subtitle</label>
-                              <textarea name="diagnosisPageSubtitle" defaultValue={localSettings.diagnosisPageSubtitle || ''} className="admin-input bg-white h-24" placeholder="How does the AI help in diagnosis?" />
-                           </div>
-                        </div>
-                        <button type="submit" className="admin-btn-save-sm w-fit mt-2">
-                           <Save size={14} /> Update Booking Page
-                        </button>
-                     </form>
-                  </div>
-
-                  {/* Booking Form Completion Messaging */}
-                  <div className="bg-white border border-gray-100 p-8 rounded-[2.5rem] space-y-6">
-                     <div className="flex items-center gap-3">
-                        <div className="bg-green-500/10 p-2 rounded-lg text-green-600">
-                           <CheckCircle size={20} />
-                        </div>
-                        <h3 className="text-sm font-black uppercase text-gray-900 tracking-tight italic">Booking Success Message</h3>
-                     </div>
-                     <form onSubmit={handleFormSubmit} className="space-y-4">
-                        <div className="grid grid-cols-1 gap-4">
-                           <div className="space-y-1">
-                              <label className="text-[10px] font-black uppercase text-gray-400 px-1">Success Heading</label>
-                              <input name="bookSuccessTitle" defaultValue={localSettings.bookSuccessTitle || ''} className="admin-input bg-gray-50 border-none" placeholder="Request Seeded" />
-                           </div>
-                           <div className="space-y-1">
-                              <label className="text-[10px] font-black uppercase text-gray-400 px-1">Success Details</label>
-                              <textarea name="bookSuccessMessage" defaultValue={localSettings.bookSuccessMessage || ''} className="admin-input bg-gray-50 border-none h-24" placeholder="Describe next steps for the client..." />
-                           </div>
-                        </div>
-                        <button type="submit" className="admin-btn-save-sm w-fit mt-2">
-                           <Save size={14} /> Update Success Message
-                        </button>
-                     </form>
-                  </div>
                 </div>
 
                 {/* AI Lab Diagnostic Restoration */}
