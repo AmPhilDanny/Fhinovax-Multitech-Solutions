@@ -364,7 +364,8 @@ export default function AdminTabs({
     { id: "bookings", label: "Inspection & Service Feed", icon: ClipboardList },
     { id: "artisans", label: "Artisan Network", icon: Users },
     { id: "navigator", label: "Menu Architect", icon: Layout },
-    { id: "identity", label: "Branding & Media", icon: Settings },
+    { id: "identity", label: "Branding & Style", icon: Settings },
+    { id: "media", label: "Media Repository", icon: ImageIcon },
     { id: "footer", label: "Footer Settings", icon: PanelBottom },
     { id: "agent", label: "AI & System", icon: Bot }
   ];
@@ -595,36 +596,54 @@ export default function AdminTabs({
                   </form>
                </div>
 
-               {/* Media Manager Section */}
-               <div className="pt-10 border-t space-y-6">
-                  <div className="flex items-center justify-between">
-                     <div className="flex items-center gap-3">
-                        <div className="bg-brand-blue/10 p-2 rounded-lg text-brand-blue">
-                           <ImageIcon size={24} />
-                        </div>
-                        <div>
-                           <h2 className="text-xl font-bold text-gray-900 leading-tight">Media Repository</h2>
-                           <p className="text-xs text-gray-500">All uploaded branding and service assets.</p>
-                        </div>
-                     </div>
-                     <label className="bg-brand-blue text-white px-4 py-2 rounded-xl text-xs font-bold hover:bg-blue-800 transition-all cursor-pointer flex items-center gap-2">
-                        <Upload size={14} /> Upload New
-                        <input type="file" className="hidden" onChange={(e) => handleUpload(e, 'media_library')} accept="image/*" />
-                     </label>
-                  </div>
+             </div>
+          )}
 
-                  <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-3">
-                     {mediaAssetsList.map((asset: any) => (
-                        <div key={asset.id} className="group relative aspect-square bg-gray-50 rounded-2xl overflow-hidden border border-gray-100 hover:border-brand-blue transition-all cursor-pointer shadow-sm">
-                           <img src={asset.url} alt={asset.fileName} className="w-full h-full object-cover group-hover:scale-110 transition-transform" />
-                           <button onClick={(e) => { e.stopPropagation(); navigator.clipboard.writeText(asset.url); alert("URL copied!"); }} className="absolute top-2 right-2 p-1.5 bg-white/90 text-gray-800 rounded-lg opacity-0 group-hover:opacity-100 transition-all shadow-sm">
-                              <Copy size={12} />
-                           </button>
-                        </div>
-                     ))}
+          {activeTab === "media" && (
+             <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4">
+                <div className="flex items-center justify-between border-b border-gray-100 pb-4">
+                  <div>
+                    <h2 className="text-xl font-black text-gray-900 uppercase italic tracking-tight">Central Media Repository</h2>
+                    <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest mt-1">Manage all site branding and service assets</p>
                   </div>
-               </div>
-            </div>
+                  <label className="bg-brand-blue text-white px-6 py-2.5 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-blue-800 transition-all cursor-pointer flex items-center gap-2 shadow-lg shadow-brand-blue/20 active:scale-95">
+                     <Upload size={14} /> Upload New Asset
+                     <input type="file" className="hidden" onChange={(e) => handleUpload(e, 'media_library')} accept="image/*" />
+                  </label>
+                </div>
+
+                <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-4">
+                   {mediaAssetsList.length === 0 && (
+                     <div className="col-span-full py-20 text-center bg-gray-50 rounded-[2.5rem] border-2 border-dashed border-gray-100">
+                        <ImageIcon size={40} className="mx-auto text-gray-200 mb-2" />
+                        <p className="text-sm text-gray-400 font-medium font-bold uppercase tracking-widest text-[10px]">Vault is Empty</p>
+                     </div>
+                   )}
+                   {mediaAssetsList.map((asset: any) => (
+                      <div key={asset.id} className="group relative aspect-square bg-white rounded-[2rem] overflow-hidden border border-gray-100 hover:border-brand-blue transition-all cursor-pointer shadow-sm hover:shadow-2xl hover:shadow-brand-blue/10">
+                         <img src={asset.url} alt={asset.fileName} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                         <div className="absolute inset-0 bg-brand-blue/60 opacity-0 group-hover:opacity-100 transition-all flex items-center justify-center backdrop-blur-[2px]">
+                            <button 
+                              onClick={(e) => { 
+                                e.stopPropagation(); 
+                                navigator.clipboard.writeText(asset.url); 
+                                alert("Direct Asset Link Copied!"); 
+                              }} 
+                              className="p-3 bg-white text-brand-blue rounded-2xl shadow-xl hover:scale-110 active:scale-90 transition-all"
+                              title="Copy Public URL"
+                            >
+                               <Copy size={18} />
+                            </button>
+                         </div>
+                         <div className="absolute bottom-2 left-0 right-0 px-2 opacity-0 group-hover:opacity-100 transition-all">
+                            <div className="bg-white/90 backdrop-blur-md rounded-xl py-1 px-2 text-[8px] font-black uppercase tracking-widest text-center truncate italic">
+                               {asset.fileName}
+                            </div>
+                         </div>
+                      </div>
+                   ))}
+                </div>
+             </div>
           )}
 
           {activeTab === "navigator" && (

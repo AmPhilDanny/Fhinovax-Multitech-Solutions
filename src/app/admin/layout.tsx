@@ -27,7 +27,8 @@ const NAV_SECTIONS = [
   {
     group: "Customization",
     items: [
-      { href: "/admin?tab=identity", label: "Branding & Media", icon: "🎨" },
+      { href: "/admin?tab=identity", label: "Branding & Style", icon: "🎨" },
+      { href: "/admin?tab=media", label: "Media Repository", icon: "🖼️" },
       { href: "/admin?tab=footer", label: "Footer Settings", icon: "🏠" },
     ],
   },
