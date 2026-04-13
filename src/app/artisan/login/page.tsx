@@ -1,5 +1,3 @@
-'use server';
-
 import { cookies } from 'next/headers';
 import { db } from '@/db';
 import { artisans } from '@/db/schema';

@@ -4,6 +4,7 @@ import { db } from '@/db';
 import { artisans } from '@/db/schema';
 import { eq } from 'drizzle-orm';
 import Link from 'next/link';
+import { artisanLogout } from './logout-action';
 
 export default async function ArtisanLayout({
   children,
@@ -17,10 +18,11 @@ export default async function ArtisanLayout({
     redirect('/artisan/login');
   }
 
+  const artisanId = parseInt(sessionId!);
   const results = await db
     .select()
     .from(artisans)
-    .where(eq(artisans.id, parseInt(sessionId)))
+    .where(eq(artisans.id, artisanId))
     .limit(1);
 
   const artisan = results[0];
@@ -29,12 +31,6 @@ export default async function ArtisanLayout({
     redirect('/artisan/login');
   }
 
-  async function logout() {
-    'use server';
-    const cookiesList = await cookies();
-    cookiesList.set('artisan_session', '', { maxAge: 0, path: '/' });
-    redirect('/artisan/login');
-  }
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col md:flex-row">
@@ -104,7 +100,7 @@ export default async function ArtisanLayout({
 
         {/* Logout */}
         <div className="p-4 border-t border-gray-100">
-          <form action={logout}>
+          <form action={artisanLogout}>
             <button
               type="submit"
               className="w-full text-[10px] font-black uppercase tracking-widest text-gray-400 hover:text-red-500 py-2 transition-colors rounded-xl hover:bg-red-50"
