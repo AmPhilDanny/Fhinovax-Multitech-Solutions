@@ -5,6 +5,15 @@ import Link from "next/link";
 export default async function ContactPage() {
   const settings = await getSiteSettings();
 
+  // Defensively extract iframe src if the admin pasted the entire HTML snippet
+  let parsedMapEmbed = settings.googleMapsEmbed || "";
+  if (parsedMapEmbed.includes("<iframe") && parsedMapEmbed.includes("src=")) {
+    const match = parsedMapEmbed.match(/src=["']([^"']+)["']/);
+    if (match) parsedMapEmbed = match[1];
+  } else if (parsedMapEmbed.startsWith("www.")) {
+    parsedMapEmbed = "https://" + parsedMapEmbed;
+  }
+
   const channels = [
     { 
       icon: Phone, 
@@ -104,9 +113,9 @@ export default async function ContactPage() {
                 </div>
 
                  <div className="w-full h-[450px] bg-gray-100 rounded-[2rem] overflow-hidden border-4 border-gray-50 shadow-inner translate-z-0 group relative">
-                    {settings.googleMapsEmbed ? (
+                    {parsedMapEmbed ? (
                       <iframe 
-                        src={settings.googleMapsEmbed} 
+                        src={parsedMapEmbed} 
                         className="w-full h-full border-none" 
                         allowFullScreen={true} 
                         loading="lazy" 
