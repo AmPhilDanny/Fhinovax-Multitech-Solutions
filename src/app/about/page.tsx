@@ -1,10 +1,17 @@
 import { db } from "@/db";
-import { siteSettings } from "@/db/schema";
+import { siteSettings, pages } from "@/db/schema";
 import { getSiteSettings } from "@/app/actions";
 import { Shield, Target, Award, Users, CheckCircle2 } from "lucide-react";
+import { eq } from "drizzle-orm";
 
 export default async function AboutPage() {
   const settings = await getSiteSettings();
+
+  // Try to load About Us content from Pages Editor
+  const dbPage = await db.select().from(pages).where(eq(pages.slug, "about-us")).limit(1);
+  const customContent = dbPage.length > 0 && dbPage[0].isPublished 
+    ? dbPage[0] 
+    : null;
 
   return (
     <div className="bg-white min-h-screen">
@@ -30,23 +37,29 @@ export default async function AboutPage() {
       <section className="py-20 px-4">
         <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
            <div className="space-y-6">
-              <h2 className="text-3xl font-black text-gray-900 uppercase">Our Mission</h2>
-              <p className="text-gray-600 leading-relaxed text-lg">
-                 We exist to bridge the gap between complex technical failures and reliable solutions. By combining state-of-the-art AI diagnostics with years of hands-on mechanical expertise, we ensure that your vehicles and generators perform at their peak.
-              </p>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4">
-                 {[
-                   "Advanced AI Diagnostics",
-                   "Professional Mechanical Staff",
-                   "Transparent Pricing",
-                   "Makurdi's Technical Hub"
-                 ].map((text, i) => (
+              {customContent ? (
+                  <div className="prose prose-blue lg:prose-lg max-w-none text-gray-600 dynamic-content" dangerouslySetInnerHTML={{ __html: customContent.content }} />
+              ) : (
+                <>
+                  <h2 className="text-3xl font-black text-gray-900 uppercase">Our Mission</h2>
+                  <p className="text-gray-600 leading-relaxed text-lg">
+                     We exist to bridge the gap between complex technical failures and reliable solutions. By combining state-of-the-art AI diagnostics with years of hands-on mechanical expertise, we ensure that your vehicles and generators perform at their peak.
+                  </p>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4">
+                     {[
+                       "Advanced AI Diagnostics",
+                       "Professional Mechanical Staff",
+                       "Transparent Pricing",
+                       "Makurdi's Technical Hub"
+                     ].map((text, i) => (
                    <div key={i} className="flex items-center gap-2 text-sm font-bold text-brand-blue">
                       <CheckCircle2 size={16} />
                       {text}
                    </div>
-                 ))}
-              </div>
+                     ))}
+                  </div>
+                </>
+              )}
            </div>
            <div className="relative">
               <div className="aspect-[4/5] bg-gray-100 rounded-[3rem] overflow-hidden shadow-2xl relative">
