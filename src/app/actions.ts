@@ -164,22 +164,33 @@ export async function getArtisans(onlyActive = true) {
 
 export async function onboardArtisan(formData: FormData) {
   const name = formData.get('name') as string;
+  const email = formData.get('email') as string;
   const specialty = formData.get('specialty') as string;
   const location = formData.get('location') as string;
   const phoneNumber = formData.get('phoneNumber') as string;
   const yearsExperience = parseInt(formData.get('yearsExperience') as string) || 0;
   const bio = formData.get('bio') as string;
   const photoUrl = formData.get('photoUrl') as string;
+  const password = formData.get('password') as string;
+
+  // Hash the password using Node.js built-in crypto (no extra deps)
+  let passwordHash: string | undefined = undefined;
+  if (password) {
+    const { createHash } = await import('crypto');
+    passwordHash = createHash('sha256').update(password).digest('hex');
+  }
 
   try {
     await db.insert(artisans).values({
       name,
+      email: email || null,
       specialty,
       location,
       phoneNumber,
       yearsExperience,
       bio,
       photoUrl,
+      passwordHash,
       status: 'pending'
     });
     revalidatePath("/admin");

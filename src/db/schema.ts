@@ -140,12 +140,14 @@ export const aiMemory = pgTable("ai_memory", {
 export const artisans = pgTable("artisans", {
   id: serial("id").primaryKey(),
   name: varchar("name", { length: 255 }).notNull(),
+  email: varchar("email", { length: 255 }),
   specialty: text("specialty").notNull(),
   yearsExperience: integer("years_experience"),
   location: text("location").notNull(),
   phoneNumber: varchar("phone_number", { length: 50 }).notNull(),
   bio: text("bio"),
   photoUrl: text("photo_url"),
+  passwordHash: text("password_hash"), // Hashed login password
   status: varchar("status", { length: 50 }).default("pending"), // "pending", "active", "rejected"
   createdAt: timestamp("created_at").defaultNow(),
 });

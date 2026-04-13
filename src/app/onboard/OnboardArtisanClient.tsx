@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from "react";
-import { ShieldCheck, Zap, ArrowRight, CheckCircle, Loader2 } from "lucide-react";
+import { ShieldCheck, Zap, ArrowRight, CheckCircle, Loader2, Lock } from "lucide-react";
 import { onboardArtisan } from "@/app/actions";
 import Link from "next/link";
 
@@ -176,6 +176,16 @@ export default function OnboardArtisanClient({
              </div>
 
              <div className="space-y-2">
+                <label className="text-[10px] font-black uppercase text-gray-400 tracking-widest px-1">Email Address (for login)</label>
+                <input 
+                  type="email"
+                  name="email" 
+                  placeholder="yourname@example.com"
+                  className="w-full bg-white border border-gray-100 rounded-2xl px-5 py-4 text-sm font-bold focus:ring-4 focus:ring-brand-blue/5 focus:border-brand-blue outline-none transition-all shadow-sm"
+                />
+             </div>
+
+             <div className="space-y-2">
                 <label className="text-[10px] font-black uppercase text-gray-400 tracking-widest px-1">Brief Bio / Key Equipment</label>
                 <textarea 
                   name="bio" 
@@ -199,6 +209,25 @@ export default function OnboardArtisanClient({
                 </button>
              </div>
 
+             {/* Portal login password */}
+             <div className="p-5 bg-blue-50/50 border border-blue-100 rounded-2xl space-y-4">
+               <div className="flex items-center gap-2 text-brand-blue">
+                 <Lock size={14} />
+                 <span className="text-[10px] font-black uppercase tracking-widest">Set Your Portal Login Password</span>
+               </div>
+               <p className="text-xs text-gray-500 font-medium">You&apos;ll use your phone number + this password to access the Artisan Portal once approved.</p>
+               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                 <div className="space-y-1">
+                   <label className="text-[10px] font-black uppercase text-gray-400 tracking-widest">Password</label>
+                   <input type="password" name="password" minLength={6} placeholder="Min. 6 characters" className="w-full bg-white border border-gray-100 rounded-2xl px-4 py-3.5 text-sm font-bold focus:ring-4 focus:ring-brand-blue/5 focus:border-brand-blue outline-none transition-all shadow-sm" />
+                 </div>
+                 <div className="space-y-1">
+                   <label className="text-[10px] font-black uppercase text-gray-400 tracking-widest">Confirm Password</label>
+                   <input type="password" name="confirmPassword" minLength={6} placeholder="Repeat password" className="w-full bg-white border border-gray-100 rounded-2xl px-4 py-3.5 text-sm font-bold focus:ring-4 focus:ring-brand-blue/5 focus:border-brand-blue outline-none transition-all shadow-sm" />
+                 </div>
+               </div>
+             </div>
+
              {status === 'error' && (
                <div className="p-4 bg-red-50 border border-red-100 text-red-600 rounded-2xl text-xs font-bold flex items-center gap-2">
                  <Zap size={14} /> {error}
@@ -206,7 +235,12 @@ export default function OnboardArtisanClient({
              )}
           </form>
 
-          <p className="mt-10 text-[10px] text-gray-400 font-bold uppercase tracking-widest text-center leading-relaxed">
+          <p className="mt-6 text-center text-xs font-bold text-gray-400">
+            Already have an account?{' '}
+            <Link href="/artisan/login" className="text-brand-blue font-black hover:underline">Sign In to Portal →</Link>
+          </p>
+
+          <p className="mt-4 text-[10px] text-gray-400 font-bold uppercase tracking-widest text-center leading-relaxed">
             By joining, you agree to {siteName} technical standards and professional conduct guidelines.
           </p>
         </div>
