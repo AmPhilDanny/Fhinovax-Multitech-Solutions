@@ -43,7 +43,8 @@ import {
   PanelBottom,
   Phone,
   Mail,
-  Clock
+  Clock,
+  ListChecks
 } from "lucide-react";
 import { Facebook, Instagram, Twitter, Linkedin } from "./Icons";
 import MediaPicker from "./MediaPicker";

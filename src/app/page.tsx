@@ -14,6 +14,15 @@ export default async function Home() {
     ? { background: settings.heroBgValue }
     : { backgroundColor: settings.heroBgValue };
 
+  // Defensively extract iframe src if the admin pasted the entire HTML snippet
+  let parsedMapEmbed = settings.googleMapsEmbed || "";
+  if (parsedMapEmbed.includes("<iframe") && parsedMapEmbed.includes("src=")) {
+    const match = parsedMapEmbed.match(/src=["']([^"']+)["']/);
+    if (match) parsedMapEmbed = match[1];
+  } else if (parsedMapEmbed.startsWith("www.")) {
+    parsedMapEmbed = "https://" + parsedMapEmbed;
+  }
+
   return (
     <div className="flex flex-col">
       {/* HERO SECTION */}
@@ -220,9 +229,9 @@ export default async function Home() {
             </div>
 
             <div className="w-full md:w-1/2 h-[400px] bg-gray-100 rounded-[2.5rem] overflow-hidden shadow-2xl border-8 border-white group relative">
-               {settings.googleMapsEmbed ? (
+               {parsedMapEmbed ? (
                  <iframe 
-                   src={settings.googleMapsEmbed} 
+                   src={parsedMapEmbed} 
                    className="w-full h-full border-none" 
                    allowFullScreen={true} 
                    loading="lazy" 
